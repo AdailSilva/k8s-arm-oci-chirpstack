@@ -1,0 +1,43 @@
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chirpstack-v4-mosquitto-config-map
+  namespace: chirpstack-v4
+  labels:
+    app: chirpstack-v4-mosquitto-config-map
+data:
+  mosquitto.conf: |
+    persistence true
+    persistence_location /mosquitto/data
+    log_dest stdout
+
+    # =================================
+    # Listener MQTT sem TLS (opcional)
+    # =================================
+    #listener 1883
+    #protocol mqtt
+    #allow_anonymous true
+    # Em produção: prefira allow_anonymous false e use senha
+
+    # =================================
+    # Listener MQTT com TLS
+    # =================================
+    listener 8883
+    protocol mqtt
+    allow_anonymous false
+
+    # Autenticação por usuário/senha
+    password_file /mosquitto/auth/passwd
+
+    # TLS (cert do servidor)
+    cafile /mosquitto/certs/ca.crt
+    certfile /mosquitto/certs/tls.crt
+    keyfile /mosquitto/certs/tls.key
+
+    # Segurança mínima
+    tls_version tlsv1.2
+    # tls_version tlsv1.3  # Se o ambiente suportar bem.
+    require_certificate false

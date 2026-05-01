@@ -1,0 +1,34 @@
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "attach-pvc-chirpstack-v3"
+  namespace: chirpstack-v3
+  labels: 
+    app: attach-pvc-chirpstack-v3
+spec:
+  volumes:
+  - name: attach-volume-chirpstack-v3
+    persistentVolumeClaim:
+      claimName: oci-fss-pvc-postgresql-claim0-chirpstack-v3
+  initContainers:
+  - name: fix-permissions-attach-volume-chirpstack-v3
+    image: busybox:1.37.0
+    command: ["/bin/sh", "-c"]
+    args:
+      - |
+        mkdir -p docker-entrypoint-initdb.d
+        chmod -R 770 docker-entrypoint-initdb.d
+        chown -R 999:999 docker-entrypoint-initdb.d
+    volumeMounts:
+      - name: attach-volume-chirpstack-v3
+        mountPath: docker-entrypoint-initdb.d
+  containers:
+  - name: attach-volume-chirpstack-v3
+    image: alpine:latest
+    command: ["/bin/sh", "-c", "sleep infinity"]   
+    volumeMounts:
+    - name: attach-volume-chirpstack-v3
+      mountPath: docker-entrypoint-initdb.d

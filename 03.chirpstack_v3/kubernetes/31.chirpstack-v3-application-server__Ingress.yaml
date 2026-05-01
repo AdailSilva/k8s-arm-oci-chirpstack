@@ -1,0 +1,33 @@
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: chirpstack-v3-application-server-ingress
+  namespace: chirpstack-v3
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    ingress.kubernetes.io/ssl-passthrough: "false"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1 # /$1 # /$2
+  labels:
+    app: chirpstack-v3-application-server-ingress
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - chirpstack-v3.adailsilva.com.br
+      secretName: chirpstack-v3-tls
+  rules:
+    - host: chirpstack-v3.adailsilva.com.br
+      http:
+        paths:
+          - path: /?(.*) # /chirpstack-v3(/|$)(.*)
+            pathType: Prefix # ImplementationSpecific # Exact # Prefix
+            backend:
+              service:
+                name: chirpstack-v3-application-server-service
+                port:
+                  number: 443

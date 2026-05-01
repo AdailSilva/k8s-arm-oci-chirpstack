@@ -1,0 +1,20 @@
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: chirpstack-v4-postgresql-service
+  namespace: chirpstack-v4
+  labels:
+    app: chirpstack-v4-postgresql-service
+spec:
+  selector:
+    app: chirpstack-v4-ns-as-postgresql-deployment
+  # clusterIP: "None"
+  type: ClusterIP
+  ports:
+    - name: "5432-to-5442"
+      protocol: TCP
+      port: 5442
+      targetPort: 5432

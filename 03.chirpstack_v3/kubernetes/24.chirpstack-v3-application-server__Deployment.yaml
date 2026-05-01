@@ -1,0 +1,43 @@
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: chirpstack-v3-application-server-deployment
+  name: chirpstack-v3-application-server-deployment
+  namespace: chirpstack-v3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chirpstack-v3-application-server-deployment
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: chirpstack-v3-application-server-deployment
+    spec:
+      containers:
+        - env:
+            - name: APPLICATION_SERVER__API__PUBLIC_HOST
+              value: chirpstack-v3-application-server-service.chirpstack-v3.svc.cluster.local:8001
+            - name: APPLICATION_SERVER__EXTERNAL_API__JWT_SECRET
+              value: gq3ebMWS0rbG5hSgo451dT_n85fX5RWK1vs6rxdX6Qi6qVBd3DcpllwQkOAYfGWN
+            - name: APPLICATION_SERVER__INTEGRATION__MQTT__SERVER
+              value: tcp://chirpstack-v3-mosquitto-service.chirpstack-v3.svc.cluster.local:1883
+            # - name: APPLICATION_SERVER__INTEGRATION__MQTT__CLIENT_ID
+            #   value: lorawan_chirpstack-application-server-v3
+            - name: POSTGRESQL__DSN
+              value: postgres://chirpstack_as:chirpstack_as@chirpstack-v3-as-postgresql-service.chirpstack-v3.svc.cluster.local:5433/chirpstack_as?sslmode=disable
+            - name: REDIS__URL
+              value: redis://chirpstack-v3-redis-service.chirpstack-v3.svc.cluster.local:6379
+          image: chirpstack/chirpstack-application-server:3.17.9
+          name: chirpstack-v3-application-server
+          ports:
+            - containerPort: 8080
+          resources: {}
+          imagePullPolicy: Always
+      restartPolicy: "Always" # Unsupported value: "unless-stopped": supported values: "Always", "OnFailure", "Never".
+status: {}

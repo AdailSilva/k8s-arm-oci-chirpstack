@@ -1,0 +1,48 @@
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chirpstack-v3-postgresql-config-map
+  namespace: chirpstack-v3
+  labels:
+    app: chirpstack-v3-postgresql-config-map
+data:
+  001.init-chirpstack-v3_ns.sh: |
+    #!/bin/bash
+    set -e
+
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+        CREATE ROLE chirpstack_ns WITH LOGIN PASSWORD 'chirpstack_ns' NOINHERIT;
+        CREATE DATABASE chirpstack_ns WITH OWNER chirpstack_ns;
+        \connect chirpstack_ns
+        GRANT ALL PRIVILEGES ON DATABASE chirpstack_ns TO chirpstack_ns;
+    EOSQL
+
+  002.init-chirpstack-v3_as.sh: |
+    #!/bin/bash
+    set -e
+
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+        CREATE ROLE chirpstack_as WITH LOGIN PASSWORD 'chirpstack_as' NOINHERIT;
+        CREATE DATABASE chirpstack_as WITH OWNER chirpstack_as;
+        \connect chirpstack_as
+        GRANT ALL PRIVILEGES ON DATABASE chirpstack_as TO chirpstack_as;
+    EOSQL
+
+  003.chirpstack-v3_as_trgm.sh: |
+    #!/bin/bash
+    set -e
+
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname="chirpstack_as" <<-EOSQL
+        CREATE EXTENSION pg_trgm;
+    EOSQL
+
+  004.chirpstack-v3_as_hstore.sh: |
+    #!/bin/bash
+    set -e
+
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname="chirpstack_as" <<-EOSQL
+        CREATE EXTENSION hstore;
+    EOSQL

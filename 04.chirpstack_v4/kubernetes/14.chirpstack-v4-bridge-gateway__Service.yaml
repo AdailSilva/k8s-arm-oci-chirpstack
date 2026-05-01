@@ -1,0 +1,20 @@
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: chirpstack-v4-gateway-bridge-service
+  namespace: chirpstack-v4
+  labels:
+    app: chirpstack-v4-gateway-bridge-service
+spec:
+  selector:
+    app: chirpstack-v4-gateway-bridge-deployment
+  # clusterIP: "None"
+  type: ClusterIP
+  ports:
+    - name: "1700-to-1710"
+      protocol: UDP
+      port: 1710
+      targetPort: 1700

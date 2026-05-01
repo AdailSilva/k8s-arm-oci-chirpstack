@@ -1,0 +1,16 @@
+# Useful Commands:
+
+chmod +x 01.deploy_chirpstack-v4_script.sh
+bash 01.deploy_chirpstack-v4_script.sh
+
+chmod +x 02.destroy_chirpstack-v4_script.sh
+bash 02.destroy_chirpstack-v4_script.sh
+
+
+# Back-UPs:
+
+chmod +x 03.back-up_chirpstack-v4_script.sh
+bash 03.back-up_chirpstack-v4_script.sh
+
+chmod +x 04.restore_chirpstack-v4_script.sh
+bash 04.restore_chirpstack-v4_script.sh

@@ -1,0 +1,21 @@
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: chirpstack-v3-network-server-service
+  namespace: chirpstack-v3
+  labels:
+    app: chirpstack-v3-network-server-service
+spec:
+  selector:
+    app: chirpstack-v3-network-server-deployment
+  # clusterIP: "None"
+  type: ClusterIP
+  ports:
+    - name: "8000-to-8000"
+      protocol: TCP
+      port: 8000
+      targetPort: 8000
+      # nodePort: 31000

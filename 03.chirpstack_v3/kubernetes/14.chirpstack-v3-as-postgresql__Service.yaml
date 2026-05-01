@@ -1,0 +1,20 @@
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: chirpstack-v3-as-postgresql-service
+  namespace: chirpstack-v3
+  labels:
+    app: chirpstack-v3-as-postgresql-service
+spec:
+  selector:
+    app: chirpstack-v3-as-postgresql-deployment
+  # clusterIP: "None"
+  type: ClusterIP
+  ports:
+    - name: "5433-to-5438"
+      protocol: TCP
+      port: 5438
+      targetPort: 5433

@@ -1,0 +1,120 @@
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chirpstack-v4-mosquitto-deployment
+  namespace: chirpstack-v4
+  labels:
+    app: chirpstack-v4-mosquitto-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chirpstack-v4-mosquitto-deployment
+  template:
+    metadata:
+      labels:
+        app: chirpstack-v4-mosquitto-deployment
+    spec:
+      initContainers:
+        - name: prepare-mosquitto-files
+          image: alpine:3.20
+          command:
+            - sh
+            - -lc
+            - |
+              set -e
+
+              # cria dirs
+              mkdir -p /work/auth /work/certs /work/config
+
+              # copia arquivos (Secret/ConfigMap -> emptyDir)
+              cp /mnt-auth/passwd /work/auth/passwd
+              cp /mnt-certs/ca.crt /work/certs/ca.crt
+              cp /mnt-certs/tls.crt /work/certs/tls.crt
+              cp /mnt-certs/tls.key /work/certs/tls.key
+              cp /mnt-config/mosquitto.conf /work/config/mosquitto.conf
+
+              # permissões exigidas/recomendadas
+              # passwd: 0600 e dono mosquitto
+              chmod 0600 /work/auth/passwd
+
+              # chaves TLS: 0600, certs: 0644
+              chmod 0600 /work/certs/tls.key
+              chmod 0644 /work/certs/tls.crt /work/certs/ca.crt
+
+              # config: pode ser 0644
+              chmod 0644 /work/config/mosquitto.conf
+
+              # usuário padrão do eclipse-mosquitto costuma ser uid 1883
+              chown -R 1883:1883 /work/auth /work/certs /work/config
+
+              echo "Arquivos preparados com permissões OK."
+          volumeMounts:
+            # fontes read-only
+            - name: mosquitto-auth-secret
+              mountPath: /mnt-auth
+              readOnly: true
+            - name: chirpstack-v4-mosquitto-tls
+              mountPath: /mnt-certs
+              readOnly: true
+            - name: chirpstack-v4-mosquitto-config
+              mountPath: /mnt-config
+              readOnly: true
+
+            # destinos graváveis
+            - name: mosquitto-auth-vol
+              mountPath: /work/auth
+            - name: mosquitto-certs-vol
+              mountPath: /work/certs
+            - name: mosquitto-config-vol
+              mountPath: /work/config
+
+      containers:
+        - name: chirpstack-v4-mosquitto
+          image: eclipse-mosquitto:2.0.22
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "250m"
+          ports:
+            - name: mqtts
+              containerPort: 8883
+          volumeMounts:
+            # agora montamos os arquivos já “arrumados”
+            - name: mosquitto-config-vol
+              mountPath: /mosquitto/config
+              readOnly: true
+            - name: mosquitto-certs-vol
+              mountPath: /mosquitto/certs
+              readOnly: true
+            - name: mosquitto-auth-vol
+              mountPath: /mosquitto/auth
+              readOnly: true
+          imagePullPolicy: IfNotPresent
+
+      volumes:
+        # fontes
+        - name: chirpstack-v4-mosquitto-config
+          configMap:
+            name: chirpstack-v4-mosquitto-config-map
+
+        - name: chirpstack-v4-mosquitto-tls
+          secret:
+            secretName: chirpstack-v4-mosquitto-tls
+
+        - name: mosquitto-auth-secret
+          secret:
+            secretName: mosquitto-auth
+
+        # destinos (graváveis)
+        - name: mosquitto-auth-vol
+          emptyDir: {}
+        - name: mosquitto-certs-vol
+          emptyDir: {}
+        - name: mosquitto-config-vol
+          emptyDir: {}
+
+      restartPolicy: Always

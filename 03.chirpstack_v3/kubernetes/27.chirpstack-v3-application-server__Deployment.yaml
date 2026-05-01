@@ -1,0 +1,148 @@
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chirpstack-v3-application-server-deployment
+  namespace: chirpstack-v3
+  labels:
+    app: chirpstack-v3-application-server-deployment
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: chirpstack-v3-application-server-deployment
+  template:
+    metadata:
+      labels:
+        app: chirpstack-v3-application-server-deployment
+    spec:
+      containers:
+        - name: chirpstack-v3-application-server-deployment
+          image: chirpstack/chirpstack-application-server:3.17.9
+          env:
+            - name: APPLICATION_SERVER__API__PUBLIC_HOST
+              value: chirpstack-v3-application-server-service.chirpstack-v3.svc.cluster.local:8001
+
+            - name: APPLICATION_SERVER__EXTERNAL_API__JWT_SECRET
+              value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5X2lkIjoiNjk5M2U5MWEtMzU2NS00NGI3LWI5YTItYjMwNGExOTNlYjNjIiwiYXVkIjoiYXMiLCJpc3MiOiJhcyIsIm5iZiI6MTY5NzMxNDA1OSwic3ViIjoiYXBpX2tleSJ9.SlkKrY_Wbg7qUlnDV6yEJAPrzk1QAJMuJPJyi8FVxho
+
+            - name: APPLICATION_SERVER__INTEGRATION__MQTT__SERVER
+              value: tcp://chirpstack-v3-mosquitto-service.chirpstack-v3.svc.cluster.local:1888
+
+            - name: APPLICATION_SERVER__INTEGRATION__MQTT__CLIENT_ID
+              value: lorawan_chirpstack-application-server-v3
+
+            # - name: APPLICATION_SERVER__INTEGRATION__MQTT__PASSWORD
+            #   value: admin
+
+            - name: POSTGRESQL__DSN # APPLICATION_SERVER__INTEGRATION__POSTGRESQL__DSN
+              value: postgres://chirpstack_as:chirpstack_as@chirpstack-v3-as-postgresql-service.chirpstack-v3.svc.cluster.local:5438/chirpstack_as?sslmode=disable
+
+            - name: POSTGRESQL__PASSWORD
+              value: postgres
+
+            # - name: APPLICATION_SERVER__INTEGRATION__POSTGRESQL__PASSWORD
+            #   value: admin
+
+            - name: REDIS__URL # APPLICATION_SERVER__INTEGRATION__REDIS__URL
+              value: redis://chirpstack-v3-redis-service.chirpstack-v3.svc.cluster.local:6384
+
+            # - name: APPLICATION_SERVER__INTEGRATION__REDIS__PASSWORD
+            #   value: admin
+
+            # - name: APPLICATION_SERVER__API__PUBLIC_HOST
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: chirpstack-application-server-secrets
+            #       key: application_server__api__public_host
+
+            # - name: APPLICATION_SERVER__EXTERNAL_API__JWT_SECRET
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: chirpstack-application-server-secrets
+            #       key: application_server__external_api__jwt_secret
+
+            # - name: APPLICATION_SERVER__INTEGRATION__MQTT__SERVER
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: chirpstack-application-server-secrets
+            #       key: application_server__integration__mqtt__server
+
+            # - name: APPLICATION_SERVER__INTEGRATION__MQTT__CLIENT_ID
+            #   valueFrom:
+            #     fieldRef:
+            #       fieldPath: metadata.name
+
+            # - name: APPLICATION_SERVER__INTEGRATION__MQTT__PASSWORD
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: chirpstack-application-server-secrets
+            #       key: application_server_ integration__mqtt__password
+
+            # - name: POSTGRESQL__DSN # APPLICATION_SERVER__INTEGRATION__POSTGRESQL__DSN
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: chirpstack-application-server-secrets
+            #       key: application_server__integration__postgresql__dsn
+
+            # - name: APPLICATION_SERVER__INTEGRATION__POSTGRESQL__PASSWORD
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: chirpstack-application-server-secrets
+            #       key: application_server__integration__postgresql__password
+
+            # - name: REDIS__URL # APPLICATION_SERVER__INTEGRATION__REDIS__URL
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: chirpstack-application-server-secrets
+            #       key: application_server__integration__redis__url
+
+            # - name: APPLICATION_SERVER__INTEGRATION__REDIS__PASSWORD
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: chirpstack-application-server-secrets
+            #       key: application_server__integration__redis__password
+
+          # readinessProbe:
+          #  httpGet:
+          #    path: /health
+          #    port: 8101
+          #  initialDelaySeconds: 5
+          #  periodSeconds: 5
+          #  timeoutSeconds: 2
+          #  failureThreshold: 5
+
+          ports:
+            - name: http-port
+              containerPort: 8001
+            - name: join-port
+              containerPort: 8003
+            - name: ui-port
+              containerPort: 8080
+            - name: monitoring-port
+              containerPort: 8101
+          # resources:
+          #  limits:
+          #    cpu: "1"
+          #    memory: 1500Mi
+          #  requests:
+          #    cpu: "1"
+          #    memory: 750Mi
+          volumeMounts:
+            - name: chirpstack-v3-application-server-config
+              mountPath: /etc/chirpstack-application-server/chirpstack-application-server.toml
+              subPath: chirpstack-application-server.toml
+          imagePullPolicy: Always
+      volumes:
+        - name: chirpstack-v3-application-server-config
+          configMap:
+            name: chirpstack-v3-application-server-config-map
+      restartPolicy: "Always" # Unsupported value: "unless-stopped": supported values: "Always", "OnFailure", "Never".
+status: {}

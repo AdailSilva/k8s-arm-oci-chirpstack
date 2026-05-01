@@ -1,0 +1,64 @@
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chirpstack-v4-redis-deployment
+  namespace: chirpstack-v4
+  labels:
+    app: chirpstack-v4-redis-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chirpstack-v4-redis-deployment
+  template:
+    metadata:
+      labels:
+        app: chirpstack-v4-redis-deployment
+    spec:
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
+      initContainers:
+        - name: fix-permissions-chirpstack-v4-redis
+          image: busybox:1.37.0
+          securityContext:
+            runAsUser: 0
+          command:
+            - sh
+            - -c
+            - |
+              set -ex
+              echo "Contents of /data before"
+              ls -la /data
+              echo "Fixing permissions (ignoring .snapshot)"
+              find /data -mindepth 1 -maxdepth 1 ! -name ".snapshot" -exec chown -R 999:999 {} \;
+              find /data -mindepth 1 -maxdepth 1 ! -name ".snapshot" -exec chmod -R 770 {} \;
+              echo "Contents of /data after"
+              ls -la /data
+          volumeMounts:
+            - name: oci-fss-pvc-redis-data-chirpstack-v4
+              mountPath: /data
+      containers:
+        - name: chirpstack-v4-redis
+          image: redis:7.2
+          securityContext:
+            runAsUser: 999
+            runAsGroup: 999
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - name: oci-fss-pvc-redis-data-chirpstack-v4
+              mountPath: /data
+          command: ["redis-server"]
+          args: ["--dir", "/data"]
+          imagePullPolicy: Always
+      volumes:
+        - name: oci-fss-pvc-redis-data-chirpstack-v4
+          persistentVolumeClaim:
+            claimName: oci-fss-pvc-redis-data-chirpstack-v4
+      restartPolicy: "Always"
+status: {}

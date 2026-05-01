@@ -1,0 +1,60 @@
+#####################
+# Attached with OCI #
+#####################
+
+---
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: oci-fss-redis-data-chirpstack-v4
+  # namespace: chirpstack-v4
+  labels:
+    app: oci-fss-redis-data-chirpstack-v4
+provisioner: oracle.com/oci-fss
+parameters:
+  mntTargetId: cid1.mounttarget.oc1.sa_saopaulo_1.aaaaaa4np2xizkpzm5zhkllqojxwiottmewxgylpobqxk3dpfuys2ylefuyqaaaa
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: oci-fss-pv-redis-data-chirpstack-v4
+  # namespace: chirpstack-v4
+  labels:
+    app: oci-fss-pv-redis-data-chirpstack-v4
+spec:
+  storageClassName: oci-fss-redis-data-chirpstack-v4
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  mountOptions:
+    - nosuid
+    - vers=3
+    #- vers=4
+  nfs:
+    server: 10.0.0.143
+    path: "/FileSystem-K8S/chirpstack-v4-redis-data"
+    readOnly: false
+  persistentVolumeReclaimPolicy: Retain #Retain #Delete
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: oci-fss-pvc-redis-data-chirpstack-v4
+  namespace: chirpstack-v4
+  labels:
+    app: oci-fss-pvc-redis-data-chirpstack-v4
+spec:
+  storageClassName: oci-fss-redis-data-chirpstack-v4
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: oci-fss-pv-redis-data-chirpstack-v4

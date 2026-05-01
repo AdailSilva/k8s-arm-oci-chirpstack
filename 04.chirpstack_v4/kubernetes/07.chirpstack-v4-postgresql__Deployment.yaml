@@ -1,0 +1,125 @@
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chirpstack-v4-ns-as-postgresql-deployment
+  namespace: chirpstack-v4
+  labels:
+    app: chirpstack-v4-ns-as-postgresql-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chirpstack-v4-ns-as-postgresql-deployment
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: chirpstack-v4-ns-as-postgresql-deployment
+    spec:
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
+      initContainers:
+        - name: fix-permissions-chirpstack-v4-ns-as
+          image: busybox:1.37.0
+          securityContext:
+            runAsUser: 0
+          command:
+            - sh
+            - -c
+            - |
+              set -ex
+              echo ">> Creating required dirs and fixing permissions..."
+              mkdir -p /mnt-data-ns-as/chirpstack-v4-ns-as
+              mkdir -p /var/run/postgresql
+              echo "Contents of /mnt-data-ns-as before:"
+              ls -la /mnt-data-ns-as
+              echo "Fixing permissions (ignoring .snapshot)..."
+              find /mnt-data-ns-as -mindepth 1 -maxdepth 1 ! -name ".snapshot" -exec chown -R 999:999 {} \;
+              find /mnt-data-ns-as -mindepth 1 -maxdepth 1 ! -name ".snapshot" -exec chmod -R 770 {} \;
+              chown -R 999:999 /var/run/postgresql
+              chmod -R 770 /var/run/postgresql
+              echo "Contents of /mnt-data-ns-as after:"
+              ls -la /mnt-data-ns-as
+              echo ">> Done"
+          volumeMounts:
+            - name: oci-fss-pvc-postgresql-data-chirpstack-v4-ns-as
+              mountPath: /mnt-data-ns-as
+            - name: pg-socket-dir
+              mountPath: /var/run/postgresql
+
+        - name: init-clean-ns-as
+          image: busybox:1.37.0
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              if [ "$CLEAR_DB" = "true" ]; then
+                echo ">> Wiping Postgres data..."
+                rm -rf /var/lib/postgresql/data/*
+                rm -rf /mnt-data-ns-as/*
+                echo ">> Done."
+              fi
+          env:
+            - name: CLEAR_DB
+              value: "false"
+          securityContext:
+            runAsUser: 999
+            runAsGroup: 999
+          volumeMounts:
+            - name: oci-fss-pvc-postgresql-data-chirpstack-v4-ns-as
+              mountPath: /var/lib/postgresql/data
+              subPath: chirpstack-v4-ns-as
+
+      containers:
+        - name: chirpstack-v4-ns-as-postgresql
+          image: postgres:17.5
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data
+            - name: POSTGRES_DB
+              value: postgres
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgres
+            - name: POSTGRES_INITDB_SKIP_DIR_PERMS
+              value: "true"
+          command: ["docker-entrypoint.sh"]
+          args: ["postgres", "-p", "5432"]
+          securityContext:
+            runAsUser: 999
+            runAsGroup: 999
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: pg-socket-dir
+              mountPath: /var/run/postgresql
+            - name: configmap-init-ns-as
+              mountPath: /docker-entrypoint-initdb.d
+            - name: oci-fss-pvc-postgresql-data-chirpstack-v4-ns-as
+              mountPath: /var/lib/postgresql/data
+              subPath: chirpstack-v4-ns-as
+          imagePullPolicy: Always
+
+      volumes:
+        - name: pg-socket-dir
+          emptyDir: {}
+        - name: configmap-init-ns-as
+          configMap:
+            name: chirpstack-v4-postgresql-config-map
+            defaultMode: 0755
+            items:
+              - key: 001.init-chirpstack-v4.sh
+                path: 001.init-chirpstack-v4.sh
+              - key: 002.chirpstack-v4_extensions.sh
+                path: 002.chirpstack-v4_extensions.sh
+        - name: oci-fss-pvc-postgresql-data-chirpstack-v4-ns-as
+          persistentVolumeClaim:
+            claimName: oci-fss-pvc-postgresql-data-chirpstack-v4-ns-as
+      restartPolicy: "Always"
+status: {}

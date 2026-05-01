@@ -1,0 +1,93 @@
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chirpstack-v3-as-postgresql-deployment
+  namespace: chirpstack-v3
+  labels:
+    app: chirpstack-v3-as-postgresql-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chirpstack-v3-as-postgresql-deployment
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: chirpstack-v3-as-postgresql-deployment
+    spec:
+      securityContext:
+        runAsUser: 999       # postgres UID
+        runAsGroup: 999      # postgres GID
+        fsGroup: 999         # garante acesso ao PVC em NFS
+      initContainers:
+        - name: fix-permissions-chirpstack-v3-as
+          image: busybox:1.37.0
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -e
+              echo ">> Creating /mnt-data-as/chirpstack-v3-as and fixing permissions..."
+              mkdir -p /mnt-data-as/chirpstack-v3-as
+              chown -R 999:999 /mnt-data-as/chirpstack-v3-as
+              chmod 700 /mnt-data-as/chirpstack-v3-as
+              echo ">> Creating /var/run/postgresql and fixing permissions"
+              mkdir -p /var/run/postgresql
+              chown -R 999:999 /var/run/postgresql
+              chmod 700 /var/run/postgresql
+              echo ">> Done"
+          securityContext:
+            runAsUser: 0   # precisa rodar como root para aplicar chown
+          volumeMounts:
+            - name: oci-fss-pvc-postgresql-data-chirpstack-v3-as
+              mountPath: /mnt-data-as
+            - name: pg-socket-dir
+              mountPath: /var/run/postgresql
+      containers:
+        - name: chirpstack-v3-as-postgresql
+          image: postgres:14-alpine
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data
+            - name: POSTGRES_DB
+              value: postgres
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgres
+            - name: POSTGRES_INITDB_SKIP_DIR_PERMS
+              value: "true"   # necessário em NFS/OCI FSS
+          args: ["postgres", "-p", "5433"]
+          ports:
+            - containerPort: 5433
+          volumeMounts:
+            - name: pg-socket-dir
+              mountPath: /var/run/postgresql
+            - name: configmap-init-as
+              mountPath: /docker-entrypoint-initdb.d
+            - name: oci-fss-pvc-postgresql-data-chirpstack-v3-as
+              mountPath: /var/lib/postgresql/data
+              subPath: chirpstack-v3-as
+          imagePullPolicy: Always
+      volumes:
+        - name: pg-socket-dir
+          emptyDir: {}   # socket isolado por pod
+        - name: configmap-init-as
+          configMap:
+            name: chirpstack-v3-postgresql-config-map
+            defaultMode: 0755
+            items:
+              - key: 002.init-chirpstack-v3_as.sh
+                path: 002.init-chirpstack-v3_as.sh
+              - key: 003.chirpstack-v3_as_trgm.sh
+                path: 003.chirpstack-v3_as_trgm.sh
+              - key: 004.chirpstack-v3_as_hstore.sh
+                path: 004.chirpstack-v3_as_hstore.sh
+        - name: oci-fss-pvc-postgresql-data-chirpstack-v3-as
+          persistentVolumeClaim:
+            claimName: oci-fss-pvc-postgresql-data-chirpstack-v3-as
+      restartPolicy: Always

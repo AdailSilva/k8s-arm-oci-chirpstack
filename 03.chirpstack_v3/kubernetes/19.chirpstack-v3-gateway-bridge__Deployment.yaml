@@ -1,0 +1,44 @@
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: chirpstack-v3-gateway-bridge-deployment
+  name: chirpstack-v3-gateway-bridge-deployment
+  namespace: chirpstack-v3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chirpstack-v3-gateway-bridge-deployment
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: chirpstack-v3-gateway-bridge-deployment
+    spec:
+      #hostNetwork: true
+      containers:
+        - env:
+            - name: INTEGRATION__MQTT__AUTH__GENERIC__SERVERS
+              value: tcp://chirpstack-v3-mosquitto-service.chirpstack-v3.svc.cluster.local:1888
+          image: chirpstack/chirpstack-gateway-bridge:3.14.8
+          name: chirpstack-v3-gateway-bridge
+          ports:
+            - containerPort: 1700
+              #hostPort: 1700
+              protocol: UDP
+          resources: {}
+          volumeMounts:
+          - name: chirpstack-v3-gateway-bridge-volume
+            mountPath: /.config/chirpstack-gateway-bridge-config-map/chirpstack-gateway-bridge.toml
+            subPath: chirpstack-gateway-bridge.toml
+          imagePullPolicy: Always
+      volumes:
+        - name: chirpstack-v3-gateway-bridge-volume
+          configMap:
+            name: chirpstack-v3-gateway-bridge-config-map
+      restartPolicy: "Always" # Unsupported value: "unless-stopped": supported values: "Always", "OnFailure", "Never".
+status: {}

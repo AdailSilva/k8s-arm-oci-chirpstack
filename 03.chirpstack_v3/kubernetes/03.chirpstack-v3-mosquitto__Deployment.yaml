@@ -1,0 +1,42 @@
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chirpstack-v3-mosquitto-deployment
+  namespace: chirpstack-v3
+  labels:
+    app: chirpstack-v3-mosquitto-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chirpstack-v3-mosquitto-deployment
+  template:
+    metadata:
+      labels:
+        app: chirpstack-v3-mosquitto-deployment
+    spec:
+      containers:
+      - name: chirpstack-v3-mosquitto-deployment
+        image: eclipse-mosquitto:2.0.22
+        resources:
+          requests:
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 1883
+        volumeMounts:
+            - name: chirpstack-v3-mosquitto-volume
+              mountPath: /mosquitto/config/mosquitto.conf
+              subPath: mosquitto.conf
+        imagePullPolicy: Always
+      volumes:
+        - name: chirpstack-v3-mosquitto-volume
+          configMap:
+            name: chirpstack-v3-mosquitto-config-map
+      restartPolicy: "Always" # Unsupported value: "unless-stopped": supported values: "Always", "OnFailure", "Never".
+status: {}
