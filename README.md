@@ -817,6 +817,26 @@ kubectl get service -n ingress-nginx ingress-nginx-controller \
 
 No Registro.br, o gerenciamento de DNS é feito em **registro.br → Domínios → (seu domínio) → Editar zona DNS**.
 
+> ⚠️ **Atenção — Modo Avançado obrigatório:** por padrão, o painel do Registro.br opera no **modo básico**, que não permite cadastrar subdomínios personalizados. Para adicionar os registros `A` necessários para este cluster, é preciso ativar o **Modo Avançado** na seção de zona DNS.
+>
+> Acesse: [registro.br → Painel → Domínios → (seu domínio) → DNS → Configurar zona DNS](https://registro.br/painel/dominios/) e procure pela opção **"Modo Avançado"** ou **"Edição avançada de zona"**.
+>
+> **A ativação do modo avançado pode levar em média 2 horas para ser processada pelo Registro.br** — portanto, ative-o com antecedência, idealmente antes mesmo de iniciar o provisionamento do cluster, para que quando o IP do NLB estiver disponível o painel já esteja liberado para edição.
+
+```
+Fluxo recomendado de tempo:
+
+Dia anterior (ou horas antes):
+└── Ativar Modo Avançado no Registro.br  ← aguardar ~2 horas para processar
+
+Durante o tofu apply (~30 segundos após iniciar):
+└── NLB + IP criados → cadastrar os registros A na zona DNS
+        └── propagação TTL=300 (~5 minutos)
+
+Ao final do apply (~20-30 min):
+└── Cluster pronto + DNS propagado + certificados TLS emitidos ✅
+```
+
 Para cada subdomínio, adicione uma entrada do tipo `A`:
 
 ```
@@ -837,11 +857,12 @@ Registro.br — Zona DNS de seudominio.com.br
 
 1. Acesse [registro.br](https://registro.br) e faça login
 2. Clique em **Domínios** e selecione o seu domínio
-3. Clique em **Editar zona DNS** (ou **DNS** no menu lateral)
-4. Para cada subdomínio, clique em **Adicionar entrada**
-5. Selecione o tipo `A`, preencha o **Nome** (ex: `chirpstack-v3`) e o **Valor** com o IP do NLB
-6. Clique em **Salvar**
-7. Aguarde a propagação (TTL de 300 segundos = 5 minutos para a maioria dos resolvedores)
+3. Acesse **DNS → Configurar zona DNS**
+4. Ative o **Modo Avançado** (se ainda não estiver ativo) — aguarde até 2 horas para o processamento
+5. Com o modo avançado ativo, clique em **Adicionar entrada** para cada subdomínio
+6. Selecione o tipo `A`, preencha o **Nome** (ex: `chirpstack-v3`) e o **Valor** com o IP do NLB
+7. Clique em **Salvar**
+8. Aguarde a propagação (TTL de 300 segundos = 5 minutos para a maioria dos resolvedores)
 
 ---
 
