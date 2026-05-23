@@ -1,0 +1,68 @@
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-chirpstack-consumer-frontend
+  namespace: chirpstack-consumer
+  labels:
+    app: app-chirpstack-consumer-frontend
+    app.kubernetes.io/part-of: chirpstack-consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-chirpstack-consumer-frontend
+  template:
+    metadata:
+      labels:
+        app: app-chirpstack-consumer-frontend
+    spec:
+      imagePullSecrets:
+        - name: oci-registry-secret
+
+      containers:
+        - name: app-chirpstack-consumer-frontend-platform-linux-arm64
+          image: <OCI_REGISTRY_URL>/<OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>/app-chirpstack-consumer-frontend_platform_linux-arm64:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              name: http
+
+          # Ajuste os limites conforme os recursos disponíveis no cluster ARM OCI
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
+
+          # Nginx não tem health endpoint nativo — verifica a raiz da aplicação
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+
+      # Garante que o pod rode em nós ARM64
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - arm64

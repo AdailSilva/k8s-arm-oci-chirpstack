@@ -1,0 +1,84 @@
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chirpstack-v4-deployment
+  namespace: chirpstack-v4
+  labels:
+    app: chirpstack-v4-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chirpstack-v4-deployment
+  template:
+    metadata:
+      labels:
+        app: chirpstack-v4-deployment
+    spec:
+      containers:
+        - name: chirpstack-v4
+          image: chirpstack/chirpstack:4.15
+          command: ["/usr/bin/chirpstack"]
+          args: ["-c", "/etc/chirpstack"]
+          env:
+            # MQTT TLS (ssl://$MQTT_BROKER_HOST) no TOML
+            - name: MQTT_BROKER_HOST
+              value: chirpstack-v4-mosquitto-service.chirpstack-v4.svc.cluster.local:8883
+
+            - name: REDIS_HOST
+              value: chirpstack-v4-redis-service.chirpstack-v4.svc.cluster.local:6389
+
+            - name: POSTGRESQL_HOST
+              value: chirpstack-v4-postgresql-service.chirpstack-v4.svc.cluster.local:5442
+
+            # ✅ Credenciais do MQTT: use um Secret separado (NÃO o passwd do Mosquitto)
+            - name: MQTT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: chirpstack-mqtt-credentials
+                  key: MQTT_USERNAME
+            - name: MQTT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: chirpstack-mqtt-credentials
+                  key: MQTT_PASSWORD
+
+          ports:
+            - name: ui-port
+              containerPort: 8080
+
+          volumeMounts:
+            # Config do ChirpStack (chirpstack.toml + regions)
+            - name: chirpstack-v4-volume
+              mountPath: /etc/chirpstack
+              readOnly: true
+
+            # Devices repo
+            - name: oci-fss-pvc-chirpstack-devices-chirpstack-v4
+              mountPath: /opt/lorawan-devices
+
+            # ✅ CA interna usada para validar o broker TLS
+            - name: mqtt-ca
+              mountPath: /etc/chirpstack/certs
+              readOnly: true
+
+          imagePullPolicy: Always
+
+      volumes:
+        - name: chirpstack-v4-volume
+          configMap:
+            name: chirpstack-v4-config-map
+            defaultMode: 0755
+
+        - name: oci-fss-pvc-chirpstack-devices-chirpstack-v4
+          persistentVolumeClaim:
+            claimName: oci-fss-pvc-chirpstack-devices-chirpstack-v4
+
+        - name: mqtt-ca
+          secret:
+            secretName: chirpstack-mqtt-ca
+
+      restartPolicy: Always

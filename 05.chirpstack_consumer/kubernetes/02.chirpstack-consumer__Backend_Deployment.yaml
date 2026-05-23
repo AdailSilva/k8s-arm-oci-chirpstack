@@ -1,0 +1,73 @@
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-chirpstack-consumer-backend
+  namespace: chirpstack-consumer
+  labels:
+    app: api-chirpstack-consumer-backend
+    app.kubernetes.io/part-of: chirpstack-consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-chirpstack-consumer-backend
+  template:
+    metadata:
+      labels:
+        app: api-chirpstack-consumer-backend
+    spec:
+      imagePullSecrets:
+        - name: oci-registry-secret
+
+      containers:
+        - name: api-chirpstack-consumer-backend-platform-linux-arm64
+          image: <OCI_REGISTRY_URL>/<OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>/api-chirpstack-consumer-backend_platform_linux-arm64:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http
+
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+
+          # Ajuste os limites conforme os recursos disponíveis no cluster ARM OCI
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+          # Liveness: verifica se o processo está vivo (usa Spring Actuator)
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            failureThreshold: 3
+
+          # Readiness: verifica se o pod está pronto para receber tráfego
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 3
+
+      # Garante que o pod rode em nós ARM64
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - arm64

@@ -1,0 +1,52 @@
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: chirpstack-v3-network-server-deployment
+  name: chirpstack-v3-network-server-deployment
+  namespace: chirpstack-v3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chirpstack-v3-network-server-deployment
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: chirpstack-v3-network-server-deployment
+    spec:
+      containers:
+        - name: chirpstack-v3-network-server
+          image: chirpstack/chirpstack-network-server:3.16.8
+          env:
+            - name: NETWORK_SERVER__API__BIND
+              value: 0.0.0.0:8000
+            - name: JOIN_SERVER__DEFAULT__SERVER
+              value: http://chirpstack-v3-application-server-service.chirpstack-v3.svc.cluster.local:8003
+            - name: NETWORK_SERVER__BAND__NAME
+              value: AU915
+            - name: NETWORK_SERVER__GATEWAY__BACKEND__MQTT__SERVER
+              value: tcp://chirpstack-v3-mosquitto-service.chirpstack-v3.svc.cluster.local:1888 
+            - name: POSTGRESQL__DSN
+              value: postgres://chirpstack_ns:chirpstack_ns@chirpstack-v3-ns-postgresql-service.chirpstack-v3.svc.cluster.local:5437/chirpstack_ns?sslmode=disable
+            - name: REDIS__URL
+              value: redis://chirpstack-v3-redis-service.chirpstack-v3.svc.cluster.local:6384
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+          resources: {}
+          volumeMounts:
+            - name: chirpstack-v3-network-server-config
+              mountPath: /etc/chirpstack-network-server/chirpstack-network-server.toml
+              subPath: chirpstack-network-server.toml
+          imagePullPolicy: Always
+      volumes:
+        - name: chirpstack-v3-network-server-config
+          configMap:
+            name: chirpstack-v3-network-server-config-map
+      restartPolicy: "Always" # Unsupported value: "unless-stopped": supported values: "Always", "OnFailure", "Never".
+status: {}

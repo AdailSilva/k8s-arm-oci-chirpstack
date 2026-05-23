@@ -1,0 +1,47 @@
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: chirpstack-consumer-ingress
+  namespace: chirpstack-consumer
+  labels:
+    app.kubernetes.io/part-of: chirpstack-consumer
+  annotations:
+    # Ajuste as annotations conforme o IngressController usado no seu cluster
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    # WebSocket
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "upgrade";
+spec:
+  rules:
+    # Substitua pelo seu hostname/IP real
+    - host: app-chirpstack-consumer.adailsilva.com.br
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: app-chirpstack-consumer-frontend-svc
+                port:
+                  number: 80
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: api-chirpstack-consumer-backend-svc
+                port:
+                  number: 8080
+          - path: /ws
+            pathType: Prefix
+            backend:
+              service:
+                name: api-chirpstack-consumer-backend-svc
+                port:
+                  number: 8080

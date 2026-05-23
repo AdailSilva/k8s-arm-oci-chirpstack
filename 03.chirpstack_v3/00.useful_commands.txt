@@ -1,0 +1,33 @@
+# Useful Commands:
+
+chmod +x 01.deploy_chirpstack-v3_script.sh
+bash 01.deploy_chirpstack-v3_script.sh
+
+chmod +x 02.destroy_chirpstack-v3_script.sh
+bash 02.destroy_chirpstack-v3_script.sh
+
+
+# Back-UPs:
+chmod +x 03.back-up_chirpstack-v3_script.sh
+bash 03.back-up_chirpstack-v3_script.sh
+
+chmod +x 04.restore_chirpstack-v3_script.sh
+bash 04.restore_chirpstack-v3_script.sh
+
+
+
+# PostgreSQL Client for version 16
+Só trocar o 17 por 16 em todos os lugares:
+
+# PostgreSQL Client for version 16
+sudo rm /etc/apt/sources.list.d/pgdg.list
+sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt noble-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+sudo apt update
+sudo apt install -y postgresql-client-16
+
+# Verificar:
+bash/usr/lib/postgresql/16/bin/pg_dump --version
+
+# No script:
+bashPG_DUMP="/usr/lib/postgresql/16/bin/pg_dump"
+

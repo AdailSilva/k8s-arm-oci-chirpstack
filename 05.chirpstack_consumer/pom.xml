@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>br.com.adailsilva</groupId>
+		<artifactId>base-chirpstack-consumer-pom</artifactId>
+		<version>1.0.0</version>
+	</parent>
+
+	<name>ChirpStack Consumer</name>
+
+	<groupId>br.com.adailsilva</groupId>
+	<artifactId>chirpstack-consumer-build</artifactId>
+	<version>1.0.0</version>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>./backend</module>
+		<module>./frontend</module>
+	</modules>
+
+	<!--<repositories>
+		<repository>
+			<id>central</id>
+                      	<name>Maven Repository Switchboard</name>
+                      	<url>http://repo1.maven.org/maven2</url>
+		</repository>
+	</repositories>-->
+</project>

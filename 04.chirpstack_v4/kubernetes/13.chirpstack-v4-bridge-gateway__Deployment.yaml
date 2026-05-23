@@ -1,0 +1,42 @@
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    LoRaWAN: chirpstack-v4
+  name: chirpstack-v4-gateway-bridge-deployment
+  namespace: chirpstack-v4
+spec:
+  selector:
+    matchLabels:
+      app: chirpstack-v4-gateway-bridge-deployment
+  template:
+    metadata:
+      labels:
+        app: chirpstack-v4-gateway-bridge-deployment
+    spec:
+      #hostNetwork: true
+      containers:
+        - name: chirpstack-v4-gateway-bridge
+          image: chirpstack/chirpstack-gateway-bridge:4.1
+          # resources:
+          #   limits:
+          #     memory: "128Mi"
+          #     cpu: "500m"
+          ports:
+            - containerPort: 1700
+              #hostPort: 1710
+              protocol: UDP
+          volumeMounts:
+            - name: chirpstack-v4-gateway-bridge-volume
+              mountPath: /etc/chirpstack-gateway-bridge
+          imagePullPolicy: Always
+      volumes:
+        - name: chirpstack-v4-gateway-bridge-volume
+          configMap:
+            name: chirpstack-v4-gateway-bridge-config-map
+            defaultMode: 0755
+      restartPolicy: "Always" # Unsupported value: "unless-stopped": supported values: "Always", "OnFailure", "Never".
+status: {}
