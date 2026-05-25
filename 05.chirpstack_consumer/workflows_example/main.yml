@@ -142,7 +142,7 @@ jobs:
 
       - name: Install OCI CLI
         run: |
-          mkdir ~/.oci
+          mkdir -p ~/.oci
           echo "${{ secrets.OCI_CONFIG }}"   > ~/.oci/config
           echo "${{ secrets.OCI_KEY_FILE }}" > ~/.oci/key.pem
           curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
@@ -315,7 +315,7 @@ jobs:
 
       - name: Install OCI CLI
         run: |
-          mkdir ~/.oci
+          mkdir -p ~/.oci
           echo "${{ secrets.OCI_CONFIG }}"   > ~/.oci/config
           echo "${{ secrets.OCI_KEY_FILE }}" > ~/.oci/key.pem
           curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
@@ -491,7 +491,7 @@ jobs:
 
       - name: Install OCI CLI
         run: |
-          mkdir ~/.oci
+          mkdir -p ~/.oci
           echo "${{ secrets.OCI_CONFIG }}"   > ~/.oci/config
           echo "${{ secrets.OCI_KEY_FILE }}" > ~/.oci/key.pem
           curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
@@ -664,7 +664,7 @@ jobs:
 
       - name: Install OCI CLI
         run: |
-          mkdir ~/.oci
+          mkdir -p ~/.oci
           echo "${{ secrets.OCI_CONFIG }}"   > ~/.oci/config
           echo "${{ secrets.OCI_KEY_FILE }}" > ~/.oci/key.pem
           curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
