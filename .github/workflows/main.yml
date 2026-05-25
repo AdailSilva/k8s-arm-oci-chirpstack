@@ -30,7 +30,8 @@ on:
 jobs:
   detect:
     name: Detectar alterações
-    runs-on: ubuntu-latest
+    #runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 10
     outputs:
       api_k8s_dashboard_backend:        ${{ steps.filter.outputs.api_k8s_dashboard_backend }}
@@ -82,7 +83,8 @@ jobs:
 # ─────────────────────────────────────────────────────────────────────────────
   api_k8s_dashboard_backend:
     name: HomePage – Backend (Spring Boot)
-    runs-on: ubuntu-latest
+    #runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 30
     needs: detect
     if: needs.detect.outputs.api_k8s_dashboard_backend == 'true'
@@ -129,8 +131,8 @@ jobs:
           git push origin ${{ steps.version.outputs.FULL_TAG }}
       # ────────────────────────────────────────────────────────────────────────
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
+        # - name: Set up QEMU
+        # uses: docker/setup-qemu-action@v4
 
       - name: Set up Docker Buildx
         id: buildx
@@ -178,7 +180,8 @@ jobs:
           docker buildx build \
             --builder ${{ steps.buildx.outputs.name }} \
             --push \
-            --platform linux/amd64,linux/arm64 \
+            #--platform linux/amd64,linux/arm64 \
+            --platform linux/arm64 \
             -f 00.homepage/02.real_time/api_k8s_dashboard_backend/Dockerfile \
             -t ${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/api-k8s-dashboard-backend_platform_linux-arm64:${{ steps.version.outputs.VERSION }} \
             -t ${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/api-k8s-dashboard-backend_platform_linux-arm64:latest \
@@ -250,7 +253,8 @@ jobs:
 # ─────────────────────────────────────────────────────────────────────────────
   app_k8s_dashboard_frontend:
     name: HomePage – Frontend (Angular)
-    runs-on: ubuntu-latest
+    #runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 45
     needs: [detect, api_k8s_dashboard_backend]
     if: |
@@ -299,8 +303,8 @@ jobs:
           git push origin ${{ steps.version.outputs.FULL_TAG }}
       # ────────────────────────────────────────────────────────────────────────
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
+        # - name: Set up QEMU
+        # uses: docker/setup-qemu-action@v4
 
       - name: Set up Docker Buildx
         id: buildx
@@ -348,7 +352,8 @@ jobs:
           docker buildx build \
             --builder ${{ steps.buildx.outputs.name }} \
             --push \
-            --platform linux/amd64,linux/arm64 \
+            #--platform linux/amd64,linux/arm64 \
+            --platform linux/arm64 \
             -f 00.homepage/02.real_time/app_k8s_dashboard_frontend/Dockerfile \
             -t ${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/app-k8s-dashboard-frontend_platform_linux-arm64:${{ steps.version.outputs.VERSION }} \
             -t ${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/app-k8s-dashboard-frontend_platform_linux-arm64:latest \
@@ -426,7 +431,8 @@ jobs:
 # ─────────────────────────────────────────────────────────────────────────────
   api_chirpstack_consumer_backend:
     name: ChirpStack Consumer – Backend (Spring Boot)
-    runs-on: ubuntu-latest
+    #runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 30
     needs: detect
     if: needs.detect.outputs.api_chirpstack_consumer_backend == 'true'
@@ -472,8 +478,8 @@ jobs:
           git push origin ${{ steps.version.outputs.FULL_TAG }}
       # ────────────────────────────────────────────────────────────────────────
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
+        # - name: Set up QEMU
+        # uses: docker/setup-qemu-action@v4
 
       - name: Set up Docker Buildx
         id: buildx
@@ -521,7 +527,8 @@ jobs:
           docker buildx build \
             --builder ${{ steps.buildx.outputs.name }} \
             --push \
-            --platform linux/amd64,linux/arm64 \
+            #--platform linux/amd64,linux/arm64 \
+            --platform linux/arm64 \
             -f 05.chirpstack_consumer/api_chirpstack_consumer_backend/Dockerfile \
             -t ${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/api-chirpstack-consumer-backend_platform_linux-arm64:${{ steps.version.outputs.VERSION }} \
             -t ${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/api-chirpstack-consumer-backend_platform_linux-arm64:latest \
@@ -593,7 +600,8 @@ jobs:
 # ─────────────────────────────────────────────────────────────────────────────
   app_chirpstack_consumer_frontend:
     name: ChirpStack Consumer – Frontend (Angular)
-    runs-on: ubuntu-latest
+    #runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 45
     needs: [detect, api_chirpstack_consumer_backend]
     if: |
@@ -642,8 +650,8 @@ jobs:
           git push origin ${{ steps.version.outputs.FULL_TAG }}
       # ────────────────────────────────────────────────────────────────────────
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
+        # - name: Set up QEMU
+        # uses: docker/setup-qemu-action@v4
 
       - name: Set up Docker Buildx
         id: buildx
@@ -691,7 +699,8 @@ jobs:
           docker buildx build \
             --builder ${{ steps.buildx.outputs.name }} \
             --push \
-            --platform linux/amd64,linux/arm64 \
+            #--platform linux/amd64,linux/arm64 \
+            --platform linux/arm64 \
             -f 05.chirpstack_consumer/app_chirpstack_consumer_frontend/Dockerfile \
             -t ${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/app-chirpstack-consumer-frontend_platform_linux-arm64:${{ steps.version.outputs.VERSION }} \
             -t ${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/app-chirpstack-consumer-frontend_platform_linux-arm64:latest \
