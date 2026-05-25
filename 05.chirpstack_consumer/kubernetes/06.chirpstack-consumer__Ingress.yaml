@@ -18,6 +18,12 @@ metadata:
     nginx.ingress.kubernetes.io/configuration-snippet: |
       proxy_set_header Upgrade $http_upgrade;
       proxy_set_header Connection "upgrade";
+    # nginx.ingress.kubernetes.io/enable-cors: "true"
+    # nginx.ingress.kubernetes.io/cors-allow-origin: "https://app.adailsilva.com.br"
+    # nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD"
+    # nginx.ingress.kubernetes.io/cors-allow-headers: "Authorization, Content-Type, Accept, Origin, Cache-Control"
+    # nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    # nginx.ingress.kubernetes.io/cors-max-age: "3600"
 spec:
   rules:
     # Substitua pelo seu hostname/IP real
