@@ -114,8 +114,8 @@ export class Navbar {
 
     rightSide = [
         { label: 'Contact', href: '/landing/contact' },
-        { label: 'Login', href: '/auth/login' },
-        { label: 'Register', href: '/auth/register' }
+        { label: 'Login', href: '/authenticate/sign-in' },
+        { label: 'Register', href: '/authenticate/register' }
     ];
 
     buttonClass = 'cursor-pointer px-4 py-2 text-surface-500 hover:text-surface-950 dark:hover:text-surface-0 transition-all font-medium';

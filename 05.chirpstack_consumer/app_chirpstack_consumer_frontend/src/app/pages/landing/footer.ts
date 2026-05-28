@@ -107,8 +107,8 @@ export class Footer {
 
     rightSide = [
         { label: 'Contact', href: '/landing/contact' },
-        { label: 'Login', href: '/auth/login' },
-        { label: 'Register', href: '/auth/register' }
+        { label: 'Login', href: '/authenticate/sign-in' },
+        { label: 'Register', href: '/authenticate/register' }
     ];
 
     socialLinks = [

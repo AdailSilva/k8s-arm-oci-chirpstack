@@ -232,42 +232,42 @@ export class AppMenu {
                         {
                             label: 'Login',
                             icon: 'pi pi-fw pi-sign-in',
-                            routerLink: ['/auth/login']
+                            routerLink: ['/authenticate/sign-in']
                         },
                         {
                             label: 'Error',
                             icon: 'pi pi-fw pi-times-circle',
-                            routerLink: ['/auth/error']
+                            routerLink: ['/authenticate/error']
                         },
                         {
                             label: 'Access Denied',
                             icon: 'pi pi-fw pi-lock',
-                            routerLink: ['/auth/access-denied']
+                            routerLink: ['/authenticate/access-denied']
                         },
                         {
                             label: 'Register',
                             icon: 'pi pi-fw pi-user-plus',
-                            routerLink: ['/auth/register']
+                            routerLink: ['/authenticate/register']
                         },
                         {
                             label: 'Forgot Password',
                             icon: 'pi pi-fw pi-question',
-                            routerLink: ['/auth/forgot-password']
+                            routerLink: ['/authenticate/forgot-password']
                         },
                         {
                             label: 'New Password',
                             icon: 'pi pi-fw pi-cog',
-                            routerLink: ['/auth/new-password']
+                            routerLink: ['/authenticate/new-password']
                         },
                         {
                             label: 'Verification',
                             icon: 'pi pi-fw pi-envelope',
-                            routerLink: ['/auth/verification']
+                            routerLink: ['/authenticate/verification']
                         },
                         {
                             label: 'Lock Screen',
                             icon: 'pi pi-fw pi-eye-slash',
-                            routerLink: ['/auth/lock-screen']
+                            routerLink: ['/authenticate/lock-screen']
                         }
                     ]
                 },
@@ -295,7 +295,7 @@ export class AppMenu {
                 {
                     label: 'Oops',
                     icon: 'pi pi-fw pi-exclamation-circle',
-                    routerLink: ['/auth/oops']
+                    routerLink: ['/authenticate/oops']
                 },
                 {
                     label: 'Not Found',

@@ -19,7 +19,7 @@ import { PasswordModule } from 'primeng/password';
                         <button type="button" class="landing-button-secondary w-full">Cancel</button>
                         <button type="submit" class="landing-button-primary w-full">Verify</button>
                     </div>
-                    <div class="text-surface-500 text-center leading-6">Already have an account? <a routerLink="/auth/login" class="text-primary font-medium hover:opacity-75 transition-all">Login</a></div>
+                    <div class="text-surface-500 text-center leading-6">Already have an account? <a routerLink="/authenticate/sign-in" class="text-primary font-medium hover:opacity-75 transition-all">Login</a></div>
                 </div>
             </form>
         </div>
