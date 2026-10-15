@@ -15,9 +15,10 @@ data:
 
     [integration.mqtt.auth.generic]
     #servers=["tcp://chirpstack-v4-mosquitto-service.chirpstack-v4.svc.cluster.local:1893"]
-    servers=["tcp://chirpstack-v4-mosquitto-service.chirpstack-v4.svc.cluster.local:8883"]
+    servers=["ssl://chirpstack-v4-mosquitto-service.chirpstack-v4.svc.cluster.local:8883"]
     username="adailsilva"
     password="H@cker101"
+    ca_cert="/etc/chirpstack-gateway-bridge-certs/ca.crt"
 
     [integration.mqtt]
     event_topic_template="au915_1/gateway/{{ .GatewayID }}/event/{{ .EventType }}"
