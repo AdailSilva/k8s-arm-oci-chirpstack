@@ -1,0 +1,9 @@
+# =====================================================================
+#  ChirpStack Manager - namespace
+# =====================================================================
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: chirpstack-manager
+  labels:
+    app.kubernetes.io/part-of: chirpstack-manager

@@ -1,0 +1,41 @@
+# =====================================================================
+#  Frontend (Angular + NGINX). O NGINX encaminha /api para o backend.
+# =====================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chirpstack-manager-web
+  namespace: chirpstack-manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chirpstack-manager-web
+  template:
+    metadata:
+      labels:
+        app: chirpstack-manager-web
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+      containers:
+        - name: web
+          image: gru.ocir.io/griszz3l82u1/chirpstack-manager-web:0.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: API_UPSTREAM
+              value: http://chirpstack-manager-api:8083
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: { drop: ["ALL"] }
+          readinessProbe:
+            httpGet: { path: /, port: 8080 }
+            periodSeconds: 10
+          resources:
+            requests: { cpu: 20m, memory: 32Mi }
+            limits: { cpu: 250m, memory: 128Mi }
+      # imagePullSecrets:
+      #   - name: ocir-secret

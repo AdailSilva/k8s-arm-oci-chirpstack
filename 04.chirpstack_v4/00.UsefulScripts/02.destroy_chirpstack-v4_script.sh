@@ -2,14 +2,17 @@
 
 echo "Start ChirpStack-v4 pod/service destroy..."
 
-kubectl delete -f ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/kubernetes/27.chirpstack-v4-toolbox__Deployment.yaml && \
+kubectl delete -f ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/kubernetes/28.chirpstack-v4-toolbox__Deployment.yaml && \
 
-kubectl delete -f ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/kubernetes/26.chirpstack-v4-rest-api__Ingress.yaml && \
-#kubectl delete -f ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/kubernetes/25.chirpstack-v4-rest-api-letsencrypt-issuer_with_e-mail_ACME_registration__ClusterIssuer.yaml && \
-#kubectl delete -f ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/kubernetes/24.chirpstack-v4-rest-api-cert-manager__v1.12.3__Components_Full.yaml && \
+kubectl delete -f ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/kubernetes/27.chirpstack-v4-rest-api__Ingress.yaml && \
+#kubectl delete -f ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/kubernetes/26.chirpstack-v4-rest-api-letsencrypt-issuer_with_e-mail_ACME_registration__ClusterIssuer.yaml && \
+#kubectl delete -f ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/kubernetes/25.chirpstack-v4-rest-api-cert-manager__v1.12.3__Components_Full.yaml && \
 
-kubectl delete -f ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/kubernetes/23.chirpstack-v4-rest-api__Service.yaml && \
-kubectl delete -f ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/kubernetes/22.chirpstack-v4-rest-api__Deployment.yaml && \
+kubectl delete -f ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/kubernetes/24.chirpstack-v4-rest-api__Service.yaml && \
+kubectl delete -f ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/kubernetes/23.chirpstack-v4-rest-api__Deployment.yaml && \
+
+# A partir do ChirpStack v4.19.1, a API do ChirpStack passa a estar disponível para comunicação via gRPC de forma nativa.
+kubectl delete -f ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/kubernetes/22.chirpstack-v4__gRPC_Ingress.yaml && \
 
 kubectl delete -f ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/kubernetes/21.chirpstack-v4__Ingress.yaml && \
 #kubectl delete -f ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/kubernetes/20.chirpstack-v4-letsencrypt-issuer_with_e-mail_ACME_registration__ClusterIssuer.yaml && \

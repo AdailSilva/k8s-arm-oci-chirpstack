@@ -1,0 +1,14 @@
+# =====================================================================
+#  Service do frontend
+# =====================================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: chirpstack-manager-web
+  namespace: chirpstack-manager
+spec:
+  selector:
+    app: chirpstack-manager-web
+  ports:
+    - port: 80
+      targetPort: 8080

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.1.1</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>br.com.adailsilva</groupId>
+    <artifactId>chirpstack-manager-api</artifactId>
+    <version>0.1.0</version>
+    <name>ChirpStack Manager API</name>
+    <description>Backend (BFF) seguro para administração do ChirpStack v4 via REST API</description>
+
+    <properties>
+        <java.version>21</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Perfil do Spring usado pelo 'mvn spring-boot:run'; vem do perfil Maven ativo (ver <profiles>). -->
+        <spring-boot.run.profiles>development</spring-boot.run.profiles>
+    </properties>
+
+    <dependencies>
+        <!-- Web (Spring MVC) e cliente HTTP -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-restclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- Segurança: JWT (HS256) emitido e validado pelo próprio backend -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security-oauth2-resource-server</artifactId>
+        </dependency>
+
+        <!-- Persistência: usuários do sistema, refresh tokens e auditoria -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-flyway</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Observabilidade (health para o Kubernetes) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- Testes -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>chirpstack-manager-api</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!--
+        Perfis de execução (mesmo esquema do CSLab WEB, CardsControl e BackOffice):
+          mvn spring-boot:run                 -> development (porta 8081, H2)
+          mvn spring-boot:run -Pstaging       -> staging     (porta 8082, PostgreSQL local)
+          mvn spring-boot:run -Pproduction    -> production  (porta 8083, PostgreSQL)
+        O jar é o mesmo para os três: em container o perfil vem de SPRING_PROFILES_ACTIVE.
+    -->
+    <profiles>
+        <profile>
+            <id>development</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <spring-boot.run.profiles>development</spring-boot.run.profiles>
+            </properties>
+        </profile>
+        <profile>
+            <id>staging</id>
+            <properties>
+                <spring-boot.run.profiles>staging</spring-boot.run.profiles>
+            </properties>
+        </profile>
+        <profile>
+            <id>production</id>
+            <properties>
+                <spring-boot.run.profiles>production</spring-boot.run.profiles>
+            </properties>
+        </profile>
+    </profiles>
+</project>

@@ -1,0 +1,33 @@
+# =====================================================================
+#  Upload do arquivo de restauração de backup: limite de corpo maior e
+#  tempo de leitura estendido SÓ nesta rota (o resto continua com 2 MB).
+# =====================================================================
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: chirpstack-manager-restauracao
+  namespace: chirpstack-manager
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "512m"
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - chirpstack-manager.adailsilva.com.br
+      secretName: chirpstack-manager-tls
+  rules:
+    - host: chirpstack-manager.adailsilva.com.br
+      http:
+        paths:
+          - path: /api/v1/backup/restaurar
+            pathType: Exact
+            backend:
+              service:
+                name: chirpstack-manager-web
+                port:
+                  number: 80

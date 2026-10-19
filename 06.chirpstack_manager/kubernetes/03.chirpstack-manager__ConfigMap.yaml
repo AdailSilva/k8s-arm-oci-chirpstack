@@ -1,0 +1,23 @@
+# =====================================================================
+#  ConfigMap (variáveis não sensíveis do backend)
+# =====================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chirpstack-manager-config
+  namespace: chirpstack-manager
+data:
+  SPRING_PROFILES_ACTIVE: "production"
+  CHIRPSTACK_BASE_URL: "https://chirpstack-v4-rest-api.adailsilva.com.br"
+  APP_CORS_ALLOWED_ORIGINS: "https://chirpstack-manager.adailsilva.com.br"
+  APP_ADMIN_EMAIL: "admin@adailsilva.com.br"
+  APP_COOKIE_SECURE: "true"
+  DB_URL: "jdbc:postgresql://chirpstack-manager-postgres:5432/chirpstack_manager"
+  DB_USERNAME: "chirpstack_manager"
+  # Fuso da grade do backup automático, dos nomes dos arquivos e dos indicadores de visitantes
+  APP_TIMEZONE: "America/Fortaleza"
+  # Volume dos backups (PVC chirpstack-manager-backups, montado no pod da API)
+  APP_BACKUP_DIR: "/var/backups/chirpstack-manager"
+  APP_BACKUP_MAX_UPLOAD: "512MB"
+  # Callback do consentimento do Google: cadastre este endereço, igual, no cliente OAuth
+  GOOGLE_DRIVE_REDIRECT_URI: "https://chirpstack-manager.adailsilva.com.br/api/v1/backup/google-drive/callback"

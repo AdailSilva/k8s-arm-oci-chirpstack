@@ -1,0 +1,33 @@
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: chirpstack-v4-grpc-ingress
+  namespace: chirpstack-v4
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    
+    # Força o Nginx Ingress Controller a tratar a rota como gRPC binário.
+    nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - api-chirpstack.adailsilva.com.br
+      secretName: chirpstack-v4-grpc-tls
+  rules:
+    - host: api-chirpstack.adailsilva.com.br
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: chirpstack-v4-service
+                port:
+                  number: 8080
+
+# A partir do ChirpStack v4.19.1, a API do ChirpStack passa a estar disponível para comunicação via gRPC de forma nativa.

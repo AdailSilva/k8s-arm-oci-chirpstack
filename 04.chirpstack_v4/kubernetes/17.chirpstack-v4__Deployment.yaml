@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: chirpstack-v4
-          image: chirpstack/chirpstack:4.19.1
+          image: chirpstack/chirpstack:4.19.1 # A partir do ChirpStack v4.19.1, a API do ChirpStack passa a estar disponível para comunicação via gRPC de forma nativa.
           command: ["/usr/bin/chirpstack"]
           args: ["-c", "/etc/chirpstack"]
           env:

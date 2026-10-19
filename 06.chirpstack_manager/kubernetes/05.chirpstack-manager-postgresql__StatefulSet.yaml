@@ -1,0 +1,49 @@
+# =====================================================================
+#  StatefulSet do PostgreSQL do painel (usuários, sessões, auditoria, backups agendados)
+# =====================================================================
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: chirpstack-manager-postgres
+  namespace: chirpstack-manager
+spec:
+  serviceName: chirpstack-manager-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chirpstack-manager-postgres
+  template:
+    metadata:
+      labels:
+        app: chirpstack-manager-postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:17-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: chirpstack_manager
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef: { name: chirpstack-manager-config, key: DB_USERNAME }
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef: { name: chirpstack-manager-secrets, key: DB_PASSWORD }
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
+            periodSeconds: 10
+          resources:
+            requests: { cpu: 50m, memory: 128Mi }
+            limits: { cpu: 500m, memory: 512Mi }
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: chirpstack-manager-postgres-data
