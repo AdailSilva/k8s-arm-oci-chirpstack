@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: chirpstack-v4-rest-api
-        image: chirpstack/chirpstack-rest-api:4.15
+        image: chirpstack/chirpstack-rest-api:4.19.1
         command: ["/usr/bin/chirpstack-rest-api"]
         args: ["--server", "chirpstack-v4-service.chirpstack-v4.svc.cluster.local:443", "--bind", "0.0.0.0:8090", "--insecure", "--cors", "\"*\""]
         # resources:

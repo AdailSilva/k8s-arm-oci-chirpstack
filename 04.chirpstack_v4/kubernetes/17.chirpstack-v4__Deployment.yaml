@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: chirpstack-v4
-          image: chirpstack/chirpstack:4.15
+          image: chirpstack/chirpstack:4.19.1
           command: ["/usr/bin/chirpstack"]
           args: ["-c", "/etc/chirpstack"]
           env:
