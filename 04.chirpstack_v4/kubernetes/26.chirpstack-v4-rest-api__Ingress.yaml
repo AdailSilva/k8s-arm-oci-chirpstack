@@ -36,4 +36,4 @@ spec:
               service:
                 name: chirpstack-v4-rest-api-service
                 port:
-                  number: 443
+                  number: 8090

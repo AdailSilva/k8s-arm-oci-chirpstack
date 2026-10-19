@@ -14,7 +14,7 @@ spec:
   # clusterIP: "None"
   type: ClusterIP
   ports:
-  - name: "8090-to-443"
+  - name: "8090-to-8090"
     protocol: TCP
-    port: 443
+    port: 8090
     targetPort: 8090

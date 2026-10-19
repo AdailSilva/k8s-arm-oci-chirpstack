@@ -14,8 +14,8 @@ spec:
   # clusterIP: "None"
   type: ClusterIP
   ports:
-    - name: "ui-port" # 8080-to-443
+    - name: "ui-port" # 8080-to-8080
       protocol: TCP
-      port: 443
+      port: 8080
       targetPort: 8080
       # nodePort: 31443
