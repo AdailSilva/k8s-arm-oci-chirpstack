@@ -1,4 +1,4 @@
-package br.com.adailsilva.chirpstackmanager;
+package br.com.adailsilva.chirpstackmanager.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import br.com.adailsilva.chirpstackmanager.auditoria.AuditoriaInterceptor;
-import br.com.adailsilva.chirpstackmanager.usuario.UsuarioRepository;
+import br.com.adailsilva.chirpstackmanager.api.web.AuditoriaInterceptor;
+import br.com.adailsilva.chirpstackmanager.api.repository.UsuarioRepository;
 
 /**
  * Sobe o contexto completo com H2 em memória: valida migrations (Flyway + Hibernate validate),
@@ -21,7 +21,7 @@ import br.com.adailsilva.chirpstackmanager.usuario.UsuarioRepository;
         "app.security.bootstrap-admin-email=admin@teste.local",
         "app.security.bootstrap-admin-password=Admin12345"
 })
-class ChirpstackManagerApplicationTests {
+class ChirpStackManagerApplicationTests {
 
     @Autowired
     UsuarioRepository usuarios;

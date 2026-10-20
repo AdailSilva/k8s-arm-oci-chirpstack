@@ -12,9 +12,9 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
  */
 @SpringBootApplication
 @ConfigurationPropertiesScan
-public class ChirpstackManagerApplication {
+public class ChirpStackManagerApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ChirpstackManagerApplication.class, args);
+        SpringApplication.run(ChirpStackManagerApplication.class, args);
     }
 }
