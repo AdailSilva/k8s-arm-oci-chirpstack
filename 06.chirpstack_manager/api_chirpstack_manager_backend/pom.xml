@@ -13,7 +13,7 @@
 
     <groupId>br.com.adailsilva</groupId>
     <artifactId>chirpstack-manager-api</artifactId>
-    <version>0.1.0</version>
+    <version>1.0.0</version>
     <name>ChirpStack Manager API</name>
     <description>Backend (BFF) seguro para administração do ChirpStack v4 via REST API</description>
 
