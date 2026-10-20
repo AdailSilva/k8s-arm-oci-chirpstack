@@ -12,4 +12,8 @@ Cada perfil troca `src/environments/environment.ts` pelo `environment.<perfil>.t
 `src/proxy-config.<perfil>.json`. Em desenvolvimento e homologação um selo no topo indica o perfil.
 O build vai para `dist/chirpstack-manager/browser`.
 
+Organização (mesmo padrão do CSLab BackOffice): `src/app/core` (auth, http, sessao, format, i18n,
+notificacao, tenant), `src/app/pages/<tela>`, `src/app/shared/<grupo>` e `src/app/layout`.
+A imagem usa `nginx.conf` e `mime.types` desta pasta; os manifests ficam em `kubernetes/`.
+
 O tema Avalon é licenciado pela PrimeTek (veja `LICENSE.md`).

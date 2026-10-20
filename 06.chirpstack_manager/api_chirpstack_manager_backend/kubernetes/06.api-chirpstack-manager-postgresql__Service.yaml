@@ -1,0 +1,14 @@
+# =====================================================================
+#  Service do PostgreSQL
+# =====================================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: chirpstack-manager-postgres
+  namespace: chirpstack-manager
+spec:
+  selector:
+    app: chirpstack-manager-postgres
+  ports:
+    - port: 5432
+      targetPort: 5432

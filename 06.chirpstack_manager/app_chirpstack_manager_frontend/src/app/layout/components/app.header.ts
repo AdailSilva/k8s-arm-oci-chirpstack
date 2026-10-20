@@ -10,7 +10,7 @@ import { SelectModule } from 'primeng/select';
 import { TooltipModule } from 'primeng/tooltip';
 import { LayoutService } from '@/app/layout/service/layout.service';
 import { AuthService } from '@/app/core/auth/auth.service';
-import { TenantContextService } from '@/app/core/util/tenant-context.service';
+import { TenantContextService } from '@/app/core/tenant/tenant-context.service';
 import { environment } from '@/environments/environment';
 import { AppProfile } from './app.profile';
 import { SessaoChip } from './app.sessao';

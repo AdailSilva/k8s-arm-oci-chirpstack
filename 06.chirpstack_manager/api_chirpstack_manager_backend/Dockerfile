@@ -18,6 +18,12 @@ RUN mvn -B -q -P${PERFIL} -DskipTests package
 
 FROM eclipse-temurin:21-jre-alpine
 ARG PERFIL=production
+
+# Metadados da imagem
+LABEL maintainer="AdailSilva <adail101@hotmail.com>" \
+      app="api-chirpstack-manager-backend" \
+      description="ChirpStack-Manager – Backend Spring Boot"
+
 # postgresql17-client: pg_dump, pg_restore e psql do módulo de backup (mesma versão do servidor
 # PostgreSQL 17 do painel; o pg_dump precisa ser igual ou mais novo que o servidor).
 # tzdata: fuso horário da grade do backup automático (APP_TIMEZONE).

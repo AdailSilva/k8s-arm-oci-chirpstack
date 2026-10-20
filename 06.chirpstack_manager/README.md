@@ -145,7 +145,13 @@ Mesmo esquema do CSLab WEB, CardsControl e BackOffice: cada perfil tem a sua por
 | `staging` | homologação | **8082** | 8084 | **4202** | PostgreSQL local (`chirpstack_manager_staging`) | não |
 | `production` | Kubernetes / Docker | **8083** | 8084 | **4203** | PostgreSQL do cluster | sim |
 
-- **Backend:** blocos `on-profile` no `application.yml` e perfis Maven de mesmo nome (`-Pdevelopment` é o padrão). O jar é o mesmo nos três; em container o perfil vem de `SPRING_PROFILES_ACTIVE` (a imagem usa `production`, ou `--build-arg PERFIL=staging`).
+- **Backend:** mesmo padrão do CSLab BackOffice. Em `src/main/resources`:
+  - `application.properties`: só escolhe o perfil (`spring.profiles.active=@activatedProperties@`, preenchido pelo perfil Maven), o banner e `application.title`/`application.version`;
+  - `application-development.properties`, `application-staging.properties` e `application-production.properties`: a configuração **completa** de cada perfil, em seções (servidor, datasource/Hikari, JPA, Flyway, actuator, ChirpStack, JWT, CORS, admin inicial, sessões, backup, Google Drive, loggers). Ficam em ISO-8859-1 (padrão do `java.util.Properties`), sem acentos;
+  - `banners/chirpstack-manager-banner.txt`: banner da inicialização, com versão, perfil ativo e endereço;
+  - `db/migration/H2` (development) e `db/migration/PostgreSQL` (staging e production).
+
+  Perfis Maven de mesmo nome (`-Pdevelopment` é o padrão). Em container, `SPRING_PROFILES_ACTIVE` tem prioridade sobre o perfil gravado no jar (a imagem usa `production`, ou `--build-arg PERFIL=staging`).
 - **Actuator:** `/actuator/health/*` sai da porta da aplicação e fica na **8084** em todos os perfis. As probes do Kubernetes usam essa porta, que não entra no Service nem no Ingress. Liveness = só a JVM; readiness = JVM + banco.
 - **Frontend:** `environment.<perfil>.ts`, `src/proxy-config.<perfil>.json` (encaminha `/api` para a porta do backend do mesmo perfil) e configurações `development`/`staging`/`production` no `angular.json`. Em desenvolvimento e homologação aparece um selo no topo da tela.
 
@@ -186,7 +192,7 @@ docker buildx build --platform linux/amd64,linux/arm64 -t gru.ocir.io/griszz3l82
 docker buildx build --platform linux/amd64,linux/arm64 -t gru.ocir.io/griszz3l82u1/chirpstack-manager-web:0.1.0 --push app_chirpstack_manager_frontend/
 
 # Secret real (uma única vez; o arquivo 02 é só exemplo e não é aplicado pelo script)
-kubectl apply -f kubernetes/01.create__Namespace.yaml
+kubectl apply -f api_chirpstack_manager_backend/kubernetes/01.create__Namespace.yaml
 kubectl -n chirpstack-manager create secret generic chirpstack-manager-secrets \
   --from-literal=CHIRPSTACK_API_TOKEN='<API key>' \
   --from-literal=APP_JWT_SECRET="$(openssl rand -base64 48)" \
@@ -194,24 +200,33 @@ kubectl -n chirpstack-manager create secret generic chirpstack-manager-secrets \
   --from-literal=DB_PASSWORD="$(openssl rand -base64 24)" \
   --from-literal=APP_CHAVE_CIFRAGEM="$(openssl rand -base64 32)"
 
-# Deploy (aplica os manifests na ordem e espera os rollouts)
-./00.UsefulScripts/01.deploy_chirpstack-manager_script.sh
+# Deploy: primeiro o backend, depois o frontend (cada um espera o próprio rollout)
+api_chirpstack_manager_backend/kubernetes/00.UsefulScripts/01.deploy_full_api-chirpstack-manager-backend_script.sh
+app_chirpstack_manager_frontend/kubernetes/00.UsefulScripts/01.deploy_full_app-chirpstack-manager-frontend_script.sh
 ```
 
-Scripts em `00.UsefulScripts/`:
+Como no CSLab BackOffice, cada módulo tem a sua pasta `kubernetes/` com `00.UsefulScripts/` e um `kustomization.yaml` (que renderiza só o Deployment, para ArgoCD/pipeline). Os nomes dos objetos no cluster não mudaram.
+
+| Backend (`api_chirpstack_manager_backend/kubernetes/`) | Frontend (`app_chirpstack_manager_frontend/kubernetes/`) |
+|---|---|
+| 01 Namespace · 02 Secret (exemplo) · 03 ConfigMap · 04–06 PostgreSQL (PVC, StatefulSet, Service) · 07 PVC dos backups · 08 Deployment · 09 Service | 01 Namespace · 02 Deployment · 03 Service · 04 Ingress · 05 Ingress da restauração (512 MB) |
 
 | Script | O que faz |
 |---|---|
-| `01.deploy_…` | Aplica os manifests 01, 03 a 13 na ordem (confere antes se o Secret existe) e espera os rollouts |
-| `02.destroy_…` | Remove pods, serviços e Ingress **mantendo** banco, backups, Secret e namespace. `--tudo` apaga também os dados, com confirmação |
-| `03.back-up_…` | `pg_dump` direto do pod do PostgreSQL para esta máquina (`~/Backups/chirpstack-manager`), sem depender da API |
-| `04.restore_…` | Restaura um `.backup` desta máquina: para a API, restaura em transação única num schema limpo, encerra as sessões e sobe a API de novo |
+| backend `01.deploy_full_…` | Confere o Secret e as chaves obrigatórias, aplica 01 e 03 a 09 na ordem, espera o PostgreSQL e a API |
+| backend `02.destroy_full_…` | Remove a API e o PostgreSQL **mantendo** banco, backups, Secret e namespace. `--tudo` apaga também os dados, com confirmação |
+| backend `03.back-up_…` | `pg_dump` direto do pod do PostgreSQL para esta máquina (`~/Backups/chirpstack-manager`), sem depender da API |
+| backend `04.restore_…` | Restaura um `.backup` desta máquina: para a API, restaura em transação única num schema limpo, encerra as sessões e sobe a API de novo |
+| frontend `01.deploy_full_…` | Aplica Deployment, Service e os dois Ingress e espera o rollout |
+| frontend `02.destroy_full_…` | Remove Ingress, Service e Deployment (o namespace fica: ele guarda o banco) |
+
+O NGINX do frontend usa `nginx.conf` e `mime.types` próprios (raiz do frontend, como no BackOffice) e encaminha `/api` para o Service `chirpstack-manager-api:8083`.
 
 Antes de aplicar, ajuste nos manifests:
 
 - o host do Ingress (`chirpstack-manager.adailsilva.com.br`);
 - o nome do `ClusterIssuer`;
-- o `storageClassName` do PostgreSQL (`04…PersistentVolumeClaim.yaml`) e do volume de backups (`07…PersistentVolumeClaim.yaml`);
+- o `storageClassName` do PostgreSQL (backend `04…PersistentVolumeClaim.yaml`) e do volume de backups (backend `07…PersistentVolumeClaim.yaml`);
 - o `GOOGLE_DRIVE_REDIRECT_URI` no ConfigMap;
 - o `imagePullSecrets` do OCIR.
 
@@ -221,30 +236,36 @@ Antes de aplicar, ajuste nos manifests:
 
 ```
 06.chirpstack_manager/
-├── 00.UsefulScripts/               deploy, destroy, backup e restore pelo kubectl
 ├── api_chirpstack_manager_backend/ Spring Boot 4.1.1 (Java 21)
-│   └── src/main/java/br/com/adailsilva/chirpstackmanager/
-│       ├── auth/                   login, refresh, logout, rate limit, tokens
-│       ├── usuario/                usuários do painel (CRUD)
-│       ├── auditoria/              registro e consulta
-│       ├── sessao/                 sessões, política de logoff, filtro de sessão encerrada
-│       ├── visitante/              monitoramento de visitantes e ações do administrador
-│       ├── backup/                 backup/restauração (PostgreSQL e H2), agendamento, histórico
-│       │   └── drive/              OAuth e upload resumable para o Google Drive
-│       ├── chirpstack/             cliente REST + exceção gRPC
-│       │   └── api/                controllers: tenants, users, applications, device-profiles,
-│       │                           device-profile-templates, devices, gateways, relay-gateways,
-│       │                           multicast-groups, resumo
-│       ├── config/                 segurança, propriedades, bootstrap do admin
-│       └── web/                    tratamento de erros, paginação
+│   ├── kubernetes/                 manifests do backend + 00.UsefulScripts/ + kustomization.yaml
+│   └── src/main/
+│       ├── java/br/com/adailsilva/chirpstackmanager/api/
+│       │   ├── config/             segurança, propriedades, bootstrap do admin, CORS
+│       │   ├── controller/         auth, usuários, auditoria, sessões, visitantes, backup, Google Drive
+│       │   │   └── chirpstack/     proxies da REST API: tenants, users, applications, device-profiles
+│       │   │                       (+ catálogo), templates, devices, gateways, relay-gateways, relays,
+│       │   │                       multicast-groups, resumo
+│       │   ├── service/            auth, usuários, auditoria, sessões, visitantes
+│       │   │   ├── backup/         backup/restauração (PostgreSQL e H2), agendamento
+│       │   │   ├── googledrive/    OAuth e upload resumable
+│       │   │   └── chirpstack/     cliente REST, Query, exceção gRPC
+│       │   ├── repository/         Spring Data JPA
+│       │   ├── domain/             entity/, enums/, dto/ (+ dto/response: ApiError, Pagina)
+│       │   ├── exception/          GlobalExceptionHandler e exceções de negócio
+│       │   ├── security/           Ids, Perfis, cifrador · filter/ (sessão ativa) · service/ (JWT, rate limit)
+│       │   └── web/                interceptor de auditoria, IP/navegador do cliente
+│       └── resources/              application.properties + 3 perfis, banners/, db/migration/{H2,PostgreSQL}
 ├── app_chirpstack_manager_frontend/ Angular 21 + Avalon
+│   ├── kubernetes/                 manifests do frontend + 00.UsefulScripts/ + kustomization.yaml
+│   ├── nginx.conf · mime.types     NGINX da imagem (SPA + proxy de /api)
 │   └── src/app/
-│       ├── core/                   api (models, services), auth (interceptor, guards, monitor de sessão), util
-│       ├── shared/                 componentes reutilizáveis (tabelas paginadas, campos hex, gráficos...)
-│       ├── features/               telas por módulo (sistema/: visitantes, controle de sessão, backup)
-│       └── layout/ pages/          tema Avalon adaptado (menu, topo, login)
+│       ├── core/                   auth/ (guards, interceptor, serviço), http/ (cliente da API, modelos),
+│       │                           sessao/, format/, i18n/, notificacao/, tenant/
+│       ├── pages/                  uma pasta por tela: aplicacoes, dispositivos, gateways, perfis-dispositivo,
+│       │                           catalogo, multicast, tenants, usuarios, visitantes, backup, auth...
+│       ├── shared/                 campos/, graficos/, tabela/, visual/
+│       └── layout/                 tema Avalon adaptado (menu, topo, rodapé)
 ├── docker/docker-compose.yaml      ambiente local completo
-├── kubernetes/                     manifests, um objeto por arquivo (01 a 13)
 └── docs/telas/                     capturas de tela
 ```
 

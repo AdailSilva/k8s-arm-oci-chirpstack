@@ -1,0 +1,49 @@
+${AnsiColor.BRIGHT_BLUE}
+${AnsiColor.BRIGHT_BLUE}          _____                    _____                    _____                    _____                    _____
+${AnsiColor.BRIGHT_BLUE}         /\    \                  /\    \                  /\    \                  /\    \                  /\    \
+${AnsiColor.BRIGHT_BLUE}        /::\    \                /::\____\                /::\    \                /::\    \                /::\    \
+${AnsiColor.BRIGHT_BLUE}       /::::\    \              /:::/    /                \:::\    \              /::::\    \              /::::\    \
+${AnsiColor.BRIGHT_BLUE}      /::::::\    \            /:::/    /                  \:::\    \            /::::::\    \            /::::::\    \
+${AnsiColor.BRIGHT_BLUE}     /:::/\:::\    \          /:::/    /                    \:::\    \          /:::/\:::\    \          /:::/\:::\    \
+${AnsiColor.BRIGHT_BLUE}    /:::/  \:::\    \        /:::/____/                      \:::\    \        /:::/__\:::\    \        /:::/__\:::\    \
+${AnsiColor.BRIGHT_BLUE}   /:::/    \:::\    \      /::::\    \                      /::::\    \      /::::\   \:::\    \      /::::\   \:::\    \
+${AnsiColor.BRIGHT_BLUE}  /:::/    / \:::\    \    /::::::\    \   _____    ____    /::::::\    \    /::::::\   \:::\    \    /::::::\   \:::\    \
+${AnsiColor.BRIGHT_BLUE} /:::/    /   \:::\    \  /:::/\:::\    \ /\    \  /\   \  /:::/\:::\    \  /:::/\:::\   \:::\____\  /:::/\:::\   \:::\____\
+${AnsiColor.BRIGHT_BLUE}/:::/____/     \:::\____\/:::/  \:::\    /::\____\/::\   \/:::/  \:::\____\/:::/  \:::\   \:::|    |/:::/  \:::\   \:::|    |
+${AnsiColor.BRIGHT_BLUE}\:::\    \      \::/    /\::/    \:::\  /:::/    /\:::\  /:::/    \::/    /\::/   |::::\  /:::|____|\::/    \:::\  /:::|____|
+${AnsiColor.BRIGHT_BLUE} \:::\    \      \/____/  \/____/ \:::\/:::/    /  \:::\/:::/    / \/____/  \/____|:::::\/:::/    /  \/_____/\:::\/:::/    /
+${AnsiColor.BRIGHT_BLUE}  \:::\    \                       \::::::/    /    \::::::/    /                 |:::::::::/    /            \::::::/    /
+${AnsiColor.BRIGHT_BLUE}   \:::\    \                       \::::/    /      \::::/____/                  |::|\::::/    /              \::::/    /
+${AnsiColor.BRIGHT_BLUE}    \:::\    \                      /:::/    /        \:::\    \                  |::| \::/____/                \::/____/
+${AnsiColor.BRIGHT_BLUE}     \:::\    \                    /:::/    /          \:::\    \                 |::|  ~|                       ~~
+${AnsiColor.BRIGHT_BLUE}      \:::\    \                  /:::/    /            \:::\    \                |::|   |
+${AnsiColor.BRIGHT_BLUE}       \:::\____\                /:::/    /              \:::\____\               \::|   |
+${AnsiColor.BRIGHT_BLUE}        \::/    /                \::/    /                \::/    /                \:|   |
+${AnsiColor.BRIGHT_BLUE}         \/____/                  \/____/                  \/____/                  \|___|
+${AnsiColor.BLUE}
+${AnsiColor.BLUE}          _____                _____                    _____                    _____                    _____
+${AnsiColor.BLUE}         /\    \              /\    \                  /\    \                  /\    \                  /\    \
+${AnsiColor.BLUE}        /::\    \            /::\    \                /::\    \                /::\    \                /::\____\
+${AnsiColor.BLUE}       /::::\    \           \:::\    \              /::::\    \              /::::\    \              /:::/    /
+${AnsiColor.BLUE}      /::::::\    \           \:::\    \            /::::::\    \            /::::::\    \            /:::/    /
+${AnsiColor.BLUE}     /:::/\:::\    \           \:::\    \          /:::/\:::\    \          /:::/\:::\    \          /:::/    /
+${AnsiColor.BLUE}    /:::/__\:::\    \           \:::\    \        /:::/__\:::\    \        /:::/  \:::\    \        /:::/____/
+${AnsiColor.BLUE}    \:::\   \:::\    \          /::::\    \      /::::\   \:::\    \      /:::/    \:::\    \      /::::\    \
+${AnsiColor.BLUE}  ___\:::\   \:::\    \        /::::::\    \    /::::::\   \:::\    \    /:::/    / \:::\    \    /::::::\____\________
+${AnsiColor.BLUE} /\   \:::\   \:::\    \      /:::/\:::\    \  /:::/\:::\   \:::\    \  /:::/    /   \:::\    \  /:::/\:::::::::::\    \
+${AnsiColor.BLUE}/::\   \:::\   \:::\____\    /:::/  \:::\____\/:::/  \:::\   \:::\____\/:::/____/     \:::\____\/:::/  |:::::::::::\____\
+${AnsiColor.BLUE}\:::\   \:::\   \::/    /   /:::/    \::/    /\::/    \:::\  /:::/    /\:::\    \      \::/    /\::/   |::|~~~|~~~~~
+${AnsiColor.BLUE} \:::\   \:::\   \/____/   /:::/    / \/____/  \/____/ \:::\/:::/    /  \:::\    \      \/____/  \/____|::|   |
+${AnsiColor.BLUE}  \:::\   \:::\    \      /:::/    /                    \::::::/    /    \:::\    \                    |::|   |
+${AnsiColor.BLUE}   \:::\   \:::\____\    /:::/    /                      \::::/    /      \:::\    \                   |::|   |
+${AnsiColor.BLUE}    \:::\  /:::/    /    \::/    /                       /:::/    /        \:::\    \                  |::|   |
+${AnsiColor.BLUE}     \:::\/:::/    /      \/____/                       /:::/    /          \:::\    \                 |::|   |
+${AnsiColor.BLUE}      \::::::/    /                                    /:::/    /            \:::\    \                |::|   |
+${AnsiColor.BLUE}       \::::/    /                                    /:::/    /              \:::\____\               \::|   |
+${AnsiColor.BLUE}        \::/    /                                     \::/    /                \::/    /                \:|   |
+${AnsiColor.BLUE}         \/____/                                       \/____/                  \/____/                  \|___|
+${AnsiColor.BLUE}
+${AnsiColor.DEFAULT}:: ${application.title} ${application.version} ::
+${AnsiColor.BRIGHT_BLUE}:: Painel de administração da rede LoRaWAN ChirpStack v4 (REST API v4.19) ::
+${AnsiColor.BRIGHT_CYAN}:: ChirpStack-Manager 📡 :: Running Spring Boot ${spring-boot.version} :: Startup profile ${AnsiColor.RED}--> (${AnsiColor.GREEN}${spring.profiles.active}${AnsiColor.RED}) ${AnsiColor.BRIGHT_CYAN}::
+${AnsiColor.BRIGHT_YELLOW}:: https://chirpstack-manager.adailsilva.com.br ::${AnsiColor.DEFAULT}

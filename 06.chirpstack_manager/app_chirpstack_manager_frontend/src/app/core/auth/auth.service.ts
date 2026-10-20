@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { firstValueFrom, Observable, of, throwError } from 'rxjs';
 import { catchError, finalize, map, shareReplay, tap } from 'rxjs/operators';
 import { environment } from '@/environments/environment';
-import { MotivoEncerramento, PerfilAcesso, SessaoInfo, UsuarioSistema } from '@/app/core/api/models';
+import { MotivoEncerramento, PerfilAcesso, SessaoInfo, UsuarioSistema } from '@/app/core/http/models';
 
 interface TokenResponse {
     accessToken: string;

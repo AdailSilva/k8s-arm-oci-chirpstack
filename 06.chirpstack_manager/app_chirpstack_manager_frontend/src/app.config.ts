@@ -10,7 +10,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { appRoutes } from './app.routes';
 import { authInterceptor } from '@/app/core/auth/auth.interceptor';
 import { AuthService } from '@/app/core/auth/auth.service';
-import { PRIMENG_PT_BR } from '@/app/core/util/primeng-pt-br';
+import { PRIMENG_PT_BR } from '@/app/core/i18n/primeng-pt-br';
 
 registerLocaleData(localePt);
 

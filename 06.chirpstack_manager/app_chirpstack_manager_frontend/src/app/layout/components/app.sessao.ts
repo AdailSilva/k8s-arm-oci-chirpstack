@@ -4,7 +4,7 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { TooltipModule } from 'primeng/tooltip';
-import { SessaoMonitorService } from '@/app/core/auth/sessao-monitor.service';
+import { SessaoMonitorService } from '@/app/core/sessao/sessao-monitor.service';
 import { AuthService } from '@/app/core/auth/auth.service';
 
 /**

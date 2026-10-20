@@ -1,0 +1,87 @@
+# =====================================================================
+#  Deployment do backend (Spring Boot). A API key do ChirpStack só existe aqui.
+# =====================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chirpstack-manager-api
+  namespace: chirpstack-manager
+spec:
+  replicas: 1
+  # Recreate: o volume de backups é ReadWriteOnce (um pod por vez).
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: chirpstack-manager-api
+  template:
+    metadata:
+      labels:
+        app: chirpstack-manager-api
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        # Dono dos arquivos do volume de backups
+        fsGroup: 10001
+        fsGroupChangePolicy: OnRootMismatch
+      containers:
+        - name: api
+          image: gru.ocir.io/griszz3l82u1/chirpstack-manager-api:0.1.0
+          imagePullPolicy: IfNotPresent
+          # 8083 = aplicação (perfil production) | 8084 = actuator/probes (management.server.port),
+          # mesmo esquema do CSLab. A 8084 não entra no Service nem no Ingress.
+          ports:
+            - name: backend-port
+              containerPort: 8083
+            - name: management-port
+              containerPort: 8084
+          envFrom:
+            - configMapRef: { name: chirpstack-manager-config }
+          env:
+            - name: CHIRPSTACK_API_TOKEN
+              valueFrom: { secretKeyRef: { name: chirpstack-manager-secrets, key: CHIRPSTACK_API_TOKEN } }
+            - name: APP_JWT_SECRET
+              valueFrom: { secretKeyRef: { name: chirpstack-manager-secrets, key: APP_JWT_SECRET } }
+            - name: APP_ADMIN_PASSWORD
+              valueFrom: { secretKeyRef: { name: chirpstack-manager-secrets, key: APP_ADMIN_PASSWORD } }
+            - name: DB_PASSWORD
+              valueFrom: { secretKeyRef: { name: chirpstack-manager-secrets, key: DB_PASSWORD } }
+            - name: APP_CHAVE_CIFRAGEM
+              valueFrom: { secretKeyRef: { name: chirpstack-manager-secrets, key: APP_CHAVE_CIFRAGEM, optional: true } }
+            - name: GOOGLE_DRIVE_CLIENT_ID
+              valueFrom: { secretKeyRef: { name: chirpstack-manager-secrets, key: GOOGLE_DRIVE_CLIENT_ID, optional: true } }
+            - name: GOOGLE_DRIVE_CLIENT_SECRET
+              valueFrom: { secretKeyRef: { name: chirpstack-manager-secrets, key: GOOGLE_DRIVE_CLIENT_SECRET, optional: true } }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: backups
+              mountPath: /var/backups/chirpstack-manager
+          startupProbe:
+            httpGet: { path: /actuator/health/liveness, port: management-port }
+            periodSeconds: 5
+            failureThreshold: 36
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: management-port }
+            periodSeconds: 20
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: management-port }
+            periodSeconds: 10
+          resources:
+            requests: { cpu: 100m, memory: 384Mi }
+            limits: { cpu: "1", memory: 768Mi }
+      volumes:
+        # /tmp também recebe o arquivo enviado para restauração e os backups enviados só ao Drive
+        - name: tmp
+          emptyDir:
+            sizeLimit: 2Gi
+        - name: backups
+          persistentVolumeClaim:
+            claimName: chirpstack-manager-backups
+      # imagePullSecrets:
+      #   - name: ocir-secret

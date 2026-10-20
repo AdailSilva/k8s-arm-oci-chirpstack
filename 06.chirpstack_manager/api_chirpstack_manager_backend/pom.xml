@@ -20,7 +20,9 @@
     <properties>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- Perfil do Spring usado pelo 'mvn spring-boot:run'; vem do perfil Maven ativo (ver <profiles>). -->
+        <!-- Perfil do Spring: vem do perfil Maven ativo (ver <profiles>) e é gravado em
+             application.properties (spring.profiles.active=@activatedProperties@). -->
+        <activatedProperties>development</activatedProperties>
         <spring-boot.run.profiles>development</spring-boot.run.profiles>
     </properties>
 
@@ -96,6 +98,16 @@
         <finalName>chirpstack-manager-api</finalName>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <!-- Os .properties ficam em ISO-8859-1 (especificação de java.util.Properties),
+                         mesmo padrão do CSLab WEB e do BackOffice. Não converter para UTF-8. -->
+                    <propertiesEncoding>ISO-8859-1</propertiesEncoding>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
@@ -107,7 +119,8 @@
           mvn spring-boot:run                 -> development (porta 8081, H2)
           mvn spring-boot:run -Pstaging       -> staging     (porta 8082, PostgreSQL local)
           mvn spring-boot:run -Pproduction    -> production  (porta 8083, PostgreSQL)
-        O jar é o mesmo para os três: em container o perfil vem de SPRING_PROFILES_ACTIVE.
+        Configuração de cada um em src/main/resources/application-{perfil}.properties.
+        Em container, SPRING_PROFILES_ACTIVE tem prioridade sobre o perfil gravado no jar.
     -->
     <profiles>
         <profile>
@@ -116,18 +129,21 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
+                <activatedProperties>development</activatedProperties>
                 <spring-boot.run.profiles>development</spring-boot.run.profiles>
             </properties>
         </profile>
         <profile>
             <id>staging</id>
             <properties>
+                <activatedProperties>staging</activatedProperties>
                 <spring-boot.run.profiles>staging</spring-boot.run.profiles>
             </properties>
         </profile>
         <profile>
             <id>production</id>
             <properties>
+                <activatedProperties>production</activatedProperties>
                 <spring-boot.run.profiles>production</spring-boot.run.profiles>
             </properties>
         </profile>

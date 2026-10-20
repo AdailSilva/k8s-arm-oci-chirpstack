@@ -1,0 +1,20 @@
+# =====================================================================
+#  Volume dos backups do painel (montado no pod do backend).
+#
+#  Backups: volume próprio (chirpstack-manager-backups) montado em
+#  /var/backups/chirpstack-manager. O pg_dump roda dentro deste pod e fala
+#  direto com o serviço do PostgreSQL (sem kubectl e sem RBAC extra).
+#  Ajuste storageClassName/tamanho para o seu cluster (no OCI, o volume em
+#  bloco tem mínimo de 50 GB; o FSS não tem mínimo).
+# =====================================================================
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: chirpstack-manager-backups
+  namespace: chirpstack-manager
+spec:
+  accessModes: ["ReadWriteOnce"]
+  # storageClassName: oci-fss
+  resources:
+    requests:
+      storage: 5Gi

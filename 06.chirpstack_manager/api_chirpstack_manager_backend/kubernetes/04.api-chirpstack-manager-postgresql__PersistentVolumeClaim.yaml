@@ -1,0 +1,15 @@
+# =====================================================================
+#  PostgreSQL do painel (usuários, refresh tokens e auditoria).
+#  Ajuste storageClassName para a classe do seu cluster (ex.: OCI FSS).
+# =====================================================================
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: chirpstack-manager-postgres-data
+  namespace: chirpstack-manager
+spec:
+  accessModes: ["ReadWriteOnce"]
+  # storageClassName: oci-fss
+  resources:
+    requests:
+      storage: 2Gi

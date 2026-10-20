@@ -1,0 +1,21 @@
+-- =====================================================================
+--  V03 - Auditoria
+--  Registra logins e toda operação de escrita feita no ChirpStack pelo painel.
+-- =====================================================================
+CREATE TABLE tb_auditoria (
+    id           BIGINT        AUTO_INCREMENT PRIMARY KEY,
+    usuario      VARCHAR(160),
+    acao         VARCHAR(40)   NOT NULL,
+    recurso      VARCHAR(255)  NOT NULL,
+    metodo       VARCHAR(10),
+    status_http  INTEGER,
+    sucesso      BOOLEAN       NOT NULL,
+    detalhe      VARCHAR(500),
+    ip           VARCHAR(64),
+    criado_em    TIMESTAMP WITH TIME ZONE NOT NULL
+);
+CREATE INDEX ix_tb_auditoria_criado_em ON tb_auditoria (criado_em DESC);
+CREATE INDEX ix_tb_auditoria_usuario ON tb_auditoria (usuario);
+-- =====================================================================
+--  Fim da V03
+-- =====================================================================

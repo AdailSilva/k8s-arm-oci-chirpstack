@@ -1,0 +1,20 @@
+-- =====================================================================
+--  V02 - Refresh tokens (guardados somente como hash SHA-256)
+--  Cada uso gera um token novo e revoga o anterior (rotação).
+-- =====================================================================
+CREATE TABLE tb_refresh_token (
+    id           BIGINT        AUTO_INCREMENT PRIMARY KEY,
+    usuario_id   BIGINT        NOT NULL,
+    token_hash   VARCHAR(64)   NOT NULL,
+    expira_em    TIMESTAMP WITH TIME ZONE NOT NULL,
+    revogado     BOOLEAN       NOT NULL DEFAULT FALSE,
+    criado_em    TIMESTAMP WITH TIME ZONE NOT NULL,
+    ip           VARCHAR(64),
+    user_agent   VARCHAR(255),
+    CONSTRAINT uk_tb_refresh_token_hash UNIQUE (token_hash),
+    CONSTRAINT fk_tb_refresh_token_usuario FOREIGN KEY (usuario_id) REFERENCES tb_usuario (id) ON DELETE CASCADE
+);
+CREATE INDEX ix_tb_refresh_token_usuario ON tb_refresh_token (usuario_id);
+-- =====================================================================
+--  Fim da V02
+-- =====================================================================

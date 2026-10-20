@@ -4,7 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { PasswordModule } from 'primeng/password';
 import { MessageModule } from 'primeng/message';
 import { AuthService, MENSAGENS_ENCERRAMENTO } from '@/app/core/auth/auth.service';
-import { NotifyService } from '@/app/core/util/notify.service';
+import { NotifyService } from '@/app/core/notificacao/notify.service';
 import { LandingInput } from '@/app/layout/components/shared/landinginput';
 import { LandingPassword } from '@/app/layout/components/shared/landingpassword';
 
