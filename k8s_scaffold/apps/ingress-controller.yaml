@@ -465,60 +465,52 @@ spec:
     app.kubernetes.io/instance: ingress-nginx
     app.kubernetes.io/component: controller
 
----
+# ---
 
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: tcp-services
-  namespace: ingress-nginx
-data:
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: tcp-services
+#   namespace: ingress-nginx
+# data:
 
-  # # --- ChirpStack-v3
-  1888: "chirpstack-v3/chirpstack-v3-mosquitto-service:1888"
-  # 5437: "chirpstack-v3/chirpstack-v3-ns-postgresql-service:5437"
-  # 5438: "chirpstack-v3/chirpstack-v3-as-postgresql-service:5438"
-  # 6384: "chirpstack-v3/chirpstack-v3-redis-service:6384"
-  # 8000: "chirpstack-v3/chirpstack-v3-network-server-service:8000"
-  # 8001: "chirpstack-v3/chirpstack-v3-application-server-service:8001"
-  # 8003: "chirpstack-v3/chirpstack-v3-application-server-service:8003"
-  # 8080: "chirpstack-v3/chirpstack-v3-application-server-service:8080"
-  # 8101: "chirpstack-v3/chirpstack-v3-application-server-service:8101"
+#   # # --- ChirpStack-v3
+#   # 1888: "chirpstack-v3/chirpstack-v3-mosquitto-service:1888"
+#   # 5437: "chirpstack-v3/chirpstack-v3-ns-postgresql-service:5437"
+#   # 5438: "chirpstack-v3/chirpstack-v3-as-postgresql-service:5438"
+#   # 6384: "chirpstack-v3/chirpstack-v3-redis-service:6384"
+#   # 8000: "chirpstack-v3/chirpstack-v3-network-server-service:8000"
+#   # 8001: "chirpstack-v3/chirpstack-v3-application-server-service:8001"
+#   # 8003: "chirpstack-v3/chirpstack-v3-application-server-service:8003"
+#   # 8080: "chirpstack-v3/chirpstack-v3-application-server-service:8080"
+#   # 8101: "chirpstack-v3/chirpstack-v3-application-server-service:8101"
 
-  # # --- ChirpStack-v4
-  # 1893: "chirpstack-v4/chirpstack-v4-mosquitto-service:1893"
-  8883: "chirpstack-v4/chirpstack-v4-mosquitto-service:8883"
-  # 5442: "chirpstack-v4/chirpstack-v4-postgresql-service:5442"
-  # 6389: "chirpstack-v4/chirpstack-v4-redis-service:6389"
-  # 8090: "chirpstack-v4/chirpstack-v4-service:8090"
-  # 8100: "chirpstack-v4/chirpstack-v4-rest-api-service:8100"
+#   # # --- ChirpStack-v4
+#   # 1893: "chirpstack-v4/chirpstack-v4-mosquitto-service:1893"
+    # 8883: "chirpstack-v4/chirpstack-v4-mosquitto-service:8883"
+#   # 5442: "chirpstack-v4/chirpstack-v4-postgresql-service:5442"
+#   # 6389: "chirpstack-v4/chirpstack-v4-redis-service:6389"
+#   # 8090: "chirpstack-v4/chirpstack-v4-service:8090"
+#   # 8100: "chirpstack-v4/chirpstack-v4-rest-api-service:8100"
 
-  # # --- Jenkins
-  # 8088: "jenkins/jenkins-service:8088"
-  # 50000: "jenkins/jenkins-service:50000"
+#   # # --- Jenkins
+#   # 8088: "jenkins/jenkins-service:8088"
+#   # 50000: "jenkins/jenkins-service:50000"
 
-  # # --- Node-RED
-  # 1885: "adailsilva-apps/node-red-service:1885"
+#   # # --- Node-RED
+#   # 1885: "adailsilva-apps/node-red-service:1885"
 
-  # # --- Grafana
-  # 3005: "adailsilva-apps/grafana-service:3005"
+#   # # --- Grafana
+#   # 3005: "adailsilva-apps/grafana-service:3005"
 
-  # # --- MongoDB
-  # 27017: "adailsilva-apps/mongo-service:27017"
+#   # # --- MongoDB
+#   # 27017: "adailsilva-apps/mongo-service:27017"
 
-  # # --- Home Assistant
-  # 8123: "home-assistant/home-assistant-service:8123"
+#   # # --- Home Assistant
+#   # 8123: "home-assistant/home-assistant-service:8123"
 
-  # # --- SpringBoot Apps (platform arm64)
-  # 8081: "adailsilva-apps/spring-boot-app-arm64-service:8081"
-
-  # # --- SpringBoot Apps (platform arm64) CSLab-CardsControl
-  # 5445: "cardscontrol/cardscontrol-postgresql-service:5445"
-  # 8083: "cardscontrol/cardscontrol-backend-service:8083"
-
-  # # --- SpringBoot Apps (platform arm64) DAG-StockControl
-  # 5446: "stockcontrol/stockcontrol-postgresql-service:5446"
-  # 8084: "stockcontrol/stockcontrol-backend-service:8084"
+#   # # --- SpringBoot Apps (platform arm64)
+#   # 8081: "adailsilva-apps/spring-boot-app-arm64-service:8081"
 
 ---
 
