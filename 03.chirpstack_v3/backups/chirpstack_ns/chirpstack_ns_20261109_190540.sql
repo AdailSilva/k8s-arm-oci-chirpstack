@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict l7bP1QvMOdEgp54lOO1OrOnSTZbzddEfgOmfPJ5h0x9xrFL1cXUdIp4tQlvVAuf
+\restrict lzHTHwX39hGnYN2hCVwJgugEdVUJuHu70O1gJNbKD4XW6xRUtIYILTv1xIQQ1IB
 
 -- Dumped from database version 14.24
 -- Dumped by pg_dump version 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
 
--- Started on 2026-11-09 18:04:29 -03
+-- Started on 2026-11-09 19:05:47 -03
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -32,9 +32,9 @@ CREATE DATABASE chirpstack_ns WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE
 
 ALTER DATABASE chirpstack_ns OWNER TO chirpstack_ns;
 
-\unrestrict l7bP1QvMOdEgp54lOO1OrOnSTZbzddEfgOmfPJ5h0x9xrFL1cXUdIp4tQlvVAuf
+\unrestrict lzHTHwX39hGnYN2hCVwJgugEdVUJuHu70O1gJNbKD4XW6xRUtIYILTv1xIQQ1IB
 \connect chirpstack_ns
-\restrict l7bP1QvMOdEgp54lOO1OrOnSTZbzddEfgOmfPJ5h0x9xrFL1cXUdIp4tQlvVAuf
+\restrict lzHTHwX39hGnYN2hCVwJgugEdVUJuHu70O1gJNbKD4XW6xRUtIYILTv1xIQQ1IB
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -551,14 +551,14 @@ COPY public.device_multicast_group (dev_eui, multicast_group_id, created_at) FRO
 --
 
 COPY public.device_profile (created_at, updated_at, device_profile_id, supports_class_b, class_b_timeout, ping_slot_period, ping_slot_dr, ping_slot_freq, supports_class_c, class_c_timeout, mac_version, reg_params_revision, rx_delay_1, rx_dr_offset_1, rx_data_rate_2, rx_freq_2, factory_preset_freqs, max_eirp, max_duty_cycle, supports_join, rf_region, supports_32bit_fcnt, adr_algorithm_id) FROM stdin;
-2026-05-10 15:51:49.822952+00	2026-11-09 20:32:33.288472+00	014c944b-cfa0-472d-94df-fd6c18843572	f	0	0	0	0	f	0	1.0.3	B	0	0	0	0	\N	30	0	t	AU915	f	default
-2026-05-01 19:46:21.938333+00	2026-11-09 20:32:37.357381+00	1ba78642-7e07-4f89-8dd9-4e2f7a025348	f	0	0	0	0	f	0	1.0.3	B	1	0	8	923300000	{916800000}	30	0	f	AU915	f	default
-2026-05-10 15:50:43.506122+00	2026-11-09 20:32:42.124938+00	edb8165c-2f2b-49ff-8dd9-448484c1f92a	f	0	0	0	0	t	0	1.0.3	A	0	0	0	0	\N	30	0	t	AU915	f	default
-2026-05-01 19:43:58.139804+00	2026-11-09 20:33:13.461634+00	d39827e9-1e0c-4f90-94c3-04df5fe12a25	f	0	0	0	0	t	0	1.0.3	A	1	0	8	923300000	{916800000}	30	0	f	AU915	f	default
-2026-05-10 15:49:27.074432+00	2026-11-09 20:33:18.226234+00	dbace6c1-ee3b-4b64-a737-499589bcad82	f	0	0	0	0	t	0	1.0.3	A	0	0	0	0	\N	30	0	t	AU915	f	default
-2026-05-01 19:45:40.618656+00	2026-11-09 20:33:22.266959+00	1cf78205-847a-46f3-acef-8f55842431c9	f	0	0	0	0	t	0	1.0.3	B	1	0	8	923300000	{916800000}	30	0	f	AU915	f	default
-2026-05-10 15:51:16.574469+00	2026-11-09 20:33:25.757477+00	47dbd59c-dbeb-4341-a0ee-78ac23caa698	f	0	0	0	0	t	0	1.0.3	B	0	0	0	0	\N	30	0	t	AU915	f	default
-2026-05-01 19:44:53.824646+00	2026-11-09 20:33:29.754077+00	098744b6-72ba-494e-b276-2a5b831abde5	f	0	0	0	0	t	0	1.0.3	A	1	0	8	923300000	{916800000}	30	0	f	AU915	f	default
+2026-05-01 19:43:58.139804+00	2026-11-09 21:36:26.506756+00	d39827e9-1e0c-4f90-94c3-04df5fe12a25	f	0	0	0	0	t	0	1.0.3	A	1	0	8	923300000	{916800000}	30	0	f	AU915	f	default
+2026-05-10 15:49:27.074432+00	2026-11-09 21:36:48.711239+00	dbace6c1-ee3b-4b64-a737-499589bcad82	f	0	0	0	0	t	0	1.0.3	A	0	0	0	0	\N	30	0	t	AU915	f	default
+2026-05-01 19:45:40.618656+00	2026-11-09 21:37:06.711075+00	1cf78205-847a-46f3-acef-8f55842431c9	f	0	0	0	0	t	0	1.0.3	B	1	0	8	923300000	{916800000}	30	0	f	AU915	f	default
+2026-05-10 15:51:16.574469+00	2026-11-09 21:37:38.417287+00	47dbd59c-dbeb-4341-a0ee-78ac23caa698	f	0	0	0	0	t	0	1.0.3	B	0	0	0	0	\N	30	0	t	AU915	f	default
+2026-05-01 19:44:53.824646+00	2026-11-09 21:38:02.221895+00	098744b6-72ba-494e-b276-2a5b831abde5	f	0	0	0	0	t	0	1.0.3	A	1	0	8	923300000	{916800000}	30	0	f	AU915	f	default
+2026-05-10 15:50:43.506122+00	2026-11-09 21:38:34.357166+00	edb8165c-2f2b-49ff-8dd9-448484c1f92a	f	0	0	0	0	t	0	1.0.3	A	0	0	0	0	\N	30	0	t	AU915	f	default
+2026-05-01 19:46:21.938333+00	2026-11-09 21:39:07.841017+00	1ba78642-7e07-4f89-8dd9-4e2f7a025348	f	0	0	0	0	f	0	1.0.3	B	1	0	8	923300000	{916800000}	30	0	f	AU915	f	default
+2026-05-10 15:51:49.822952+00	2026-11-09 21:39:30.538238+00	014c944b-cfa0-472d-94df-fd6c18843572	f	0	0	0	0	f	0	1.0.3	B	0	0	0	0	\N	30	0	t	AU915	f	default
 \.
 
 
@@ -1152,11 +1152,11 @@ REVOKE USAGE ON SCHEMA public FROM PUBLIC;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
--- Completed on 2026-11-09 18:04:34 -03
+-- Completed on 2026-11-09 19:05:52 -03
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict l7bP1QvMOdEgp54lOO1OrOnSTZbzddEfgOmfPJ5h0x9xrFL1cXUdIp4tQlvVAuf
+\unrestrict lzHTHwX39hGnYN2hCVwJgugEdVUJuHu70O1gJNbKD4XW6xRUtIYILTv1xIQQ1IB
 

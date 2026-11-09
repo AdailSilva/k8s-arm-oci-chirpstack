@@ -1,18 +1,18 @@
-[2026-11-09 18:05:35] ============================================================
-[2026-11-09 18:05:35]  Iniciando backup: chirpstack
-[2026-11-09 18:05:35]  Namespace: chirpstack-v4 | Service: chirpstack-v4-postgresql-service
-[2026-11-09 18:05:35]  Host: 127.0.0.1:5442
-[2026-11-09 18:05:35]  Usuario: chirpstack
-[2026-11-09 18:05:35]  Destino: /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/backups
-[2026-11-09 18:05:35]  Versao: pg_dump (PostgreSQL) 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
-[2026-11-09 18:05:35] ============================================================
-[2026-11-09 18:05:35] Port-forward: kubectl port-forward -n chirpstack-v4 svc/chirpstack-v4-postgresql-service 5442:5442
+[2026-11-09 19:06:07] ============================================================
+[2026-11-09 19:06:07]  Iniciando backup: chirpstack
+[2026-11-09 19:06:07]  Namespace: chirpstack-v4 | Service: chirpstack-v4-postgresql-service
+[2026-11-09 19:06:07]  Host: 127.0.0.1:5442
+[2026-11-09 19:06:07]  Usuario: chirpstack
+[2026-11-09 19:06:07]  Destino: /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/backups
+[2026-11-09 19:06:07]  Versao: pg_dump (PostgreSQL) 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
+[2026-11-09 19:06:07] ============================================================
+[2026-11-09 19:06:07] Port-forward: kubectl port-forward -n chirpstack-v4 svc/chirpstack-v4-postgresql-service 5442:5442
 Forwarding from 127.0.0.1:5442 -> 5432
 Forwarding from [::1]:5442 -> 5432
 Handling connection for 5442
-[2026-11-09 18:05:37]   OK - port-forward ativo (PID 877341)
-[2026-11-09 18:05:37] 
-[2026-11-09 18:05:37] [1/2] Gerando .backup (formato custom)...
+[2026-11-09 19:06:08]   OK - port-forward ativo (PID 942626)
+[2026-11-09 19:06:08] 
+[2026-11-09 19:06:08] [1/2] Gerando .backup (formato custom)...
 Handling connection for 5442
 pg_dump: last built-in OID is 16383
 pg_dump: reading extensions
@@ -90,9 +90,9 @@ pg_dump: dumping contents of table "public.relay_gateway"
 pg_dump: dumping contents of table "public.tenant"
 pg_dump: dumping contents of table "public.tenant_user"
 pg_dump: dumping contents of table "public.user"
-[2026-11-09 18:05:43]   OK - 69733 bytes - /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/backups/chirpstack_20261109_180535.backup
-[2026-11-09 18:05:43] 
-[2026-11-09 18:05:43] [2/2] Gerando .sql (plain SQL)...
+[2026-11-09 19:06:13]   OK - 70426 bytes - /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/backups/chirpstack_20261109_190607.backup
+[2026-11-09 19:06:13] 
+[2026-11-09 19:06:13] [2/2] Gerando .sql (plain SQL)...
 Handling connection for 5442
 pg_dump: last built-in OID is 16383
 pg_dump: reading extensions
@@ -321,9 +321,9 @@ pg_dump: creating FK CONSTRAINT "public.relay_device relay_device_relay_dev_eui_
 pg_dump: creating FK CONSTRAINT "public.relay_gateway relay_gateway_tenant_id_fkey"
 pg_dump: creating FK CONSTRAINT "public.tenant_user tenant_user_tenant_id_fkey"
 pg_dump: creating FK CONSTRAINT "public.tenant_user tenant_user_user_id_fkey"
-[2026-11-09 18:05:48]   OK - 83833 bytes - /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/backups/chirpstack_20261109_180535.sql
-[2026-11-09 18:05:48] 
-[2026-11-09 18:05:48] ============================================================
-[2026-11-09 18:05:48]  STATUS FINAL (chirpstack): SUCESSO
-[2026-11-09 18:05:48]  Log: /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/backups/backup_20261109_180535.log
-[2026-11-09 18:05:48] ============================================================
+[2026-11-09 19:06:19]   OK - 89379 bytes - /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/backups/chirpstack_20261109_190607.sql
+[2026-11-09 19:06:19] 
+[2026-11-09 19:06:19] ============================================================
+[2026-11-09 19:06:19]  STATUS FINAL (chirpstack): SUCESSO
+[2026-11-09 19:06:19]  Log: /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/backups/backup_20261109_190607.log
+[2026-11-09 19:06:19] ============================================================
