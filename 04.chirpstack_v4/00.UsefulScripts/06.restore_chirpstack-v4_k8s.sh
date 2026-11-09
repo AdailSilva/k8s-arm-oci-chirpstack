@@ -71,7 +71,7 @@ esac
 # --------------------------------------------------------------
 # CONFIGURACOES DO BANCO
 # --------------------------------------------------------------
-PG_DEPLOYMENT="chirpstack-v4-ns-as-postgresql-deployment"
+PG_DEPLOYMENT="chirpstack-v4-postgresql-deployment"
 PG_DB="chirpstack"
 PG_USER="chirpstack"
 PG_PASSWORD="chirpstack"

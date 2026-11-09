@@ -2113,7 +2113,7 @@ Gateway físico (LoRa)
 | `Service` | `chirpstack-v4-mosquitto-service` | — | TCP 8883 |
 | `StorageClass` + `PV` + `PVC` | `oci-fss-postgresql-data-chirpstack-v4-ns-as` | — | Dados PostgreSQL (10Gi) |
 | `ConfigMap` | `chirpstack-v4-postgresql-config-map` | — | Script de init do banco |
-| `Deployment` | `chirpstack-v4-ns-as-postgresql-deployment` | `postgres:17.5` | TCP 5442→5432 |
+| `Deployment` | `chirpstack-v4-postgresql-deployment` | `postgres:17.5` | TCP 5442→5432 |
 | `Service` | `chirpstack-v4-postgresql-service` | — | TCP 5442→5432 |
 | `StorageClass` + `PV` + `PVC` | `oci-fss-redis-data-chirpstack-v4` | — | Dados Redis (1Gi) |
 | `Deployment` | `chirpstack-v4-redis-deployment` | `redis:7.2` | TCP 6389→6379 |
@@ -2907,7 +2907,7 @@ kubectl apply -f 14.chirpstack-v4-bridge-gateway__Service.yaml
 kubectl wait --namespace chirpstack-v4 --for=condition=ready pod \
   --selector=app=chirpstack-v4-mosquitto-deployment --timeout=300s
 kubectl wait --namespace chirpstack-v4 --for=condition=ready pod \
-  --selector=app=chirpstack-v4-ns-as-postgresql-deployment --timeout=300s
+  --selector=app=chirpstack-v4-postgresql-deployment --timeout=300s
 kubectl wait --namespace chirpstack-v4 --for=condition=ready pod \
   --selector=app=chirpstack-v4-redis-deployment --timeout=300s
 
@@ -2938,7 +2938,7 @@ kubectl get pods -n chirpstack-v4 -o wide
 # Saída esperada (todos Running):
 # NAME                                                READY   STATUS    RESTARTS
 # chirpstack-v4-mosquitto-deployment-xxx              1/1     Running   0
-# chirpstack-v4-ns-as-postgresql-deployment-xxx       1/1     Running   0
+# chirpstack-v4-postgresql-deployment-xxx       1/1     Running   0
 # chirpstack-v4-redis-deployment-xxx                  1/1     Running   0
 # chirpstack-v4-gateway-bridge-deployment-xxx         1/1     Running   0
 # chirpstack-v4-deployment-xxx                        1/1     Running   0

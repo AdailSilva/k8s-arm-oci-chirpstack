@@ -10,7 +10,7 @@ metadata:
     app: chirpstack-v4-postgresql-service
 spec:
   selector:
-    app: chirpstack-v4-ns-as-postgresql-deployment
+    app: chirpstack-v4-postgresql-deployment
   # clusterIP: "None"
   type: ClusterIP
   ports:

@@ -25,7 +25,7 @@ kubectl apply -f ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.
 
 echo "Waiting for Mosquitto, Postgres and Redis Services to become available to start ChirpStack-v4 Service..."
 kubectl wait --namespace chirpstack-v4 --for=condition=ready pod --selector=app=chirpstack-v4-mosquitto-deployment --timeout=300s && \
-kubectl wait --namespace chirpstack-v4 --for=condition=ready pod --selector=app=chirpstack-v4-ns-as-postgresql-deployment --timeout=300s && \
+kubectl wait --namespace chirpstack-v4 --for=condition=ready pod --selector=app=chirpstack-v4-postgresql-deployment --timeout=300s && \
 kubectl wait --namespace chirpstack-v4 --for=condition=ready pod --selector=app=chirpstack-v4-redis-deployment --timeout=300s && \
 echo "Mosquitto, Postgres and Redis Services are operational, starting ChirpStack-v4 Service..."
 

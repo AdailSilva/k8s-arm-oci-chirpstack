@@ -45,7 +45,7 @@ SCRIPT_NAME="$(basename "$0")"
 usage() {
     echo "Uso: ./${SCRIPT_NAME}"
     echo ""
-    echo "  Faz o backup do banco chirpstack (chirpstack-v4-ns-as-postgresql-deployment)."
+    echo "  Faz o backup do banco chirpstack (chirpstack-v4-postgresql-deployment)."
 }
 
 KUBECTL=(kubectl)
@@ -61,7 +61,7 @@ CURRENT_CONTEXT="${KUBE_CONTEXT:-$(kubectl config current-context 2>/dev/null)}"
 # CONFIGURACOES DO BANCO
 # --------------------------------------------------------------
 set_target() {
-    PG_DEPLOYMENT="chirpstack-v4-ns-as-postgresql-deployment"
+    PG_DEPLOYMENT="chirpstack-v4-postgresql-deployment"
     PG_DB="chirpstack"
     PG_USER="chirpstack"
     PG_PASSWORD="chirpstack"

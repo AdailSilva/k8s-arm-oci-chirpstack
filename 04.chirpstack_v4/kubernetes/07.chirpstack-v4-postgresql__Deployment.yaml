@@ -4,21 +4,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: chirpstack-v4-ns-as-postgresql-deployment
+  name: chirpstack-v4-postgresql-deployment
   namespace: chirpstack-v4
   labels:
-    app: chirpstack-v4-ns-as-postgresql-deployment
+    app: chirpstack-v4-postgresql-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: chirpstack-v4-ns-as-postgresql-deployment
+      app: chirpstack-v4-postgresql-deployment
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: chirpstack-v4-ns-as-postgresql-deployment
+        app: chirpstack-v4-postgresql-deployment
     spec:
       securityContext:
         runAsUser: 999
@@ -76,7 +76,7 @@ spec:
               subPath: chirpstack-v4-ns-as
 
       containers:
-        - name: chirpstack-v4-ns-as-postgresql
+        - name: chirpstack-v4-postgresql
           image: postgres:17.5
           env:
             - name: PGDATA
