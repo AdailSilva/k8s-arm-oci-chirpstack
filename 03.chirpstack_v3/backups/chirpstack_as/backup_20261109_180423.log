@@ -1,18 +1,14 @@
-NAME                                     READY   UP-TO-DATE   AVAILABLE   AGE
-chirpstack-v3-as-postgresql-deployment   1/1     1            1           18m
-[2026-10-06 11:00:17] ============================================================
-[2026-10-06 11:00:17]  Iniciando backup: chirpstack_as
-[2026-10-06 11:00:17]  Contexto:   kubernetes-admin@kubernetes
-[2026-10-06 11:00:17]  Namespace:  chirpstack-v3
-[2026-10-06 11:00:17]  Pod:        chirpstack-v3-as-postgresql-deployment-b7c66687f-784tr (container: chirpstack-v3-as-postgresql)
-[2026-10-06 11:00:17]  Usuario:    chirpstack_as
-[2026-10-06 11:00:17]  Porta:      5433
-[2026-10-06 11:00:17]  Destino:    /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/03.chirpstack_v3/backups/chirpstack_as
-[2026-10-06 11:00:17] ============================================================
-[2026-10-06 11:00:17] Versao no pod: pg_dump (PostgreSQL) 14.24
-[2026-10-06 11:00:19]   OK - conectado. Tabelas no schema public: 19
-[2026-10-06 11:00:19] 
-[2026-10-06 11:00:19] [1/2] Gerando .backup (formato custom)...
+[2026-11-09 18:04:34] ============================================================
+[2026-11-09 18:04:34]  Iniciando backup: chirpstack_as
+[2026-11-09 18:04:34]  Namespace: chirpstack-v3 | Service: chirpstack-v3-as-postgresql-service
+[2026-11-09 18:04:34]  Host: 127.0.0.1:5438
+[2026-11-09 18:04:34]  Usuario: chirpstack_as
+[2026-11-09 18:04:34]  Destino: /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/03.chirpstack_v3/backups/chirpstack_as
+[2026-11-09 18:04:34]  Versao: pg_dump (PostgreSQL) 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
+[2026-11-09 18:04:34] ============================================================
+[2026-11-09 18:04:34] Port-forward: porta 5438 ja esta ativa - reaproveitando.
+[2026-11-09 18:04:34] 
+[2026-11-09 18:04:34] [1/2] Gerando .backup (formato custom)...
 pg_dump: last built-in OID is 16383
 pg_dump: reading extensions
 pg_dump: identifying extension members
@@ -42,106 +38,27 @@ pg_dump: reading event triggers
 pg_dump: finding extension tables
 pg_dump: finding inheritance relationships
 pg_dump: reading column info for interesting tables
-pg_dump: finding the columns and types of table "public.api_key"
-pg_dump: finding default expressions of table "public.api_key"
-pg_dump: finding the columns and types of table "public.application"
-pg_dump: finding default expressions of table "public.application"
-pg_dump: finding the columns and types of table "public.code_migration"
-pg_dump: finding the columns and types of table "public.device"
-pg_dump: finding the columns and types of table "public.device_keys"
-pg_dump: finding the columns and types of table "public.device_multicast_group"
-pg_dump: finding the columns and types of table "public.device_profile"
-pg_dump: finding the columns and types of table "public.gateway"
-pg_dump: finding default expressions of table "public.gateway"
-pg_dump: finding the columns and types of table "public.gateway_ping"
-pg_dump: finding default expressions of table "public.gateway_ping"
-pg_dump: finding the columns and types of table "public.gateway_ping_rx"
-pg_dump: finding default expressions of table "public.gateway_ping_rx"
-pg_dump: finding the columns and types of table "public.gateway_profile"
-pg_dump: finding the columns and types of table "public.integration"
-pg_dump: finding default expressions of table "public.integration"
-pg_dump: finding the columns and types of table "public.multicast_group"
-pg_dump: finding the columns and types of table "public.network_server"
-pg_dump: finding default expressions of table "public.network_server"
-pg_dump: finding the columns and types of table "public.organization"
-pg_dump: finding default expressions of table "public.organization"
-pg_dump: finding the columns and types of table "public.organization_user"
-pg_dump: finding default expressions of table "public.organization_user"
-pg_dump: finding the columns and types of table "public.schema_migrations"
-pg_dump: finding the columns and types of table "public.service_profile"
-pg_dump: finding the columns and types of table "public.user"
-pg_dump: finding default expressions of table "public.user"
+pg_dump: finding table default expressions
 pg_dump: flagging inherited columns in subtables
 pg_dump: reading partitioning data
 pg_dump: reading indexes
-pg_dump: reading indexes for table "public.api_key"
-pg_dump: reading indexes for table "public.application"
-pg_dump: reading indexes for table "public.code_migration"
-pg_dump: reading indexes for table "public.device"
-pg_dump: reading indexes for table "public.device_keys"
-pg_dump: reading indexes for table "public.device_multicast_group"
-pg_dump: reading indexes for table "public.device_profile"
-pg_dump: reading indexes for table "public.gateway"
-pg_dump: reading indexes for table "public.gateway_ping"
-pg_dump: reading indexes for table "public.gateway_ping_rx"
-pg_dump: reading indexes for table "public.gateway_profile"
-pg_dump: reading indexes for table "public.integration"
-pg_dump: reading indexes for table "public.multicast_group"
-pg_dump: reading indexes for table "public.network_server"
-pg_dump: reading indexes for table "public.organization"
-pg_dump: reading indexes for table "public.organization_user"
-pg_dump: reading indexes for table "public.schema_migrations"
-pg_dump: reading indexes for table "public.service_profile"
-pg_dump: reading indexes for table "public.user"
 pg_dump: flagging indexes in partitioned tables
 pg_dump: reading extended statistics
 pg_dump: reading constraints
-pg_dump: reading foreign key constraints for table "public.api_key"
-pg_dump: reading foreign key constraints for table "public.application"
-pg_dump: reading foreign key constraints for table "public.device"
-pg_dump: reading foreign key constraints for table "public.device_keys"
-pg_dump: reading foreign key constraints for table "public.device_multicast_group"
-pg_dump: reading foreign key constraints for table "public.device_profile"
-pg_dump: reading foreign key constraints for table "public.gateway"
-pg_dump: reading foreign key constraints for table "public.gateway_ping"
-pg_dump: reading foreign key constraints for table "public.gateway_ping_rx"
-pg_dump: reading foreign key constraints for table "public.gateway_profile"
-pg_dump: reading foreign key constraints for table "public.integration"
-pg_dump: reading foreign key constraints for table "public.multicast_group"
-pg_dump: reading foreign key constraints for table "public.network_server"
-pg_dump: reading foreign key constraints for table "public.organization"
-pg_dump: reading foreign key constraints for table "public.organization_user"
-pg_dump: reading foreign key constraints for table "public.service_profile"
-pg_dump: reading foreign key constraints for table "public.user"
 pg_dump: reading triggers
-pg_dump: reading triggers for table "public.api_key"
-pg_dump: reading triggers for table "public.application"
-pg_dump: reading triggers for table "public.device"
-pg_dump: reading triggers for table "public.device_keys"
-pg_dump: reading triggers for table "public.device_multicast_group"
-pg_dump: reading triggers for table "public.device_profile"
-pg_dump: reading triggers for table "public.gateway"
-pg_dump: reading triggers for table "public.gateway_ping"
-pg_dump: reading triggers for table "public.gateway_ping_rx"
-pg_dump: reading triggers for table "public.gateway_profile"
-pg_dump: reading triggers for table "public.integration"
-pg_dump: reading triggers for table "public.multicast_group"
-pg_dump: reading triggers for table "public.network_server"
-pg_dump: reading triggers for table "public.organization"
-pg_dump: reading triggers for table "public.organization_user"
-pg_dump: reading triggers for table "public.service_profile"
-pg_dump: reading triggers for table "public.user"
 pg_dump: reading rewrite rules
 pg_dump: reading policies
 pg_dump: reading row-level security policies
 pg_dump: reading publications
-pg_dump: reading publication membership
+pg_dump: reading publication membership of tables
+pg_dump: reading publication membership of schemas
 pg_dump: reading subscriptions
+pg_dump: reading subscription membership of tables
 pg_dump: reading large objects
 pg_dump: reading dependency data
 pg_dump: saving encoding = UTF8
-pg_dump: saving standard_conforming_strings = on
-pg_dump: saving search_path = 
+pg_dump: saving "standard_conforming_strings = on"
+pg_dump: saving "search_path = "
 pg_dump: saving database definition
 pg_dump: dumping contents of table "public.api_key"
 pg_dump: dumping contents of table "public.application"
@@ -162,9 +79,9 @@ pg_dump: dumping contents of table "public.organization_user"
 pg_dump: dumping contents of table "public.schema_migrations"
 pg_dump: dumping contents of table "public.service_profile"
 pg_dump: dumping contents of table "public.user"
-[2026-10-06 11:00:20]   OK - 88402 bytes - /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/03.chirpstack_v3/backups/chirpstack_as/chirpstack_as_20261006_110016.backup
-[2026-10-06 11:00:20] 
-[2026-10-06 11:00:20] [2/2] Gerando .sql (plain SQL)...
+[2026-11-09 18:04:40]   OK - 92984 bytes - /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/03.chirpstack_v3/backups/chirpstack_as/chirpstack_as_20261109_180423.backup
+[2026-11-09 18:04:40] 
+[2026-11-09 18:04:40] [2/2] Gerando .sql (plain SQL)...
 pg_dump: last built-in OID is 16383
 pg_dump: reading extensions
 pg_dump: identifying extension members
@@ -194,106 +111,32 @@ pg_dump: reading event triggers
 pg_dump: finding extension tables
 pg_dump: finding inheritance relationships
 pg_dump: reading column info for interesting tables
-pg_dump: finding the columns and types of table "public.api_key"
-pg_dump: finding default expressions of table "public.api_key"
-pg_dump: finding the columns and types of table "public.application"
-pg_dump: finding default expressions of table "public.application"
-pg_dump: finding the columns and types of table "public.code_migration"
-pg_dump: finding the columns and types of table "public.device"
-pg_dump: finding the columns and types of table "public.device_keys"
-pg_dump: finding the columns and types of table "public.device_multicast_group"
-pg_dump: finding the columns and types of table "public.device_profile"
-pg_dump: finding the columns and types of table "public.gateway"
-pg_dump: finding default expressions of table "public.gateway"
-pg_dump: finding the columns and types of table "public.gateway_ping"
-pg_dump: finding default expressions of table "public.gateway_ping"
-pg_dump: finding the columns and types of table "public.gateway_ping_rx"
-pg_dump: finding default expressions of table "public.gateway_ping_rx"
-pg_dump: finding the columns and types of table "public.gateway_profile"
-pg_dump: finding the columns and types of table "public.integration"
-pg_dump: finding default expressions of table "public.integration"
-pg_dump: finding the columns and types of table "public.multicast_group"
-pg_dump: finding the columns and types of table "public.network_server"
-pg_dump: finding default expressions of table "public.network_server"
-pg_dump: finding the columns and types of table "public.organization"
-pg_dump: finding default expressions of table "public.organization"
-pg_dump: finding the columns and types of table "public.organization_user"
-pg_dump: finding default expressions of table "public.organization_user"
-pg_dump: finding the columns and types of table "public.schema_migrations"
-pg_dump: finding the columns and types of table "public.service_profile"
-pg_dump: finding the columns and types of table "public.user"
-pg_dump: finding default expressions of table "public.user"
+pg_dump: finding table default expressions
 pg_dump: flagging inherited columns in subtables
 pg_dump: reading partitioning data
 pg_dump: reading indexes
-pg_dump: reading indexes for table "public.api_key"
-pg_dump: reading indexes for table "public.application"
-pg_dump: reading indexes for table "public.code_migration"
-pg_dump: reading indexes for table "public.device"
-pg_dump: reading indexes for table "public.device_keys"
-pg_dump: reading indexes for table "public.device_multicast_group"
-pg_dump: reading indexes for table "public.device_profile"
-pg_dump: reading indexes for table "public.gateway"
-pg_dump: reading indexes for table "public.gateway_ping"
-pg_dump: reading indexes for table "public.gateway_ping_rx"
-pg_dump: reading indexes for table "public.gateway_profile"
-pg_dump: reading indexes for table "public.integration"
-pg_dump: reading indexes for table "public.multicast_group"
-pg_dump: reading indexes for table "public.network_server"
-pg_dump: reading indexes for table "public.organization"
-pg_dump: reading indexes for table "public.organization_user"
-pg_dump: reading indexes for table "public.schema_migrations"
-pg_dump: reading indexes for table "public.service_profile"
-pg_dump: reading indexes for table "public.user"
 pg_dump: flagging indexes in partitioned tables
 pg_dump: reading extended statistics
 pg_dump: reading constraints
-pg_dump: reading foreign key constraints for table "public.api_key"
-pg_dump: reading foreign key constraints for table "public.application"
-pg_dump: reading foreign key constraints for table "public.device"
-pg_dump: reading foreign key constraints for table "public.device_keys"
-pg_dump: reading foreign key constraints for table "public.device_multicast_group"
-pg_dump: reading foreign key constraints for table "public.device_profile"
-pg_dump: reading foreign key constraints for table "public.gateway"
-pg_dump: reading foreign key constraints for table "public.gateway_ping"
-pg_dump: reading foreign key constraints for table "public.gateway_ping_rx"
-pg_dump: reading foreign key constraints for table "public.gateway_profile"
-pg_dump: reading foreign key constraints for table "public.integration"
-pg_dump: reading foreign key constraints for table "public.multicast_group"
-pg_dump: reading foreign key constraints for table "public.network_server"
-pg_dump: reading foreign key constraints for table "public.organization"
-pg_dump: reading foreign key constraints for table "public.organization_user"
-pg_dump: reading foreign key constraints for table "public.service_profile"
-pg_dump: reading foreign key constraints for table "public.user"
 pg_dump: reading triggers
-pg_dump: reading triggers for table "public.api_key"
-pg_dump: reading triggers for table "public.application"
-pg_dump: reading triggers for table "public.device"
-pg_dump: reading triggers for table "public.device_keys"
-pg_dump: reading triggers for table "public.device_multicast_group"
-pg_dump: reading triggers for table "public.device_profile"
-pg_dump: reading triggers for table "public.gateway"
-pg_dump: reading triggers for table "public.gateway_ping"
-pg_dump: reading triggers for table "public.gateway_ping_rx"
-pg_dump: reading triggers for table "public.gateway_profile"
-pg_dump: reading triggers for table "public.integration"
-pg_dump: reading triggers for table "public.multicast_group"
-pg_dump: reading triggers for table "public.network_server"
-pg_dump: reading triggers for table "public.organization"
-pg_dump: reading triggers for table "public.organization_user"
-pg_dump: reading triggers for table "public.service_profile"
-pg_dump: reading triggers for table "public.user"
 pg_dump: reading rewrite rules
 pg_dump: reading policies
 pg_dump: reading row-level security policies
 pg_dump: reading publications
-pg_dump: reading publication membership
+pg_dump: reading publication membership of tables
+pg_dump: reading publication membership of schemas
 pg_dump: reading subscriptions
+pg_dump: reading subscription membership of tables
 pg_dump: reading large objects
 pg_dump: reading dependency data
 pg_dump: saving encoding = UTF8
-pg_dump: saving standard_conforming_strings = on
-pg_dump: saving search_path = 
+pg_dump: saving "standard_conforming_strings = on"
+pg_dump: saving "search_path = "
+pg_dump: saving database definition
+pg_dump: dropping DATABASE chirpstack_as
+pg_dump: creating DATABASE "chirpstack_as"
+pg_dump: connecting to new database "chirpstack_as"
+pg_dump: creating SCHEMA "public"
 pg_dump: creating EXTENSION "hstore"
 pg_dump: creating COMMENT "EXTENSION hstore"
 pg_dump: creating EXTENSION "pg_trgm"
@@ -477,9 +320,10 @@ pg_dump: creating FK CONSTRAINT "public.organization_user organization_user_orga
 pg_dump: creating FK CONSTRAINT "public.organization_user organization_user_user_id_fkey"
 pg_dump: creating FK CONSTRAINT "public.service_profile service_profile_network_server_id_fkey"
 pg_dump: creating FK CONSTRAINT "public.service_profile service_profile_organization_id_fkey"
-[2026-10-06 11:00:21]   OK - 202043 bytes - /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/03.chirpstack_v3/backups/chirpstack_as/chirpstack_as_20261006_110016.sql
-[2026-10-06 11:00:21] 
-[2026-10-06 11:00:21] ============================================================
-[2026-10-06 11:00:21]  STATUS FINAL: SUCESSO
-[2026-10-06 11:00:21]  Log: /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/03.chirpstack_v3/backups/chirpstack_as/backup_20261006_110016.log
-[2026-10-06 11:00:21] ============================================================
+pg_dump: creating ACL "SCHEMA public"
+[2026-11-09 18:04:45]   OK - 218150 bytes - /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/03.chirpstack_v3/backups/chirpstack_as/chirpstack_as_20261109_180423.sql
+[2026-11-09 18:04:45] 
+[2026-11-09 18:04:45] ============================================================
+[2026-11-09 18:04:45]  STATUS FINAL (chirpstack_as): SUCESSO
+[2026-11-09 18:04:45]  Log: /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/03.chirpstack_v3/backups/chirpstack_as/backup_20261109_180423.log
+[2026-11-09 18:04:46] ============================================================

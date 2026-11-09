@@ -2,16 +2,17 @@
 -- PostgreSQL database dump
 --
 
-\restrict 0XtVtVTD91pBldX7NCaopAmMndPvrhPpaw1ttwEAfoX4P5cMSUiAeh0G17UNxaT
+\restrict l7bP1QvMOdEgp54lOO1OrOnSTZbzddEfgOmfPJ5h0x9xrFL1cXUdIp4tQlvVAuf
 
 -- Dumped from database version 14.24
--- Dumped by pg_dump version 14.24
+-- Dumped by pg_dump version 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
 
--- Started on 2026-10-06 13:59:48 UTC
+-- Started on 2026-11-09 18:04:29 -03
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -20,12 +21,49 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+DROP DATABASE IF EXISTS chirpstack_ns;
+--
+-- TOC entry 3586 (class 1262 OID 17054)
+-- Name: chirpstack_ns; Type: DATABASE; Schema: -; Owner: chirpstack_ns
+--
+
+CREATE DATABASE chirpstack_ns WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'C';
+
+
+ALTER DATABASE chirpstack_ns OWNER TO chirpstack_ns;
+
+\unrestrict l7bP1QvMOdEgp54lOO1OrOnSTZbzddEfgOmfPJ5h0x9xrFL1cXUdIp4tQlvVAuf
+\connect chirpstack_ns
+\restrict l7bP1QvMOdEgp54lOO1OrOnSTZbzddEfgOmfPJ5h0x9xrFL1cXUdIp4tQlvVAuf
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 5 (class 2615 OID 2200)
+-- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+-- *not* creating schema, since initdb creates it
+
+
+ALTER SCHEMA public OWNER TO postgres;
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
 --
--- TOC entry 209 (class 1259 OID 17055)
+-- TOC entry 211 (class 1259 OID 17055)
 -- Name: code_migration; Type: TABLE; Schema: public; Owner: chirpstack_ns
 --
 
@@ -38,7 +76,7 @@ CREATE TABLE public.code_migration (
 ALTER TABLE public.code_migration OWNER TO chirpstack_ns;
 
 --
--- TOC entry 210 (class 1259 OID 17060)
+-- TOC entry 212 (class 1259 OID 17060)
 -- Name: device; Type: TABLE; Schema: public; Owner: chirpstack_ns
 --
 
@@ -59,7 +97,7 @@ CREATE TABLE public.device (
 ALTER TABLE public.device OWNER TO chirpstack_ns;
 
 --
--- TOC entry 211 (class 1259 OID 17066)
+-- TOC entry 213 (class 1259 OID 17066)
 -- Name: device_activation; Type: TABLE; Schema: public; Owner: chirpstack_ns
 --
 
@@ -80,7 +118,7 @@ CREATE TABLE public.device_activation (
 ALTER TABLE public.device_activation OWNER TO chirpstack_ns;
 
 --
--- TOC entry 212 (class 1259 OID 17071)
+-- TOC entry 214 (class 1259 OID 17071)
 -- Name: device_activation_id_seq; Type: SEQUENCE; Schema: public; Owner: chirpstack_ns
 --
 
@@ -92,11 +130,11 @@ CREATE SEQUENCE public.device_activation_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.device_activation_id_seq OWNER TO chirpstack_ns;
+ALTER SEQUENCE public.device_activation_id_seq OWNER TO chirpstack_ns;
 
 --
--- TOC entry 3584 (class 0 OID 0)
--- Dependencies: 212
+-- TOC entry 3588 (class 0 OID 0)
+-- Dependencies: 214
 -- Name: device_activation_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chirpstack_ns
 --
 
@@ -104,7 +142,7 @@ ALTER SEQUENCE public.device_activation_id_seq OWNED BY public.device_activation
 
 
 --
--- TOC entry 213 (class 1259 OID 17072)
+-- TOC entry 215 (class 1259 OID 17072)
 -- Name: device_multicast_group; Type: TABLE; Schema: public; Owner: chirpstack_ns
 --
 
@@ -118,7 +156,7 @@ CREATE TABLE public.device_multicast_group (
 ALTER TABLE public.device_multicast_group OWNER TO chirpstack_ns;
 
 --
--- TOC entry 214 (class 1259 OID 17077)
+-- TOC entry 216 (class 1259 OID 17077)
 -- Name: device_profile; Type: TABLE; Schema: public; Owner: chirpstack_ns
 --
 
@@ -152,7 +190,7 @@ CREATE TABLE public.device_profile (
 ALTER TABLE public.device_profile OWNER TO chirpstack_ns;
 
 --
--- TOC entry 215 (class 1259 OID 17082)
+-- TOC entry 217 (class 1259 OID 17082)
 -- Name: device_queue; Type: TABLE; Schema: public; Owner: chirpstack_ns
 --
 
@@ -176,7 +214,7 @@ CREATE TABLE public.device_queue (
 ALTER TABLE public.device_queue OWNER TO chirpstack_ns;
 
 --
--- TOC entry 216 (class 1259 OID 17087)
+-- TOC entry 218 (class 1259 OID 17087)
 -- Name: device_queue_id_seq; Type: SEQUENCE; Schema: public; Owner: chirpstack_ns
 --
 
@@ -188,11 +226,11 @@ CREATE SEQUENCE public.device_queue_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.device_queue_id_seq OWNER TO chirpstack_ns;
+ALTER SEQUENCE public.device_queue_id_seq OWNER TO chirpstack_ns;
 
 --
--- TOC entry 3585 (class 0 OID 0)
--- Dependencies: 216
+-- TOC entry 3589 (class 0 OID 0)
+-- Dependencies: 218
 -- Name: device_queue_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chirpstack_ns
 --
 
@@ -200,7 +238,7 @@ ALTER SEQUENCE public.device_queue_id_seq OWNED BY public.device_queue.id;
 
 
 --
--- TOC entry 217 (class 1259 OID 17088)
+-- TOC entry 219 (class 1259 OID 17088)
 -- Name: gateway; Type: TABLE; Schema: public; Owner: chirpstack_ns
 --
 
@@ -222,7 +260,7 @@ CREATE TABLE public.gateway (
 ALTER TABLE public.gateway OWNER TO chirpstack_ns;
 
 --
--- TOC entry 218 (class 1259 OID 17093)
+-- TOC entry 220 (class 1259 OID 17093)
 -- Name: gateway_board; Type: TABLE; Schema: public; Owner: chirpstack_ns
 --
 
@@ -237,7 +275,7 @@ CREATE TABLE public.gateway_board (
 ALTER TABLE public.gateway_board OWNER TO chirpstack_ns;
 
 --
--- TOC entry 219 (class 1259 OID 17098)
+-- TOC entry 221 (class 1259 OID 17098)
 -- Name: gateway_profile; Type: TABLE; Schema: public; Owner: chirpstack_ns
 --
 
@@ -253,7 +291,7 @@ CREATE TABLE public.gateway_profile (
 ALTER TABLE public.gateway_profile OWNER TO chirpstack_ns;
 
 --
--- TOC entry 220 (class 1259 OID 17103)
+-- TOC entry 222 (class 1259 OID 17103)
 -- Name: gateway_profile_extra_channel; Type: TABLE; Schema: public; Owner: chirpstack_ns
 --
 
@@ -271,7 +309,7 @@ CREATE TABLE public.gateway_profile_extra_channel (
 ALTER TABLE public.gateway_profile_extra_channel OWNER TO chirpstack_ns;
 
 --
--- TOC entry 221 (class 1259 OID 17108)
+-- TOC entry 223 (class 1259 OID 17108)
 -- Name: gateway_profile_extra_channel_id_seq; Type: SEQUENCE; Schema: public; Owner: chirpstack_ns
 --
 
@@ -283,11 +321,11 @@ CREATE SEQUENCE public.gateway_profile_extra_channel_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.gateway_profile_extra_channel_id_seq OWNER TO chirpstack_ns;
+ALTER SEQUENCE public.gateway_profile_extra_channel_id_seq OWNER TO chirpstack_ns;
 
 --
--- TOC entry 3586 (class 0 OID 0)
--- Dependencies: 221
+-- TOC entry 3590 (class 0 OID 0)
+-- Dependencies: 223
 -- Name: gateway_profile_extra_channel_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chirpstack_ns
 --
 
@@ -295,7 +333,7 @@ ALTER SEQUENCE public.gateway_profile_extra_channel_id_seq OWNED BY public.gatew
 
 
 --
--- TOC entry 222 (class 1259 OID 17109)
+-- TOC entry 224 (class 1259 OID 17109)
 -- Name: multicast_group; Type: TABLE; Schema: public; Owner: chirpstack_ns
 --
 
@@ -318,7 +356,7 @@ CREATE TABLE public.multicast_group (
 ALTER TABLE public.multicast_group OWNER TO chirpstack_ns;
 
 --
--- TOC entry 223 (class 1259 OID 17114)
+-- TOC entry 225 (class 1259 OID 17114)
 -- Name: multicast_queue; Type: TABLE; Schema: public; Owner: chirpstack_ns
 --
 
@@ -340,7 +378,7 @@ CREATE TABLE public.multicast_queue (
 ALTER TABLE public.multicast_queue OWNER TO chirpstack_ns;
 
 --
--- TOC entry 224 (class 1259 OID 17119)
+-- TOC entry 226 (class 1259 OID 17119)
 -- Name: multicast_queue_id_seq; Type: SEQUENCE; Schema: public; Owner: chirpstack_ns
 --
 
@@ -352,11 +390,11 @@ CREATE SEQUENCE public.multicast_queue_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.multicast_queue_id_seq OWNER TO chirpstack_ns;
+ALTER SEQUENCE public.multicast_queue_id_seq OWNER TO chirpstack_ns;
 
 --
--- TOC entry 3587 (class 0 OID 0)
--- Dependencies: 224
+-- TOC entry 3591 (class 0 OID 0)
+-- Dependencies: 226
 -- Name: multicast_queue_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chirpstack_ns
 --
 
@@ -364,7 +402,7 @@ ALTER SEQUENCE public.multicast_queue_id_seq OWNED BY public.multicast_queue.id;
 
 
 --
--- TOC entry 225 (class 1259 OID 17120)
+-- TOC entry 227 (class 1259 OID 17120)
 -- Name: routing_profile; Type: TABLE; Schema: public; Owner: chirpstack_ns
 --
 
@@ -382,7 +420,7 @@ CREATE TABLE public.routing_profile (
 ALTER TABLE public.routing_profile OWNER TO chirpstack_ns;
 
 --
--- TOC entry 226 (class 1259 OID 17128)
+-- TOC entry 228 (class 1259 OID 17128)
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: chirpstack_ns
 --
 
@@ -395,7 +433,7 @@ CREATE TABLE public.schema_migrations (
 ALTER TABLE public.schema_migrations OWNER TO chirpstack_ns;
 
 --
--- TOC entry 227 (class 1259 OID 17131)
+-- TOC entry 229 (class 1259 OID 17131)
 -- Name: service_profile; Type: TABLE; Schema: public; Owner: chirpstack_ns
 --
 
@@ -429,7 +467,7 @@ CREATE TABLE public.service_profile (
 ALTER TABLE public.service_profile OWNER TO chirpstack_ns;
 
 --
--- TOC entry 3348 (class 2604 OID 17137)
+-- TOC entry 3350 (class 2604 OID 17137)
 -- Name: device_activation id; Type: DEFAULT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -437,7 +475,7 @@ ALTER TABLE ONLY public.device_activation ALTER COLUMN id SET DEFAULT nextval('p
 
 
 --
--- TOC entry 3349 (class 2604 OID 17138)
+-- TOC entry 3351 (class 2604 OID 17138)
 -- Name: device_queue id; Type: DEFAULT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -445,7 +483,7 @@ ALTER TABLE ONLY public.device_queue ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 3350 (class 2604 OID 17139)
+-- TOC entry 3352 (class 2604 OID 17139)
 -- Name: gateway_profile_extra_channel id; Type: DEFAULT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -453,7 +491,7 @@ ALTER TABLE ONLY public.gateway_profile_extra_channel ALTER COLUMN id SET DEFAUL
 
 
 --
--- TOC entry 3351 (class 2604 OID 17140)
+-- TOC entry 3353 (class 2604 OID 17140)
 -- Name: multicast_queue id; Type: DEFAULT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -461,8 +499,8 @@ ALTER TABLE ONLY public.multicast_queue ALTER COLUMN id SET DEFAULT nextval('pub
 
 
 --
--- TOC entry 3560 (class 0 OID 17055)
--- Dependencies: 209
+-- TOC entry 3562 (class 0 OID 17055)
+-- Dependencies: 211
 -- Data for Name: code_migration; Type: TABLE DATA; Schema: public; Owner: chirpstack_ns
 --
 
@@ -473,20 +511,22 @@ migrate_to_golang_migrate	2026-10-06 13:32:31.337465+00
 
 
 --
--- TOC entry 3561 (class 0 OID 17060)
--- Dependencies: 210
+-- TOC entry 3563 (class 0 OID 17060)
+-- Dependencies: 212
 -- Data for Name: device; Type: TABLE DATA; Schema: public; Owner: chirpstack_ns
 --
 
 COPY public.device (dev_eui, created_at, updated_at, device_profile_id, service_profile_id, routing_profile_id, skip_fcnt_check, reference_altitude, mode, is_disabled) FROM stdin;
 \\x08fdbe4bc604e8f8	2026-05-17 14:44:05.64873+00	2026-05-17 14:44:30.304817+00	1ba78642-7e07-4f89-8dd9-4e2f7a025348	3dd33931-1cf7-4a56-8479-e88afa94a9e5	6d5db27e-4ce2-4b3b-b5d7-91f069397878	f	0	A	f
 \\xf38df5e5a31e63de	2026-05-17 14:45:29.068031+00	2026-05-17 14:45:29.068031+00	014c944b-cfa0-472d-94df-fd6c18843572	3dd33931-1cf7-4a56-8479-e88afa94a9e5	6d5db27e-4ce2-4b3b-b5d7-91f069397878	f	0	 	f
+\\x5f904b22e1ce458c	2026-11-09 20:36:18.611133+00	2026-11-09 20:36:39.745378+00	1ba78642-7e07-4f89-8dd9-4e2f7a025348	3dd33931-1cf7-4a56-8479-e88afa94a9e5	6d5db27e-4ce2-4b3b-b5d7-91f069397878	f	0	A	f
+\\x0379385c33313636	2026-11-09 20:37:38.843345+00	2026-11-09 20:37:38.843345+00	014c944b-cfa0-472d-94df-fd6c18843572	3dd33931-1cf7-4a56-8479-e88afa94a9e5	6d5db27e-4ce2-4b3b-b5d7-91f069397878	f	0	 	f
 \.
 
 
 --
--- TOC entry 3562 (class 0 OID 17066)
--- Dependencies: 211
+-- TOC entry 3564 (class 0 OID 17066)
+-- Dependencies: 213
 -- Data for Name: device_activation; Type: TABLE DATA; Schema: public; Owner: chirpstack_ns
 --
 
@@ -495,8 +535,8 @@ COPY public.device_activation (id, created_at, dev_eui, join_eui, dev_addr, f_nw
 
 
 --
--- TOC entry 3564 (class 0 OID 17072)
--- Dependencies: 213
+-- TOC entry 3566 (class 0 OID 17072)
+-- Dependencies: 215
 -- Data for Name: device_multicast_group; Type: TABLE DATA; Schema: public; Owner: chirpstack_ns
 --
 
@@ -505,26 +545,26 @@ COPY public.device_multicast_group (dev_eui, multicast_group_id, created_at) FRO
 
 
 --
--- TOC entry 3565 (class 0 OID 17077)
--- Dependencies: 214
+-- TOC entry 3567 (class 0 OID 17077)
+-- Dependencies: 216
 -- Data for Name: device_profile; Type: TABLE DATA; Schema: public; Owner: chirpstack_ns
 --
 
 COPY public.device_profile (created_at, updated_at, device_profile_id, supports_class_b, class_b_timeout, ping_slot_period, ping_slot_dr, ping_slot_freq, supports_class_c, class_c_timeout, mac_version, reg_params_revision, rx_delay_1, rx_dr_offset_1, rx_data_rate_2, rx_freq_2, factory_preset_freqs, max_eirp, max_duty_cycle, supports_join, rf_region, supports_32bit_fcnt, adr_algorithm_id) FROM stdin;
-2026-05-10 15:49:27.074432+00	2026-05-10 15:49:27.074432+00	dbace6c1-ee3b-4b64-a737-499589bcad82	f	0	0	0	0	t	5	1.0.3	A	0	0	0	0	\N	30	0	t	AU915	f	default
-2026-05-10 15:50:43.506122+00	2026-05-10 15:50:43.506122+00	edb8165c-2f2b-49ff-8dd9-448484c1f92a	f	0	0	0	0	t	5	1.0.3	A	0	0	0	0	\N	30	0	t	AU915	f	default
-2026-05-10 15:51:16.574469+00	2026-05-10 15:51:16.574469+00	47dbd59c-dbeb-4341-a0ee-78ac23caa698	f	0	0	0	0	t	5	1.0.3	B	0	0	0	0	\N	30	0	t	AU915	f	default
-2026-05-01 19:43:58.139804+00	2026-05-11 18:40:21.617826+00	d39827e9-1e0c-4f90-94c3-04df5fe12a25	f	0	0	0	0	t	5	1.0.3	A	1	0	8	923300000	{916800000}	30	0	f	AU915	f	default
-2026-05-01 19:45:40.618656+00	2026-05-11 18:40:31.887282+00	1cf78205-847a-46f3-acef-8f55842431c9	f	0	0	0	0	t	5	1.0.3	B	1	0	8	923300000	{916800000}	30	0	f	AU915	f	default
-2026-05-01 19:44:53.824646+00	2026-05-11 18:40:49.86068+00	098744b6-72ba-494e-b276-2a5b831abde5	f	0	0	0	0	t	5	1.0.3	A	1	0	8	923300000	{916800000}	30	0	f	AU915	f	default
-2026-05-01 19:46:21.938333+00	2026-05-16 14:19:52.700534+00	1ba78642-7e07-4f89-8dd9-4e2f7a025348	f	0	0	0	0	f	5	1.0.3	B	1	0	8	923300000	{916800000}	30	0	f	AU915	f	default
-2026-05-10 15:51:49.822952+00	2026-05-16 14:19:57.941032+00	014c944b-cfa0-472d-94df-fd6c18843572	f	0	0	0	0	f	5	1.0.3	B	0	0	0	0	\N	30	0	t	AU915	f	default
+2026-05-10 15:51:49.822952+00	2026-11-09 20:32:33.288472+00	014c944b-cfa0-472d-94df-fd6c18843572	f	0	0	0	0	f	0	1.0.3	B	0	0	0	0	\N	30	0	t	AU915	f	default
+2026-05-01 19:46:21.938333+00	2026-11-09 20:32:37.357381+00	1ba78642-7e07-4f89-8dd9-4e2f7a025348	f	0	0	0	0	f	0	1.0.3	B	1	0	8	923300000	{916800000}	30	0	f	AU915	f	default
+2026-05-10 15:50:43.506122+00	2026-11-09 20:32:42.124938+00	edb8165c-2f2b-49ff-8dd9-448484c1f92a	f	0	0	0	0	t	0	1.0.3	A	0	0	0	0	\N	30	0	t	AU915	f	default
+2026-05-01 19:43:58.139804+00	2026-11-09 20:33:13.461634+00	d39827e9-1e0c-4f90-94c3-04df5fe12a25	f	0	0	0	0	t	0	1.0.3	A	1	0	8	923300000	{916800000}	30	0	f	AU915	f	default
+2026-05-10 15:49:27.074432+00	2026-11-09 20:33:18.226234+00	dbace6c1-ee3b-4b64-a737-499589bcad82	f	0	0	0	0	t	0	1.0.3	A	0	0	0	0	\N	30	0	t	AU915	f	default
+2026-05-01 19:45:40.618656+00	2026-11-09 20:33:22.266959+00	1cf78205-847a-46f3-acef-8f55842431c9	f	0	0	0	0	t	0	1.0.3	B	1	0	8	923300000	{916800000}	30	0	f	AU915	f	default
+2026-05-10 15:51:16.574469+00	2026-11-09 20:33:25.757477+00	47dbd59c-dbeb-4341-a0ee-78ac23caa698	f	0	0	0	0	t	0	1.0.3	B	0	0	0	0	\N	30	0	t	AU915	f	default
+2026-05-01 19:44:53.824646+00	2026-11-09 20:33:29.754077+00	098744b6-72ba-494e-b276-2a5b831abde5	f	0	0	0	0	t	0	1.0.3	A	1	0	8	923300000	{916800000}	30	0	f	AU915	f	default
 \.
 
 
 --
--- TOC entry 3566 (class 0 OID 17082)
--- Dependencies: 215
+-- TOC entry 3568 (class 0 OID 17082)
+-- Dependencies: 217
 -- Data for Name: device_queue; Type: TABLE DATA; Schema: public; Owner: chirpstack_ns
 --
 
@@ -533,24 +573,26 @@ COPY public.device_queue (id, created_at, updated_at, dev_eui, frm_payload, f_cn
 
 
 --
--- TOC entry 3568 (class 0 OID 17088)
--- Dependencies: 217
+-- TOC entry 3570 (class 0 OID 17088)
+-- Dependencies: 219
 -- Data for Name: gateway; Type: TABLE DATA; Schema: public; Owner: chirpstack_ns
 --
 
 COPY public.gateway (gateway_id, created_at, updated_at, first_seen_at, last_seen_at, location, altitude, gateway_profile_id, routing_profile_id, tls_cert, service_profile_id) FROM stdin;
-\\xb827ebfffea04db6	2026-05-01 19:47:14.933522+00	2026-05-01 19:47:14.933522+00	\N	\N	(51.482594,-0.007661)	0	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	6d5db27e-4ce2-4b3b-b5d7-91f069397878	\\x	3dd33931-1cf7-4a56-8479-e88afa94a9e5
-\\xb827ebfffe158993	2026-05-01 19:47:40.941562+00	2026-05-01 19:47:40.941562+00	\N	\N	(51.482594,-0.007661)	0	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	6d5db27e-4ce2-4b3b-b5d7-91f069397878	\\x	3dd33931-1cf7-4a56-8479-e88afa94a9e5
-\\xb827ebfffef81e69	2026-05-01 19:48:08.120986+00	2026-05-01 19:48:08.120986+00	\N	\N	(51.482594,-0.007661)	0	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	6d5db27e-4ce2-4b3b-b5d7-91f069397878	\\x	3dd33931-1cf7-4a56-8479-e88afa94a9e5
-\\xb827ebfffe78ffce	2026-05-01 19:48:38.204434+00	2026-05-01 19:48:38.204434+00	\N	\N	(51.482594,-0.007661)	0	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	6d5db27e-4ce2-4b3b-b5d7-91f069397878	\\x	3dd33931-1cf7-4a56-8479-e88afa94a9e5
-\\xe45f01fffe10e12e	2026-05-01 19:49:17.46373+00	2026-05-01 19:49:17.46373+00	\N	\N	(51.482594,-0.007661)	0	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	6d5db27e-4ce2-4b3b-b5d7-91f069397878	\\x	3dd33931-1cf7-4a56-8479-e88afa94a9e5
 \\xa840411b7dcc4150	2026-05-01 19:49:45.276535+00	2026-05-01 19:49:45.276535+00	\N	\N	(51.482594,-0.007661)	0	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	6d5db27e-4ce2-4b3b-b5d7-91f069397878	\\x	3dd33931-1cf7-4a56-8479-e88afa94a9e5
+\\xe45f01fffe10e12e	2026-05-01 19:49:17.46373+00	2026-11-09 20:26:52.39603+00	\N	\N	(51.482594,-0.007661)	0	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	6d5db27e-4ce2-4b3b-b5d7-91f069397878	\\x	3dd33931-1cf7-4a56-8479-e88afa94a9e5
+\\xb827ebfffea04db6	2026-05-01 19:47:14.933522+00	2026-11-09 20:27:03.783995+00	\N	\N	(51.482594,-0.007661)	0	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	6d5db27e-4ce2-4b3b-b5d7-91f069397878	\\x	3dd33931-1cf7-4a56-8479-e88afa94a9e5
+\\xb827ebfffe158993	2026-05-01 19:47:40.941562+00	2026-11-09 20:27:13.415187+00	\N	\N	(51.482594,-0.007661)	0	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	6d5db27e-4ce2-4b3b-b5d7-91f069397878	\\x	3dd33931-1cf7-4a56-8479-e88afa94a9e5
+\\xb827ebfffef81e69	2026-05-01 19:48:08.120986+00	2026-11-09 20:27:23.043714+00	\N	\N	(51.482594,-0.007661)	0	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	6d5db27e-4ce2-4b3b-b5d7-91f069397878	\\x	3dd33931-1cf7-4a56-8479-e88afa94a9e5
+\\xb827ebfffe78ffce	2026-05-01 19:48:38.204434+00	2026-11-09 20:27:31.728552+00	\N	\N	(51.482594,-0.007661)	0	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	6d5db27e-4ce2-4b3b-b5d7-91f069397878	\\x	3dd33931-1cf7-4a56-8479-e88afa94a9e5
+\\xa842e3fffe90a3d4	2026-11-09 20:34:16.197136+00	2026-11-09 20:34:16.197136+00	\N	\N	(-3.735552,-40.9894912)	0	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	6d5db27e-4ce2-4b3b-b5d7-91f069397878	\\x	3dd33931-1cf7-4a56-8479-e88afa94a9e5
+\\xa842e3fffe90a3d5	2026-11-09 20:34:54.73541+00	2026-11-09 20:34:54.73541+00	\N	\N	(-3.735552,-40.9894912)	0	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	6d5db27e-4ce2-4b3b-b5d7-91f069397878	\\x	3dd33931-1cf7-4a56-8479-e88afa94a9e5
 \.
 
 
 --
--- TOC entry 3569 (class 0 OID 17093)
--- Dependencies: 218
+-- TOC entry 3571 (class 0 OID 17093)
+-- Dependencies: 220
 -- Data for Name: gateway_board; Type: TABLE DATA; Schema: public; Owner: chirpstack_ns
 --
 
@@ -559,8 +601,8 @@ COPY public.gateway_board (id, gateway_id, fpga_id, fine_timestamp_key) FROM std
 
 
 --
--- TOC entry 3570 (class 0 OID 17098)
--- Dependencies: 219
+-- TOC entry 3572 (class 0 OID 17098)
+-- Dependencies: 221
 -- Data for Name: gateway_profile; Type: TABLE DATA; Schema: public; Owner: chirpstack_ns
 --
 
@@ -571,8 +613,8 @@ COPY public.gateway_profile (gateway_profile_id, created_at, updated_at, channel
 
 
 --
--- TOC entry 3571 (class 0 OID 17103)
--- Dependencies: 220
+-- TOC entry 3573 (class 0 OID 17103)
+-- Dependencies: 222
 -- Data for Name: gateway_profile_extra_channel; Type: TABLE DATA; Schema: public; Owner: chirpstack_ns
 --
 
@@ -581,8 +623,8 @@ COPY public.gateway_profile_extra_channel (id, gateway_profile_id, modulation, f
 
 
 --
--- TOC entry 3573 (class 0 OID 17109)
--- Dependencies: 222
+-- TOC entry 3575 (class 0 OID 17109)
+-- Dependencies: 224
 -- Data for Name: multicast_group; Type: TABLE DATA; Schema: public; Owner: chirpstack_ns
 --
 
@@ -591,8 +633,8 @@ COPY public.multicast_group (id, created_at, updated_at, mc_addr, mc_nwk_s_key, 
 
 
 --
--- TOC entry 3574 (class 0 OID 17114)
--- Dependencies: 223
+-- TOC entry 3576 (class 0 OID 17114)
+-- Dependencies: 225
 -- Data for Name: multicast_queue; Type: TABLE DATA; Schema: public; Owner: chirpstack_ns
 --
 
@@ -601,8 +643,8 @@ COPY public.multicast_queue (id, created_at, schedule_at, emit_at_time_since_gps
 
 
 --
--- TOC entry 3576 (class 0 OID 17120)
--- Dependencies: 225
+-- TOC entry 3578 (class 0 OID 17120)
+-- Dependencies: 227
 -- Data for Name: routing_profile; Type: TABLE DATA; Schema: public; Owner: chirpstack_ns
 --
 
@@ -612,8 +654,8 @@ COPY public.routing_profile (created_at, updated_at, routing_profile_id, as_id, 
 
 
 --
--- TOC entry 3577 (class 0 OID 17128)
--- Dependencies: 226
+-- TOC entry 3579 (class 0 OID 17128)
+-- Dependencies: 228
 -- Data for Name: schema_migrations; Type: TABLE DATA; Schema: public; Owner: chirpstack_ns
 --
 
@@ -623,8 +665,8 @@ COPY public.schema_migrations (version, dirty) FROM stdin;
 
 
 --
--- TOC entry 3578 (class 0 OID 17131)
--- Dependencies: 227
+-- TOC entry 3580 (class 0 OID 17131)
+-- Dependencies: 229
 -- Data for Name: service_profile; Type: TABLE DATA; Schema: public; Owner: chirpstack_ns
 --
 
@@ -634,8 +676,8 @@ COPY public.service_profile (created_at, updated_at, service_profile_id, ul_rate
 
 
 --
--- TOC entry 3588 (class 0 OID 0)
--- Dependencies: 212
+-- TOC entry 3592 (class 0 OID 0)
+-- Dependencies: 214
 -- Name: device_activation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chirpstack_ns
 --
 
@@ -643,8 +685,8 @@ SELECT pg_catalog.setval('public.device_activation_id_seq', 1, false);
 
 
 --
--- TOC entry 3589 (class 0 OID 0)
--- Dependencies: 216
+-- TOC entry 3593 (class 0 OID 0)
+-- Dependencies: 218
 -- Name: device_queue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chirpstack_ns
 --
 
@@ -652,8 +694,8 @@ SELECT pg_catalog.setval('public.device_queue_id_seq', 1, false);
 
 
 --
--- TOC entry 3590 (class 0 OID 0)
--- Dependencies: 221
+-- TOC entry 3594 (class 0 OID 0)
+-- Dependencies: 223
 -- Name: gateway_profile_extra_channel_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chirpstack_ns
 --
 
@@ -661,8 +703,8 @@ SELECT pg_catalog.setval('public.gateway_profile_extra_channel_id_seq', 1, false
 
 
 --
--- TOC entry 3591 (class 0 OID 0)
--- Dependencies: 224
+-- TOC entry 3595 (class 0 OID 0)
+-- Dependencies: 226
 -- Name: multicast_queue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chirpstack_ns
 --
 
@@ -670,7 +712,7 @@ SELECT pg_catalog.setval('public.multicast_queue_id_seq', 1, false);
 
 
 --
--- TOC entry 3357 (class 2606 OID 17142)
+-- TOC entry 3359 (class 2606 OID 17142)
 -- Name: code_migration code_migration_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -679,7 +721,7 @@ ALTER TABLE ONLY public.code_migration
 
 
 --
--- TOC entry 3365 (class 2606 OID 17144)
+-- TOC entry 3367 (class 2606 OID 17144)
 -- Name: device_activation device_activation_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -688,7 +730,7 @@ ALTER TABLE ONLY public.device_activation
 
 
 --
--- TOC entry 3369 (class 2606 OID 17146)
+-- TOC entry 3371 (class 2606 OID 17146)
 -- Name: device_multicast_group device_multicast_group_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -697,7 +739,7 @@ ALTER TABLE ONLY public.device_multicast_group
 
 
 --
--- TOC entry 3359 (class 2606 OID 17148)
+-- TOC entry 3361 (class 2606 OID 17148)
 -- Name: device device_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -706,7 +748,7 @@ ALTER TABLE ONLY public.device
 
 
 --
--- TOC entry 3371 (class 2606 OID 17150)
+-- TOC entry 3373 (class 2606 OID 17150)
 -- Name: device_profile device_profile_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -715,7 +757,7 @@ ALTER TABLE ONLY public.device_profile
 
 
 --
--- TOC entry 3373 (class 2606 OID 17152)
+-- TOC entry 3375 (class 2606 OID 17152)
 -- Name: device_queue device_queue_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -724,7 +766,7 @@ ALTER TABLE ONLY public.device_queue
 
 
 --
--- TOC entry 3384 (class 2606 OID 17154)
+-- TOC entry 3386 (class 2606 OID 17154)
 -- Name: gateway_board gateway_board_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -733,7 +775,7 @@ ALTER TABLE ONLY public.gateway_board
 
 
 --
--- TOC entry 3379 (class 2606 OID 17156)
+-- TOC entry 3381 (class 2606 OID 17156)
 -- Name: gateway gateway_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -742,7 +784,7 @@ ALTER TABLE ONLY public.gateway
 
 
 --
--- TOC entry 3388 (class 2606 OID 17158)
+-- TOC entry 3390 (class 2606 OID 17158)
 -- Name: gateway_profile_extra_channel gateway_profile_extra_channel_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -751,7 +793,7 @@ ALTER TABLE ONLY public.gateway_profile_extra_channel
 
 
 --
--- TOC entry 3386 (class 2606 OID 17160)
+-- TOC entry 3388 (class 2606 OID 17160)
 -- Name: gateway_profile gateway_profile_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -760,7 +802,7 @@ ALTER TABLE ONLY public.gateway_profile
 
 
 --
--- TOC entry 3393 (class 2606 OID 17162)
+-- TOC entry 3395 (class 2606 OID 17162)
 -- Name: multicast_group multicast_group_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -769,7 +811,7 @@ ALTER TABLE ONLY public.multicast_group
 
 
 --
--- TOC entry 3398 (class 2606 OID 17164)
+-- TOC entry 3400 (class 2606 OID 17164)
 -- Name: multicast_queue multicast_queue_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -778,7 +820,7 @@ ALTER TABLE ONLY public.multicast_queue
 
 
 --
--- TOC entry 3400 (class 2606 OID 17166)
+-- TOC entry 3402 (class 2606 OID 17166)
 -- Name: routing_profile routing_profile_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -787,7 +829,7 @@ ALTER TABLE ONLY public.routing_profile
 
 
 --
--- TOC entry 3402 (class 2606 OID 17168)
+-- TOC entry 3404 (class 2606 OID 17168)
 -- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -796,7 +838,7 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
--- TOC entry 3404 (class 2606 OID 17170)
+-- TOC entry 3406 (class 2606 OID 17170)
 -- Name: service_profile service_profile_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -805,7 +847,7 @@ ALTER TABLE ONLY public.service_profile
 
 
 --
--- TOC entry 3366 (class 1259 OID 17171)
+-- TOC entry 3368 (class 1259 OID 17171)
 -- Name: idx_device_activation_dev_eui; Type: INDEX; Schema: public; Owner: chirpstack_ns
 --
 
@@ -813,7 +855,7 @@ CREATE INDEX idx_device_activation_dev_eui ON public.device_activation USING btr
 
 
 --
--- TOC entry 3367 (class 1259 OID 17172)
+-- TOC entry 3369 (class 1259 OID 17172)
 -- Name: idx_device_activation_nonce_lookup; Type: INDEX; Schema: public; Owner: chirpstack_ns
 --
 
@@ -821,7 +863,7 @@ CREATE INDEX idx_device_activation_nonce_lookup ON public.device_activation USIN
 
 
 --
--- TOC entry 3360 (class 1259 OID 17173)
+-- TOC entry 3362 (class 1259 OID 17173)
 -- Name: idx_device_device_profile_id; Type: INDEX; Schema: public; Owner: chirpstack_ns
 --
 
@@ -829,7 +871,7 @@ CREATE INDEX idx_device_device_profile_id ON public.device USING btree (device_p
 
 
 --
--- TOC entry 3361 (class 1259 OID 17174)
+-- TOC entry 3363 (class 1259 OID 17174)
 -- Name: idx_device_mode; Type: INDEX; Schema: public; Owner: chirpstack_ns
 --
 
@@ -837,7 +879,7 @@ CREATE INDEX idx_device_mode ON public.device USING btree (mode);
 
 
 --
--- TOC entry 3374 (class 1259 OID 17175)
+-- TOC entry 3376 (class 1259 OID 17175)
 -- Name: idx_device_queue_confirmed; Type: INDEX; Schema: public; Owner: chirpstack_ns
 --
 
@@ -845,7 +887,7 @@ CREATE INDEX idx_device_queue_confirmed ON public.device_queue USING btree (conf
 
 
 --
--- TOC entry 3375 (class 1259 OID 17176)
+-- TOC entry 3377 (class 1259 OID 17176)
 -- Name: idx_device_queue_dev_eui; Type: INDEX; Schema: public; Owner: chirpstack_ns
 --
 
@@ -853,7 +895,7 @@ CREATE INDEX idx_device_queue_dev_eui ON public.device_queue USING btree (dev_eu
 
 
 --
--- TOC entry 3376 (class 1259 OID 17177)
+-- TOC entry 3378 (class 1259 OID 17177)
 -- Name: idx_device_queue_emit_at_time_since_gps_epoch; Type: INDEX; Schema: public; Owner: chirpstack_ns
 --
 
@@ -861,7 +903,7 @@ CREATE INDEX idx_device_queue_emit_at_time_since_gps_epoch ON public.device_queu
 
 
 --
--- TOC entry 3377 (class 1259 OID 17178)
+-- TOC entry 3379 (class 1259 OID 17178)
 -- Name: idx_device_queue_timeout_after; Type: INDEX; Schema: public; Owner: chirpstack_ns
 --
 
@@ -869,7 +911,7 @@ CREATE INDEX idx_device_queue_timeout_after ON public.device_queue USING btree (
 
 
 --
--- TOC entry 3362 (class 1259 OID 17179)
+-- TOC entry 3364 (class 1259 OID 17179)
 -- Name: idx_device_routing_profile_id; Type: INDEX; Schema: public; Owner: chirpstack_ns
 --
 
@@ -877,7 +919,7 @@ CREATE INDEX idx_device_routing_profile_id ON public.device USING btree (routing
 
 
 --
--- TOC entry 3363 (class 1259 OID 17180)
+-- TOC entry 3365 (class 1259 OID 17180)
 -- Name: idx_device_service_profile_id; Type: INDEX; Schema: public; Owner: chirpstack_ns
 --
 
@@ -885,7 +927,7 @@ CREATE INDEX idx_device_service_profile_id ON public.device USING btree (service
 
 
 --
--- TOC entry 3380 (class 1259 OID 17181)
+-- TOC entry 3382 (class 1259 OID 17181)
 -- Name: idx_gateway_gateway_profile_id; Type: INDEX; Schema: public; Owner: chirpstack_ns
 --
 
@@ -893,7 +935,7 @@ CREATE INDEX idx_gateway_gateway_profile_id ON public.gateway USING btree (gatew
 
 
 --
--- TOC entry 3389 (class 1259 OID 17182)
+-- TOC entry 3391 (class 1259 OID 17182)
 -- Name: idx_gateway_profile_extra_channel_gw_profile_id; Type: INDEX; Schema: public; Owner: chirpstack_ns
 --
 
@@ -901,7 +943,7 @@ CREATE INDEX idx_gateway_profile_extra_channel_gw_profile_id ON public.gateway_p
 
 
 --
--- TOC entry 3381 (class 1259 OID 17183)
+-- TOC entry 3383 (class 1259 OID 17183)
 -- Name: idx_gateway_routing_profile_id; Type: INDEX; Schema: public; Owner: chirpstack_ns
 --
 
@@ -909,7 +951,7 @@ CREATE INDEX idx_gateway_routing_profile_id ON public.gateway USING btree (routi
 
 
 --
--- TOC entry 3382 (class 1259 OID 17184)
+-- TOC entry 3384 (class 1259 OID 17184)
 -- Name: idx_gateway_service_profile_id; Type: INDEX; Schema: public; Owner: chirpstack_ns
 --
 
@@ -917,7 +959,7 @@ CREATE INDEX idx_gateway_service_profile_id ON public.gateway USING btree (servi
 
 
 --
--- TOC entry 3390 (class 1259 OID 17185)
+-- TOC entry 3392 (class 1259 OID 17185)
 -- Name: idx_multicast_group_routing_profile_id; Type: INDEX; Schema: public; Owner: chirpstack_ns
 --
 
@@ -925,7 +967,7 @@ CREATE INDEX idx_multicast_group_routing_profile_id ON public.multicast_group US
 
 
 --
--- TOC entry 3391 (class 1259 OID 17186)
+-- TOC entry 3393 (class 1259 OID 17186)
 -- Name: idx_multicast_group_service_profile_id; Type: INDEX; Schema: public; Owner: chirpstack_ns
 --
 
@@ -933,7 +975,7 @@ CREATE INDEX idx_multicast_group_service_profile_id ON public.multicast_group US
 
 
 --
--- TOC entry 3394 (class 1259 OID 17187)
+-- TOC entry 3396 (class 1259 OID 17187)
 -- Name: idx_multicast_queue_emit_at_time_since_gps_epoch; Type: INDEX; Schema: public; Owner: chirpstack_ns
 --
 
@@ -941,7 +983,7 @@ CREATE INDEX idx_multicast_queue_emit_at_time_since_gps_epoch ON public.multicas
 
 
 --
--- TOC entry 3395 (class 1259 OID 17188)
+-- TOC entry 3397 (class 1259 OID 17188)
 -- Name: idx_multicast_queue_multicast_group_id; Type: INDEX; Schema: public; Owner: chirpstack_ns
 --
 
@@ -949,7 +991,7 @@ CREATE INDEX idx_multicast_queue_multicast_group_id ON public.multicast_queue US
 
 
 --
--- TOC entry 3396 (class 1259 OID 17189)
+-- TOC entry 3398 (class 1259 OID 17189)
 -- Name: idx_multicast_queue_schedule_at; Type: INDEX; Schema: public; Owner: chirpstack_ns
 --
 
@@ -957,7 +999,7 @@ CREATE INDEX idx_multicast_queue_schedule_at ON public.multicast_queue USING btr
 
 
 --
--- TOC entry 3408 (class 2606 OID 17190)
+-- TOC entry 3410 (class 2606 OID 17190)
 -- Name: device_activation device_activation_dev_eui_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -966,7 +1008,7 @@ ALTER TABLE ONLY public.device_activation
 
 
 --
--- TOC entry 3405 (class 2606 OID 17195)
+-- TOC entry 3407 (class 2606 OID 17195)
 -- Name: device device_device_profile_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -975,7 +1017,7 @@ ALTER TABLE ONLY public.device
 
 
 --
--- TOC entry 3409 (class 2606 OID 17200)
+-- TOC entry 3411 (class 2606 OID 17200)
 -- Name: device_multicast_group device_multicast_group_dev_eui_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -984,7 +1026,7 @@ ALTER TABLE ONLY public.device_multicast_group
 
 
 --
--- TOC entry 3410 (class 2606 OID 17205)
+-- TOC entry 3412 (class 2606 OID 17205)
 -- Name: device_multicast_group device_multicast_group_multicast_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -993,7 +1035,7 @@ ALTER TABLE ONLY public.device_multicast_group
 
 
 --
--- TOC entry 3411 (class 2606 OID 17210)
+-- TOC entry 3413 (class 2606 OID 17210)
 -- Name: device_queue device_queue_dev_eui_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -1002,7 +1044,7 @@ ALTER TABLE ONLY public.device_queue
 
 
 --
--- TOC entry 3406 (class 2606 OID 17215)
+-- TOC entry 3408 (class 2606 OID 17215)
 -- Name: device device_routing_profile_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -1011,7 +1053,7 @@ ALTER TABLE ONLY public.device
 
 
 --
--- TOC entry 3407 (class 2606 OID 17220)
+-- TOC entry 3409 (class 2606 OID 17220)
 -- Name: device device_service_profile_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -1020,7 +1062,7 @@ ALTER TABLE ONLY public.device
 
 
 --
--- TOC entry 3415 (class 2606 OID 17225)
+-- TOC entry 3417 (class 2606 OID 17225)
 -- Name: gateway_board gateway_board_gateway_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -1029,7 +1071,7 @@ ALTER TABLE ONLY public.gateway_board
 
 
 --
--- TOC entry 3412 (class 2606 OID 17230)
+-- TOC entry 3414 (class 2606 OID 17230)
 -- Name: gateway gateway_gateway_profile_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -1038,7 +1080,7 @@ ALTER TABLE ONLY public.gateway
 
 
 --
--- TOC entry 3416 (class 2606 OID 17235)
+-- TOC entry 3418 (class 2606 OID 17235)
 -- Name: gateway_profile_extra_channel gateway_profile_extra_channel_gateway_profile_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -1047,7 +1089,7 @@ ALTER TABLE ONLY public.gateway_profile_extra_channel
 
 
 --
--- TOC entry 3413 (class 2606 OID 17240)
+-- TOC entry 3415 (class 2606 OID 17240)
 -- Name: gateway gateway_routing_profile_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -1056,7 +1098,7 @@ ALTER TABLE ONLY public.gateway
 
 
 --
--- TOC entry 3414 (class 2606 OID 17245)
+-- TOC entry 3416 (class 2606 OID 17245)
 -- Name: gateway gateway_service_profile_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -1065,7 +1107,7 @@ ALTER TABLE ONLY public.gateway
 
 
 --
--- TOC entry 3417 (class 2606 OID 17250)
+-- TOC entry 3419 (class 2606 OID 17250)
 -- Name: multicast_group multicast_group_routing_profile_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -1074,7 +1116,7 @@ ALTER TABLE ONLY public.multicast_group
 
 
 --
--- TOC entry 3418 (class 2606 OID 17255)
+-- TOC entry 3420 (class 2606 OID 17255)
 -- Name: multicast_group multicast_group_service_profile_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -1083,7 +1125,7 @@ ALTER TABLE ONLY public.multicast_group
 
 
 --
--- TOC entry 3419 (class 2606 OID 17260)
+-- TOC entry 3421 (class 2606 OID 17260)
 -- Name: multicast_queue multicast_queue_gateway_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -1092,7 +1134,7 @@ ALTER TABLE ONLY public.multicast_queue
 
 
 --
--- TOC entry 3420 (class 2606 OID 17265)
+-- TOC entry 3422 (class 2606 OID 17265)
 -- Name: multicast_queue multicast_queue_multicast_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_ns
 --
 
@@ -1100,11 +1142,21 @@ ALTER TABLE ONLY public.multicast_queue
     ADD CONSTRAINT multicast_queue_multicast_group_id_fkey FOREIGN KEY (multicast_group_id) REFERENCES public.multicast_group(id) ON DELETE CASCADE;
 
 
--- Completed on 2026-10-06 13:59:48 UTC
+--
+-- TOC entry 3587 (class 0 OID 0)
+-- Dependencies: 5
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE USAGE ON SCHEMA public FROM PUBLIC;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+-- Completed on 2026-11-09 18:04:34 -03
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 0XtVtVTD91pBldX7NCaopAmMndPvrhPpaw1ttwEAfoX4P5cMSUiAeh0G17UNxaT
+\unrestrict l7bP1QvMOdEgp54lOO1OrOnSTZbzddEfgOmfPJ5h0x9xrFL1cXUdIp4tQlvVAuf
 

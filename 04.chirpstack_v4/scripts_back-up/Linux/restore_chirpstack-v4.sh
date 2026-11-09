@@ -15,7 +15,7 @@ set -uo pipefail
 # CONFIGURACOES
 # --------------------------------------------------------------
 PG_HOST="localhost"
-PG_PORT="5432"
+PG_PORT="5442"
 PG_DB="chirpstack"
 #PG_USER="postgres"
 PG_USER="chirpstack"

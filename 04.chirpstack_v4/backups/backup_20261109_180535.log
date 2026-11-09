@@ -1,17 +1,19 @@
-NAME                                        READY   UP-TO-DATE   AVAILABLE   AGE
-chirpstack-v4-ns-as-postgresql-deployment   1/1     1            1           7m31s
-[2026-10-06 11:10:26] ============================================================
-[2026-10-06 11:10:26]  Iniciando backup: chirpstack
-[2026-10-06 11:10:26]  Contexto:   kubernetes-admin@kubernetes
-[2026-10-06 11:10:26]  Namespace:  chirpstack-v4
-[2026-10-06 11:10:26]  Pod:        chirpstack-v4-ns-as-postgresql-deployment-ddf8fc566-6tt4b (container: chirpstack-v4-ns-as-postgresql)
-[2026-10-06 11:10:26]  Usuario:    chirpstack
-[2026-10-06 11:10:26]  Destino:    /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/backups
-[2026-10-06 11:10:26] ============================================================
-[2026-10-06 11:10:27] Versao no pod: pg_dump (PostgreSQL) 17.5 (Debian 17.5-1.pgdg130+1)
-[2026-10-06 11:10:29]   OK - conectado na porta 5432. Tabelas no schema public: 23
-[2026-10-06 11:10:29] 
-[2026-10-06 11:10:29] [1/2] Gerando .backup (formato custom)...
+[2026-11-09 18:05:35] ============================================================
+[2026-11-09 18:05:35]  Iniciando backup: chirpstack
+[2026-11-09 18:05:35]  Namespace: chirpstack-v4 | Service: chirpstack-v4-postgresql-service
+[2026-11-09 18:05:35]  Host: 127.0.0.1:5442
+[2026-11-09 18:05:35]  Usuario: chirpstack
+[2026-11-09 18:05:35]  Destino: /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/backups
+[2026-11-09 18:05:35]  Versao: pg_dump (PostgreSQL) 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
+[2026-11-09 18:05:35] ============================================================
+[2026-11-09 18:05:35] Port-forward: kubectl port-forward -n chirpstack-v4 svc/chirpstack-v4-postgresql-service 5442:5442
+Forwarding from 127.0.0.1:5442 -> 5432
+Forwarding from [::1]:5442 -> 5432
+Handling connection for 5442
+[2026-11-09 18:05:37]   OK - port-forward ativo (PID 877341)
+[2026-11-09 18:05:37] 
+[2026-11-09 18:05:37] [1/2] Gerando .backup (formato custom)...
+Handling connection for 5442
 pg_dump: last built-in OID is 16383
 pg_dump: reading extensions
 pg_dump: identifying extension members
@@ -70,7 +72,9 @@ pg_dump: dumping contents of table "public.application_integration"
 pg_dump: dumping contents of table "public.device"
 pg_dump: dumping contents of table "public.device_keys"
 pg_dump: dumping contents of table "public.device_profile"
+pg_dump: dumping contents of table "public.device_profile_device"
 pg_dump: dumping contents of table "public.device_profile_template"
+pg_dump: dumping contents of table "public.device_profile_vendor"
 pg_dump: dumping contents of table "public.device_queue_item"
 pg_dump: dumping contents of table "public.fuota_deployment"
 pg_dump: dumping contents of table "public.fuota_deployment_device"
@@ -86,9 +90,10 @@ pg_dump: dumping contents of table "public.relay_gateway"
 pg_dump: dumping contents of table "public.tenant"
 pg_dump: dumping contents of table "public.tenant_user"
 pg_dump: dumping contents of table "public.user"
-[2026-10-06 11:10:30]   OK - 63135 bytes - /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/backups/chirpstack_20261006_111025.backup
-[2026-10-06 11:10:30] 
-[2026-10-06 11:10:30] [2/2] Gerando .sql (plain SQL)...
+[2026-11-09 18:05:43]   OK - 69733 bytes - /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/backups/chirpstack_20261109_180535.backup
+[2026-11-09 18:05:43] 
+[2026-11-09 18:05:43] [2/2] Gerando .sql (plain SQL)...
+Handling connection for 5442
 pg_dump: last built-in OID is 16383
 pg_dump: reading extensions
 pg_dump: identifying extension members
@@ -139,6 +144,10 @@ pg_dump: reading dependency data
 pg_dump: saving encoding = UTF8
 pg_dump: saving "standard_conforming_strings = on"
 pg_dump: saving "search_path = "
+pg_dump: saving database definition
+pg_dump: dropping DATABASE chirpstack
+pg_dump: creating DATABASE "chirpstack"
+pg_dump: connecting to new database "chirpstack"
 pg_dump: creating EXTENSION "hstore"
 pg_dump: creating COMMENT "EXTENSION hstore"
 pg_dump: creating EXTENSION "pg_trgm"
@@ -150,7 +159,9 @@ pg_dump: creating TABLE "public.application_integration"
 pg_dump: creating TABLE "public.device"
 pg_dump: creating TABLE "public.device_keys"
 pg_dump: creating TABLE "public.device_profile"
+pg_dump: creating TABLE "public.device_profile_device"
 pg_dump: creating TABLE "public.device_profile_template"
+pg_dump: creating TABLE "public.device_profile_vendor"
 pg_dump: creating TABLE "public.device_queue_item"
 pg_dump: creating TABLE "public.fuota_deployment"
 pg_dump: creating TABLE "public.fuota_deployment_device"
@@ -180,8 +191,12 @@ pg_dump: processing data for table "public.device_keys"
 pg_dump: dumping contents of table "public.device_keys"
 pg_dump: processing data for table "public.device_profile"
 pg_dump: dumping contents of table "public.device_profile"
+pg_dump: processing data for table "public.device_profile_device"
+pg_dump: dumping contents of table "public.device_profile_device"
 pg_dump: processing data for table "public.device_profile_template"
 pg_dump: dumping contents of table "public.device_profile_template"
+pg_dump: processing data for table "public.device_profile_vendor"
+pg_dump: dumping contents of table "public.device_profile_vendor"
 pg_dump: processing data for table "public.device_queue_item"
 pg_dump: dumping contents of table "public.device_queue_item"
 pg_dump: processing data for table "public.fuota_deployment"
@@ -218,8 +233,10 @@ pg_dump: creating CONSTRAINT "public.application_integration application_integra
 pg_dump: creating CONSTRAINT "public.application application_pkey"
 pg_dump: creating CONSTRAINT "public.device_keys device_keys_pkey"
 pg_dump: creating CONSTRAINT "public.device device_pkey"
+pg_dump: creating CONSTRAINT "public.device_profile_device device_profile_device_pkey"
 pg_dump: creating CONSTRAINT "public.device_profile device_profile_pkey"
 pg_dump: creating CONSTRAINT "public.device_profile_template device_profile_template_pkey"
+pg_dump: creating CONSTRAINT "public.device_profile_vendor device_profile_vendor_pkey"
 pg_dump: creating CONSTRAINT "public.device_queue_item device_queue_item_pkey"
 pg_dump: creating CONSTRAINT "public.fuota_deployment_device fuota_deployment_device_pkey"
 pg_dump: creating CONSTRAINT "public.fuota_deployment_gateway fuota_deployment_gateway_pkey"
@@ -245,9 +262,15 @@ pg_dump: creating INDEX "public.idx_device_dev_addr_trgm"
 pg_dump: creating INDEX "public.idx_device_dev_eui_trgm"
 pg_dump: creating INDEX "public.idx_device_device_profile_id"
 pg_dump: creating INDEX "public.idx_device_name_trgm"
+pg_dump: creating INDEX "public.idx_device_profile_device_id"
+pg_dump: creating INDEX "public.idx_device_profile_device_name_trgm"
+pg_dump: creating INDEX "public.idx_device_profile_device_vendor_id"
 pg_dump: creating INDEX "public.idx_device_profile_name_trgm"
 pg_dump: creating INDEX "public.idx_device_profile_tags"
 pg_dump: creating INDEX "public.idx_device_profile_tenant_id"
+pg_dump: creating INDEX "public.idx_device_profile_vendor_name_trgm"
+pg_dump: creating INDEX "public.idx_device_profile_vendor_ouis"
+pg_dump: creating INDEX "public.idx_device_profile_vendor_vendor_id"
 pg_dump: creating INDEX "public.idx_device_queue_item_created_at"
 pg_dump: creating INDEX "public.idx_device_queue_item_dev_eui"
 pg_dump: creating INDEX "public.idx_device_queue_item_timeout_after"
@@ -274,6 +297,8 @@ pg_dump: creating FK CONSTRAINT "public.application application_tenant_id_fkey"
 pg_dump: creating FK CONSTRAINT "public.device device_application_id_fkey"
 pg_dump: creating FK CONSTRAINT "public.device device_device_profile_id_fkey"
 pg_dump: creating FK CONSTRAINT "public.device_keys device_keys_dev_eui_fkey"
+pg_dump: creating FK CONSTRAINT "public.device_profile device_profile_device_id_fkey"
+pg_dump: creating FK CONSTRAINT "public.device_profile_device device_profile_device_vendor_id_fkey"
 pg_dump: creating FK CONSTRAINT "public.device_profile device_profile_tenant_id_fkey"
 pg_dump: creating FK CONSTRAINT "public.device_queue_item device_queue_item_dev_eui_fkey"
 pg_dump: creating FK CONSTRAINT "public.fuota_deployment fuota_deployment_application_id_fkey"
@@ -296,9 +321,9 @@ pg_dump: creating FK CONSTRAINT "public.relay_device relay_device_relay_dev_eui_
 pg_dump: creating FK CONSTRAINT "public.relay_gateway relay_gateway_tenant_id_fkey"
 pg_dump: creating FK CONSTRAINT "public.tenant_user tenant_user_tenant_id_fkey"
 pg_dump: creating FK CONSTRAINT "public.tenant_user tenant_user_user_id_fkey"
-[2026-10-06 11:10:31]   OK - 74863 bytes - /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/backups/chirpstack_20261006_111025.sql
-[2026-10-06 11:10:31] 
-[2026-10-06 11:10:31] ============================================================
-[2026-10-06 11:10:31]  STATUS FINAL: SUCESSO
-[2026-10-06 11:10:31]  Log: /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/backups/backup_20261006_111025.log
-[2026-10-06 11:10:31] ============================================================
+[2026-11-09 18:05:48]   OK - 83833 bytes - /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/backups/chirpstack_20261109_180535.sql
+[2026-11-09 18:05:48] 
+[2026-11-09 18:05:48] ============================================================
+[2026-11-09 18:05:48]  STATUS FINAL (chirpstack): SUCESSO
+[2026-11-09 18:05:48]  Log: /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/04.chirpstack_v4/backups/backup_20261109_180535.log
+[2026-11-09 18:05:48] ============================================================

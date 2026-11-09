@@ -2,10 +2,39 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.5 (Debian 17.5-1.pgdg130+1)
--- Dumped by pg_dump version 17.5 (Debian 17.5-1.pgdg130+1)
+\restrict 2kamwaTHZqBKXDoeW6ScJM09yVfXiA4T1TvVKeVqreajRSe4Kp2TnAS5uPFTpHz
 
--- Started on 2026-10-06 14:10:30 UTC
+-- Dumped from database version 17.5 (Debian 17.5-1.pgdg130+1)
+-- Dumped by pg_dump version 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
+
+-- Started on 2026-11-09 18:05:43 -03
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+DROP DATABASE IF EXISTS chirpstack;
+--
+-- TOC entry 3808 (class 1262 OID 17239)
+-- Name: chirpstack; Type: DATABASE; Schema: -; Owner: chirpstack
+--
+
+CREATE DATABASE chirpstack WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'en_US.utf8';
+
+
+ALTER DATABASE chirpstack OWNER TO chirpstack;
+
+\unrestrict 2kamwaTHZqBKXDoeW6ScJM09yVfXiA4T1TvVKeVqreajRSe4Kp2TnAS5uPFTpHz
+\connect chirpstack
+\restrict 2kamwaTHZqBKXDoeW6ScJM09yVfXiA4T1TvVKeVqreajRSe4Kp2TnAS5uPFTpHz
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -20,7 +49,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 2 (class 3079 OID 24788)
+-- TOC entry 3 (class 3079 OID 17321)
 -- Name: hstore; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -28,8 +57,8 @@ CREATE EXTENSION IF NOT EXISTS hstore WITH SCHEMA public;
 
 
 --
--- TOC entry 3786 (class 0 OID 0)
--- Dependencies: 2
+-- TOC entry 3809 (class 0 OID 0)
+-- Dependencies: 3
 -- Name: EXTENSION hstore; Type: COMMENT; Schema: -; Owner: 
 --
 
@@ -37,7 +66,7 @@ COMMENT ON EXTENSION hstore IS 'data type for storing sets of (key, value) pairs
 
 
 --
--- TOC entry 3 (class 3079 OID 24916)
+-- TOC entry 2 (class 3079 OID 17240)
 -- Name: pg_trgm; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -45,8 +74,8 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
 
 
 --
--- TOC entry 3787 (class 0 OID 0)
--- Dependencies: 3
+-- TOC entry 3810 (class 0 OID 0)
+-- Dependencies: 2
 -- Name: EXTENSION pg_trgm; Type: COMMENT; Schema: -; Owner: 
 --
 
@@ -58,7 +87,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 219 (class 1259 OID 24997)
+-- TOC entry 219 (class 1259 OID 17449)
 -- Name: __diesel_schema_migrations; Type: TABLE; Schema: public; Owner: chirpstack
 --
 
@@ -71,7 +100,7 @@ CREATE TABLE public.__diesel_schema_migrations (
 ALTER TABLE public.__diesel_schema_migrations OWNER TO chirpstack;
 
 --
--- TOC entry 220 (class 1259 OID 25001)
+-- TOC entry 220 (class 1259 OID 17453)
 -- Name: api_key; Type: TABLE; Schema: public; Owner: chirpstack
 --
 
@@ -80,14 +109,15 @@ CREATE TABLE public.api_key (
     created_at timestamp with time zone NOT NULL,
     name character varying(100) NOT NULL,
     is_admin boolean NOT NULL,
-    tenant_id uuid
+    tenant_id uuid,
+    is_read_only boolean NOT NULL
 );
 
 
 ALTER TABLE public.api_key OWNER TO chirpstack;
 
 --
--- TOC entry 221 (class 1259 OID 25004)
+-- TOC entry 221 (class 1259 OID 17456)
 -- Name: application; Type: TABLE; Schema: public; Owner: chirpstack
 --
 
@@ -106,7 +136,7 @@ CREATE TABLE public.application (
 ALTER TABLE public.application OWNER TO chirpstack;
 
 --
--- TOC entry 222 (class 1259 OID 25009)
+-- TOC entry 222 (class 1259 OID 17461)
 -- Name: application_integration; Type: TABLE; Schema: public; Owner: chirpstack
 --
 
@@ -122,7 +152,7 @@ CREATE TABLE public.application_integration (
 ALTER TABLE public.application_integration OWNER TO chirpstack;
 
 --
--- TOC entry 223 (class 1259 OID 25014)
+-- TOC entry 223 (class 1259 OID 17466)
 -- Name: device; Type: TABLE; Schema: public; Owner: chirpstack
 --
 
@@ -160,7 +190,7 @@ CREATE TABLE public.device (
 ALTER TABLE public.device OWNER TO chirpstack;
 
 --
--- TOC entry 224 (class 1259 OID 25019)
+-- TOC entry 224 (class 1259 OID 17471)
 -- Name: device_keys; Type: TABLE; Schema: public; Owner: chirpstack
 --
 
@@ -179,13 +209,13 @@ CREATE TABLE public.device_keys (
 ALTER TABLE public.device_keys OWNER TO chirpstack;
 
 --
--- TOC entry 225 (class 1259 OID 25024)
+-- TOC entry 225 (class 1259 OID 17476)
 -- Name: device_profile; Type: TABLE; Schema: public; Owner: chirpstack
 --
 
 CREATE TABLE public.device_profile (
     id uuid NOT NULL,
-    tenant_id uuid NOT NULL,
+    tenant_id uuid,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     name character varying(100) NOT NULL,
@@ -212,14 +242,36 @@ CREATE TABLE public.device_profile (
     class_b_params jsonb,
     class_c_params jsonb,
     relay_params jsonb,
-    app_layer_params jsonb NOT NULL
+    app_layer_params jsonb NOT NULL,
+    device_id uuid,
+    firmware_version character varying(20) NOT NULL,
+    vendor_profile_id integer NOT NULL,
+    supported_uplink_data_rates smallint[] NOT NULL
 );
 
 
 ALTER TABLE public.device_profile OWNER TO chirpstack;
 
 --
--- TOC entry 226 (class 1259 OID 25029)
+-- TOC entry 243 (class 1259 OID 17789)
+-- Name: device_profile_device; Type: TABLE; Schema: public; Owner: chirpstack
+--
+
+CREATE TABLE public.device_profile_device (
+    id uuid NOT NULL,
+    vendor_id uuid NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    name character varying(100) NOT NULL,
+    description text NOT NULL,
+    metadata jsonb NOT NULL
+);
+
+
+ALTER TABLE public.device_profile_device OWNER TO chirpstack;
+
+--
+-- TOC entry 226 (class 1259 OID 17481)
 -- Name: device_profile_template; Type: TABLE; Schema: public; Owner: chirpstack
 --
 
@@ -261,7 +313,25 @@ CREATE TABLE public.device_profile_template (
 ALTER TABLE public.device_profile_template OWNER TO chirpstack;
 
 --
--- TOC entry 227 (class 1259 OID 25034)
+-- TOC entry 242 (class 1259 OID 17779)
+-- Name: device_profile_vendor; Type: TABLE; Schema: public; Owner: chirpstack
+--
+
+CREATE TABLE public.device_profile_vendor (
+    id uuid NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    name text NOT NULL,
+    vendor_id integer NOT NULL,
+    ouis text[] NOT NULL,
+    metadata jsonb NOT NULL
+);
+
+
+ALTER TABLE public.device_profile_vendor OWNER TO chirpstack;
+
+--
+-- TOC entry 227 (class 1259 OID 17486)
 -- Name: device_queue_item; Type: TABLE; Schema: public; Owner: chirpstack
 --
 
@@ -283,7 +353,7 @@ CREATE TABLE public.device_queue_item (
 ALTER TABLE public.device_queue_item OWNER TO chirpstack;
 
 --
--- TOC entry 228 (class 1259 OID 25039)
+-- TOC entry 228 (class 1259 OID 17491)
 -- Name: fuota_deployment; Type: TABLE; Schema: public; Owner: chirpstack
 --
 
@@ -322,7 +392,7 @@ CREATE TABLE public.fuota_deployment (
 ALTER TABLE public.fuota_deployment OWNER TO chirpstack;
 
 --
--- TOC entry 229 (class 1259 OID 25044)
+-- TOC entry 229 (class 1259 OID 17496)
 -- Name: fuota_deployment_device; Type: TABLE; Schema: public; Owner: chirpstack
 --
 
@@ -342,7 +412,7 @@ CREATE TABLE public.fuota_deployment_device (
 ALTER TABLE public.fuota_deployment_device OWNER TO chirpstack;
 
 --
--- TOC entry 230 (class 1259 OID 25049)
+-- TOC entry 230 (class 1259 OID 17501)
 -- Name: fuota_deployment_gateway; Type: TABLE; Schema: public; Owner: chirpstack
 --
 
@@ -356,7 +426,7 @@ CREATE TABLE public.fuota_deployment_gateway (
 ALTER TABLE public.fuota_deployment_gateway OWNER TO chirpstack;
 
 --
--- TOC entry 231 (class 1259 OID 25054)
+-- TOC entry 231 (class 1259 OID 17506)
 -- Name: fuota_deployment_job; Type: TABLE; Schema: public; Owner: chirpstack
 --
 
@@ -376,7 +446,7 @@ CREATE TABLE public.fuota_deployment_job (
 ALTER TABLE public.fuota_deployment_job OWNER TO chirpstack;
 
 --
--- TOC entry 232 (class 1259 OID 25059)
+-- TOC entry 232 (class 1259 OID 17511)
 -- Name: gateway; Type: TABLE; Schema: public; Owner: chirpstack
 --
 
@@ -394,14 +464,15 @@ CREATE TABLE public.gateway (
     stats_interval_secs integer NOT NULL,
     tls_certificate bytea,
     tags jsonb NOT NULL,
-    properties jsonb NOT NULL
+    properties jsonb NOT NULL,
+    downlink_priority smallint NOT NULL
 );
 
 
 ALTER TABLE public.gateway OWNER TO chirpstack;
 
 --
--- TOC entry 233 (class 1259 OID 25064)
+-- TOC entry 233 (class 1259 OID 17516)
 -- Name: multicast_group; Type: TABLE; Schema: public; Owner: chirpstack
 --
 
@@ -427,7 +498,7 @@ CREATE TABLE public.multicast_group (
 ALTER TABLE public.multicast_group OWNER TO chirpstack;
 
 --
--- TOC entry 234 (class 1259 OID 25069)
+-- TOC entry 234 (class 1259 OID 17521)
 -- Name: multicast_group_device; Type: TABLE; Schema: public; Owner: chirpstack
 --
 
@@ -441,7 +512,7 @@ CREATE TABLE public.multicast_group_device (
 ALTER TABLE public.multicast_group_device OWNER TO chirpstack;
 
 --
--- TOC entry 235 (class 1259 OID 25074)
+-- TOC entry 235 (class 1259 OID 17526)
 -- Name: multicast_group_gateway; Type: TABLE; Schema: public; Owner: chirpstack
 --
 
@@ -455,7 +526,7 @@ CREATE TABLE public.multicast_group_gateway (
 ALTER TABLE public.multicast_group_gateway OWNER TO chirpstack;
 
 --
--- TOC entry 236 (class 1259 OID 25079)
+-- TOC entry 236 (class 1259 OID 17531)
 -- Name: multicast_group_queue_item; Type: TABLE; Schema: public; Owner: chirpstack
 --
 
@@ -476,7 +547,7 @@ CREATE TABLE public.multicast_group_queue_item (
 ALTER TABLE public.multicast_group_queue_item OWNER TO chirpstack;
 
 --
--- TOC entry 237 (class 1259 OID 25084)
+-- TOC entry 237 (class 1259 OID 17536)
 -- Name: relay_device; Type: TABLE; Schema: public; Owner: chirpstack
 --
 
@@ -490,7 +561,7 @@ CREATE TABLE public.relay_device (
 ALTER TABLE public.relay_device OWNER TO chirpstack;
 
 --
--- TOC entry 238 (class 1259 OID 25089)
+-- TOC entry 238 (class 1259 OID 17541)
 -- Name: relay_gateway; Type: TABLE; Schema: public; Owner: chirpstack
 --
 
@@ -510,7 +581,7 @@ CREATE TABLE public.relay_gateway (
 ALTER TABLE public.relay_gateway OWNER TO chirpstack;
 
 --
--- TOC entry 239 (class 1259 OID 25094)
+-- TOC entry 239 (class 1259 OID 17546)
 -- Name: tenant; Type: TABLE; Schema: public; Owner: chirpstack
 --
 
@@ -525,14 +596,15 @@ CREATE TABLE public.tenant (
     max_gateway_count integer NOT NULL,
     private_gateways_up boolean NOT NULL,
     private_gateways_down boolean NOT NULL,
-    tags jsonb NOT NULL
+    tags jsonb NOT NULL,
+    dev_addr_prefixes text[] NOT NULL
 );
 
 
 ALTER TABLE public.tenant OWNER TO chirpstack;
 
 --
--- TOC entry 240 (class 1259 OID 25099)
+-- TOC entry 240 (class 1259 OID 17551)
 -- Name: tenant_user; Type: TABLE; Schema: public; Owner: chirpstack
 --
 
@@ -550,7 +622,7 @@ CREATE TABLE public.tenant_user (
 ALTER TABLE public.tenant_user OWNER TO chirpstack;
 
 --
--- TOC entry 241 (class 1259 OID 25102)
+-- TOC entry 241 (class 1259 OID 17554)
 -- Name: user; Type: TABLE; Schema: public; Owner: chirpstack
 --
 
@@ -571,7 +643,7 @@ CREATE TABLE public."user" (
 ALTER TABLE public."user" OWNER TO chirpstack;
 
 --
--- TOC entry 3758 (class 0 OID 24997)
+-- TOC entry 3778 (class 0 OID 17449)
 -- Dependencies: 219
 -- Data for Name: __diesel_schema_migrations; Type: TABLE DATA; Schema: public; Owner: chirpstack
 --
@@ -602,21 +674,26 @@ COPY public.__diesel_schema_migrations (version, run_on) FROM stdin;
 20250605100843	2026-05-01 16:21:11.244598
 20250804085822	2026-05-01 16:21:11.246899
 20251001085546	2026-05-01 16:21:11.252227
+202511111404590000	2026-11-09 19:53:35.007117
+202512101058490000	2026-11-09 19:53:35.100365
+202602181001240000	2026-11-09 19:53:35.103137
+202605201051510000	2026-11-09 19:53:35.105528
+202606150939590000	2026-11-09 19:53:35.107943
 \.
 
 
 --
--- TOC entry 3759 (class 0 OID 25001)
+-- TOC entry 3779 (class 0 OID 17453)
 -- Dependencies: 220
 -- Data for Name: api_key; Type: TABLE DATA; Schema: public; Owner: chirpstack
 --
 
-COPY public.api_key (id, created_at, name, is_admin, tenant_id) FROM stdin;
+COPY public.api_key (id, created_at, name, is_admin, tenant_id, is_read_only) FROM stdin;
 \.
 
 
 --
--- TOC entry 3760 (class 0 OID 25004)
+-- TOC entry 3780 (class 0 OID 17456)
 -- Dependencies: 221
 -- Data for Name: application; Type: TABLE DATA; Schema: public; Owner: chirpstack
 --
@@ -627,7 +704,7 @@ COPY public.application (id, tenant_id, created_at, updated_at, name, descriptio
 
 
 --
--- TOC entry 3761 (class 0 OID 25009)
+-- TOC entry 3781 (class 0 OID 17461)
 -- Dependencies: 222
 -- Data for Name: application_integration; Type: TABLE DATA; Schema: public; Owner: chirpstack
 --
@@ -637,7 +714,7 @@ COPY public.application_integration (application_id, kind, created_at, updated_a
 
 
 --
--- TOC entry 3762 (class 0 OID 25014)
+-- TOC entry 3782 (class 0 OID 17466)
 -- Dependencies: 223
 -- Data for Name: device; Type: TABLE DATA; Schema: public; Owner: chirpstack
 --
@@ -645,40 +722,53 @@ COPY public.application_integration (application_id, kind, created_at, updated_a
 COPY public.device (dev_eui, application_id, device_profile_id, created_at, updated_at, last_seen_at, scheduler_run_after, name, description, external_power_source, battery_level, margin, dr, latitude, longitude, altitude, dev_addr, enabled_class, skip_fcnt_check, is_disabled, tags, variables, join_eui, secondary_dev_addr, device_session, app_layer_params, f_cnt_up) FROM stdin;
 \\x08fdbe4bc604e8f8	56560a65-2fb8-444c-a1ee-bd0ee4be0946	1bbfac1d-4e6f-44b4-8e48-aae6dcf6c591	2026-05-10 13:53:34.770399+00	2026-05-11 21:06:02.986362+00	2026-05-12 13:43:33.420294+00	2026-05-12 13:43:38.415883+00	ESP32 RF95W (ABP)	ESP32 with RF95W (ABP)	f	\N	6	5	\N	\N	\N	\\x00aa88ca	A	t	f	{}	{}	\\x0000000000000000	\N	\\x120400aa88ca20032a10151f7779d7aaee422a74568380db70453210151f7779d7aaee422a74568380db70453a10151f7779d7aaee422a74568380db704542121210fd91d55dce3af1023093e289a1d9f3df5001680170018001088801a0e1a1b80392010908090a0b0c0d0e0f41b80101c80105f20114084d1500002041200528e7ffffffffffffffff01f20114084e15cdcc5c41200528e4ffffffffffffffff0182020c0883dd8cd00610bcd8bcd202c2020761753931355f31	{"ts004_session_cnt": [0, 0, 0, 0]}	79
 \\xf38df5e5a31e63de	56560a65-2fb8-444c-a1ee-bd0ee4be0946	cff3ab28-afa3-4909-8958-e01ab4984a3b	2026-05-04 02:06:34.517515+00	2026-05-10 15:19:01.527258+00	2026-05-18 21:39:05.135151+00	2026-05-18 21:39:10.128555+00	ESP32 RF95W (OTAA)	ESP32 with RF95W (OTAA)	f	\N	6	2	\N	\N	\N	\\x007ea68e	A	f	f	{}	{}	\\xc7102ce6a134f6b2	\N	\\x1204007ea68e20032a103b0d294f96511be99e810775ee78177f32103b0d294f96511be99e810775ee78177f3a103b0d294f96511be99e810775ee78177f42121210288743626c160893fc8035f1f7263335500570018001088801a0e1a1b80392010908090a0b0c0d0e0f41b80101c80102f2011508f8121500006841200428e8ffffffffffffffff01f2011508f9121500004841200428e6ffffffffffffffff01f2011508fa121500004841200428e7ffffffffffffffff01f2011508fb121500004041200428e6ffffffffffffffff01f2011508fc12159a99f940200428e7ffffffffffffffff01f2011508fd121500004841200428ecffffffffffffffff01f2011508fe121500004041200428e4ffffffffffffffff01f2011508ff121533334341200428ebffffffffffffffff01f2011508801315cdcc4c41200428e7ffffffffffffffff01f2011508811315cdcc2c41200428eaffffffffffffffff01f201150882131500004841200428e7ffffffffffffffff01f201150883131500003041200428eaffffffffffffffff01f201150884131500004841200428eaffffffffffffffff01f201150885131500003041200428e9ffffffffffffffff01f2011508861315cdcc3c41200428ebffffffffffffffff01f201150887131533333341200428e9ffffffffffffffff01f201150888131533335341200428e6ffffffffffffffff01f201150889131533333341200428eaffffffffffffffff01f20115088a131500004841200428e6ffffffffffffffff01f20115088b131500004041200428eaffffffffffffffff0182020c08e19aacd00610af97b2c702c2020761753931355f31	{"ts004_session_cnt": [0, 0, 0, 0]}	2444
+\\x5f904b22e1ce458c	56560a65-2fb8-444c-a1ee-bd0ee4be0946	1bbfac1d-4e6f-44b4-8e48-aae6dcf6c591	2026-11-09 20:38:35.980226+00	2026-11-09 20:38:35.980226+00	\N	\N	STM32 RF95W (ABP)	STM32 with RF95W (ABP)	f	\N	\N	\N	\N	\N	\N	\\x00d382ec	C	f	f	{}	{}	\\x0000000000000000	\N	\\x120400d382ec20032a107277c9aed02a1dac8d9197f07c64544632107277c9aed02a1dac8d9197f07c6454463a107277c9aed02a1dac8d9197f07c64544642121210677c441968c784f6f67be569d9320b7070018001088801a0e1a1b803b80101	{"ts004_session_cnt": [0, 0, 0, 0]}	0
+\\x0379385c33313636	56560a65-2fb8-444c-a1ee-bd0ee4be0946	cff3ab28-afa3-4909-8958-e01ab4984a3b	2026-11-09 20:39:27.299081+00	2026-11-09 20:39:27.299081+00	2026-11-09 21:05:35.082212+00	2026-11-09 21:05:40.070401+00	STM32 RF95W (OTAA)	STM32 with RF95W (OTAA)	f	\N	\N	5	\N	\N	\N	\\x00869a86	C	f	f	{}	{}	\\xb2f634a1e62c10c7	\N	\\x120400869a8620032a10809c783c78c86649bce001ad4e934ff73210809c783c78c86649bce001ad4e934ff73a10809c783c78c86649bce001ad4e934ff742121210f243d7ac511bcb2a2e2e79d9406ba8ac500370018001088801a0e1a1b80392010908090a0b0c0d0e0f41b80101c80105f201140807159a99f940200128fdffffffffffffffff01f2011408081500001041200128ffffffffffffffffff01f20114080915cdcc2c41200128fbffffffffffffffff01f20114080a1500002041200128fdffffffffffffffff01f20114080b1533331341200128ffffffffffffffffff01f20114080c1500002041200128f9ffffffffffffffff01f20114080d156666e640200128fdffffffffffffffff01f20114080e1500002041200128fdffffffffffffffff01f20114080f15cdcc1c41200128fbffffffffffffffff01f20114081015cdcc1c41200128ffffffffffffffffff01f201140811150000f040200128fdffffffffffffffff01f2011408121533332341200128ffffffffffffffffff01f2011408131500001841200128fbffffffffffffffff01f2011408141500002041200128fbffffffffffffffff01f2011408151500002041200128fcffffffffffffffff01f2011408161500002041200128faffffffffffffffff01f20109081715cdcc0c412001f2011408181500001841200128fdffffffffffffffff01f2010b081915cdcc0c4120012801f20114081a1500002841200128fdffffffffffffffff0182020b08dedfc8d70610b2b1b72ec2020761753931355f31da02050806120106e20238080512340a08a842e3fffe90a3d410fdffffffffffffffff011d000028413204587cc9244a103e00683f4c834c14b1e1afe543221836500a	{"ts004_session_cnt": [0, 0, 0, 0]}	27
 \.
 
 
 --
--- TOC entry 3763 (class 0 OID 25019)
+-- TOC entry 3783 (class 0 OID 17471)
 -- Dependencies: 224
 -- Data for Name: device_keys; Type: TABLE DATA; Schema: public; Owner: chirpstack
 --
 
 COPY public.device_keys (dev_eui, created_at, updated_at, nwk_key, app_key, dev_nonces, join_nonce, gen_app_key) FROM stdin;
 \\xf38df5e5a31e63de	2026-05-04 02:06:50.902336+00	2026-05-18 13:00:11.631287+00	\\x6fc57c4cda46ddc502bcb7855e4e94ae	\\x00000000000000000000000000000000	{"c7102ce6a134f6b2": [39887, 32611, 9324, 51147, 27064, 9067, 2140, 3264, 2337, 35373, 2760, 522, 42945, 16868, 4147, 26038, 39257, 13414, 26958, 12550, 19365, 56516, 53749, 29433, 27104, 46854, 11035, 22905, 55745, 55489, 51674, 48135, 23659, 26471, 38952, 10916, 59466, 21142, 35911, 5254, 14405, 15793, 51203, 11815, 41815, 3520, 18663, 41650, 47894, 50588, 24383, 5622, 9717, 1272, 20703, 49800, 15851, 45942, 63845, 41080, 40483, 12185, 13121, 45355, 24047, 59808, 33980, 26241]}	68	\\x00000000000000000000000000000000
+\\x0379385c33313636	2026-11-09 20:39:38.292511+00	2026-11-09 20:40:56.54352+00	\\x6fc57c4cda46ddc502bcb7855e4e94ae	\\x00000000000000000000000000000000	{"b2f634a1e62c10c7": [16]}	1	\\x6fc57c4cda46ddc502bcb7855e4e94ae
 \.
 
 
 --
--- TOC entry 3764 (class 0 OID 25024)
+-- TOC entry 3784 (class 0 OID 17476)
 -- Dependencies: 225
 -- Data for Name: device_profile; Type: TABLE DATA; Schema: public; Owner: chirpstack
 --
 
-COPY public.device_profile (id, tenant_id, created_at, updated_at, name, region, mac_version, reg_params_revision, adr_algorithm_id, payload_codec_runtime, uplink_interval, device_status_req_interval, supports_otaa, supports_class_b, supports_class_c, tags, payload_codec_script, flush_queue_on_activate, description, measurements, auto_detect_measurements, region_config_id, allow_roaming, rx1_delay, abp_params, class_b_params, class_c_params, relay_params, app_layer_params) FROM stdin;
-6d427ef3-0285-40b6-97ee-419cd1454da6	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-10 14:33:18.153052+00	2026-05-10 14:33:18.153052+00	Devide Profile - AU915_0 - 1.0.3 - A (OTAA)	AU915	1.0.3	A	default	NONE	3600	1	t	f	t	{}	/**\n * Decode uplink function\n * \n * @param {object} input\n * @param {number[]} input.bytes Byte array containing the uplink payload, e.g. [255, 230, 255, 0]\n * @param {number} input.fPort Uplink fPort.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{data: object, errors: string[], warnings: string[]}}\n * An object containing:\n * - data: Object representing the decoded payload.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction decodeUplink(input) {\n  return {\n    data: {\n      temp: 22.5,\n    }\n  };\n}\n\n/**\n * Encode downlink function.\n * \n * @param {object} input\n * @param {object} input.data Object representing the payload that must be encoded.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{bytes: number[], fPort: number, errors: string[], warnings: string[]}}\n * An object containing:\n * - bytes: Byte array containing the downlink payload.\n * - fPort: The downlink LoRaWAN fPort.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction encodeDownlink(input) {\n  return {\n    fPort: 10,\n    bytes: [225, 230, 255, 0],\n  };\n}\n	t	Devide Profile Region AU915 - Region configuration 0 - MAC version LoRaWAN 1.0.3 - Regional parameters revision A (OTAA)	{}	t	au915_0	f	0	\N	\N	{"timeout": 5}	\N	{"ts003_f_port": 202, "ts004_f_port": 201, "ts005_f_port": 200, "ts003_version": null, "ts004_version": null, "ts005_version": null}
-b9f5f095-7bcc-427f-8381-b9dd8eba0e1a	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-01 19:54:50.69657+00	2026-05-11 18:38:41.607836+00	Devide Profile - AU915_0 - 1.0.3 - A (ABP)	AU915	1.0.3	A	default	NONE	3600	1	f	f	t	{}	/**\n * Decode uplink function\n * \n * @param {object} input\n * @param {number[]} input.bytes Byte array containing the uplink payload, e.g. [255, 230, 255, 0]\n * @param {number} input.fPort Uplink fPort.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{data: object, errors: string[], warnings: string[]}}\n * An object containing:\n * - data: Object representing the decoded payload.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction decodeUplink(input) {\n  return {\n    data: {\n      temp: 22.5,\n    }\n  };\n}\n\n/**\n * Encode downlink function.\n * \n * @param {object} input\n * @param {object} input.data Object representing the payload that must be encoded.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{bytes: number[], fPort: number, errors: string[], warnings: string[]}}\n * An object containing:\n * - bytes: Byte array containing the downlink payload.\n * - fPort: The downlink LoRaWAN fPort.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction encodeDownlink(input) {\n  return {\n    fPort: 10,\n    bytes: [225, 230, 255, 0],\n  };\n}\n	t	Devide Profile Region AU915 - Region configuration 0 - MAC version LoRaWAN 1.0.3 - Regional parameters revision A (ABP)	{}	t	au915_0	f	0	{"rx2_dr": 8, "rx2_freq": 923300000, "rx1_delay": 1, "rx1_dr_offset": 0}	\N	{"timeout": 5}	\N	{"ts003_f_port": 202, "ts004_f_port": 201, "ts005_f_port": 200, "ts003_version": null, "ts004_version": null, "ts005_version": null}
-f984c66c-b3a6-4edb-85bb-ea5617d036a4	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-01 19:55:26.187824+00	2026-05-11 18:39:06.917039+00	Devide Profile - AU915_1 - 1.0.3 - A (ABP)	AU915	1.0.3	A	default	NONE	3600	1	f	f	t	{}	/**\n * Decode uplink function\n * \n * @param {object} input\n * @param {number[]} input.bytes Byte array containing the uplink payload, e.g. [255, 230, 255, 0]\n * @param {number} input.fPort Uplink fPort.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{data: object, errors: string[], warnings: string[]}}\n * An object containing:\n * - data: Object representing the decoded payload.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction decodeUplink(input) {\n  return {\n    data: {\n      temp: 22.5,\n    }\n  };\n}\n\n/**\n * Encode downlink function.\n * \n * @param {object} input\n * @param {object} input.data Object representing the payload that must be encoded.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{bytes: number[], fPort: number, errors: string[], warnings: string[]}}\n * An object containing:\n * - bytes: Byte array containing the downlink payload.\n * - fPort: The downlink LoRaWAN fPort.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction encodeDownlink(input) {\n  return {\n    fPort: 10,\n    bytes: [225, 230, 255, 0],\n  };\n}\n	t	Devide Profile Region AU915 - Region configuration 1 - MAC version LoRaWAN 1.0.3 - Regional parameters revision A (ABP)	{}	t	au915_1	f	0	{"rx2_dr": 8, "rx2_freq": 923300000, "rx1_delay": 1, "rx1_dr_offset": 0}	\N	{"timeout": 5}	\N	{"ts003_f_port": 202, "ts004_f_port": 201, "ts005_f_port": 200, "ts003_version": null, "ts004_version": null, "ts005_version": null}
-0cc8dba0-cbea-4784-b769-b0dcf0dab8ff	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-10 14:34:14.531822+00	2026-05-10 14:34:14.531822+00	Devide Profile - AU915_0 - 1.0.3 - B (OTAA)	AU915	1.0.3	B	default	NONE	3600	1	t	f	t	{}	/**\n * Decode uplink function\n * \n * @param {object} input\n * @param {number[]} input.bytes Byte array containing the uplink payload, e.g. [255, 230, 255, 0]\n * @param {number} input.fPort Uplink fPort.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{data: object, errors: string[], warnings: string[]}}\n * An object containing:\n * - data: Object representing the decoded payload.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction decodeUplink(input) {\n  return {\n    data: {\n      temp: 22.5,\n    }\n  };\n}\n\n/**\n * Encode downlink function.\n * \n * @param {object} input\n * @param {object} input.data Object representing the payload that must be encoded.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{bytes: number[], fPort: number, errors: string[], warnings: string[]}}\n * An object containing:\n * - bytes: Byte array containing the downlink payload.\n * - fPort: The downlink LoRaWAN fPort.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction encodeDownlink(input) {\n  return {\n    fPort: 10,\n    bytes: [225, 230, 255, 0],\n  };\n}\n	t	Devide Profile Region AU915 - Region configuration 0 - MAC version LoRaWAN 1.0.3 - Regional parameters revision B (OTAA)	{}	t	au915_0	f	0	\N	\N	{"timeout": 5}	\N	{"ts003_f_port": 202, "ts004_f_port": 201, "ts005_f_port": 200, "ts003_version": null, "ts004_version": null, "ts005_version": null}
-a82611dc-b236-422c-a1e5-87c155cfb3d7	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-10 14:33:45.174072+00	2026-05-10 14:33:45.174072+00	Devide Profile - AU915_1 - 1.0.3 - A (OTAA)	AU915	1.0.3	A	default	NONE	3600	1	t	f	t	{}	/**\n * Decode uplink function\n * \n * @param {object} input\n * @param {number[]} input.bytes Byte array containing the uplink payload, e.g. [255, 230, 255, 0]\n * @param {number} input.fPort Uplink fPort.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{data: object, errors: string[], warnings: string[]}}\n * An object containing:\n * - data: Object representing the decoded payload.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction decodeUplink(input) {\n  return {\n    data: {\n      temp: 22.5,\n    }\n  };\n}\n\n/**\n * Encode downlink function.\n * \n * @param {object} input\n * @param {object} input.data Object representing the payload that must be encoded.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{bytes: number[], fPort: number, errors: string[], warnings: string[]}}\n * An object containing:\n * - bytes: Byte array containing the downlink payload.\n * - fPort: The downlink LoRaWAN fPort.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction encodeDownlink(input) {\n  return {\n    fPort: 10,\n    bytes: [225, 230, 255, 0],\n  };\n}\n	t	Devide Profile Region AU915 - Region configuration 1 - MAC version LoRaWAN 1.0.3 - Regional parameters revision A (OTAA)	{}	t	au915_1	f	0	\N	\N	{"timeout": 5}	\N	{"ts003_f_port": 202, "ts004_f_port": 201, "ts005_f_port": 200, "ts003_version": null, "ts004_version": null, "ts005_version": null}
-e630fede-3319-4974-931d-6bc00ee12c15	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-01 19:55:57.800665+00	2026-05-11 18:38:51.858305+00	Devide Profile - AU915_0 - 1.0.3 - B (ABP)	AU915	1.0.3	B	default	NONE	3600	1	f	f	t	{}	/**\n * Decode uplink function\n * \n * @param {object} input\n * @param {number[]} input.bytes Byte array containing the uplink payload, e.g. [255, 230, 255, 0]\n * @param {number} input.fPort Uplink fPort.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{data: object, errors: string[], warnings: string[]}}\n * An object containing:\n * - data: Object representing the decoded payload.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction decodeUplink(input) {\n  return {\n    data: {\n      temp: 22.5,\n    }\n  };\n}\n\n/**\n * Encode downlink function.\n * \n * @param {object} input\n * @param {object} input.data Object representing the payload that must be encoded.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{bytes: number[], fPort: number, errors: string[], warnings: string[]}}\n * An object containing:\n * - bytes: Byte array containing the downlink payload.\n * - fPort: The downlink LoRaWAN fPort.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction encodeDownlink(input) {\n  return {\n    fPort: 10,\n    bytes: [225, 230, 255, 0],\n  };\n}\n	t	Devide Profile Region AU915 - Region configuration 0 - MAC version LoRaWAN 1.0.3 - Regional parameters revision B (ABP)	{}	t	au915_0	f	0	{"rx2_dr": 8, "rx2_freq": 923300000, "rx1_delay": 1, "rx1_dr_offset": 0}	\N	{"timeout": 5}	\N	{"ts003_f_port": 202, "ts004_f_port": 201, "ts005_f_port": 200, "ts003_version": null, "ts004_version": null, "ts005_version": null}
-cff3ab28-afa3-4909-8958-e01ab4984a3b	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-10 14:34:42.556927+00	2026-05-10 15:23:39.62467+00	Devide Profile - AU915_1 - 1.0.3 - B (OTAA)	AU915	1.0.3	B	default	NONE	3600	1	t	f	f	{}	/**\n * Decode uplink function\n * \n * @param {object} input\n * @param {number[]} input.bytes Byte array containing the uplink payload, e.g. [255, 230, 255, 0]\n * @param {number} input.fPort Uplink fPort.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{data: object, errors: string[], warnings: string[]}}\n * An object containing:\n * - data: Object representing the decoded payload.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction decodeUplink(input) {\n  return {\n    data: {\n      temp: 22.5,\n    }\n  };\n}\n\n/**\n * Encode downlink function.\n * \n * @param {object} input\n * @param {object} input.data Object representing the payload that must be encoded.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{bytes: number[], fPort: number, errors: string[], warnings: string[]}}\n * An object containing:\n * - bytes: Byte array containing the downlink payload.\n * - fPort: The downlink LoRaWAN fPort.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction encodeDownlink(input) {\n  return {\n    fPort: 10,\n    bytes: [225, 230, 255, 0],\n  };\n}\n	t	Devide Profile Region AU915 - Region configuration 1 - MAC version LoRaWAN 1.0.3 - Regional parameters revision B (OTAA)	{}	t	au915_1	f	0	\N	\N	\N	\N	{"ts003_f_port": 202, "ts004_f_port": 201, "ts005_f_port": 200, "ts003_version": null, "ts004_version": null, "ts005_version": null}
-1bbfac1d-4e6f-44b4-8e48-aae6dcf6c591	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-01 19:56:31.807982+00	2026-05-11 19:21:04.289842+00	Devide Profile - AU915_1 - 1.0.3 - B (ABP)	AU915	1.0.3	B	default	NONE	3600	1	f	f	f	{}	/**\n * Decode uplink function\n * \n * @param {object} input\n * @param {number[]} input.bytes Byte array containing the uplink payload, e.g. [255, 230, 255, 0]\n * @param {number} input.fPort Uplink fPort.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{data: object, errors: string[], warnings: string[]}}\n * An object containing:\n * - data: Object representing the decoded payload.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction decodeUplink(input) {\n  return {\n    data: {\n      temp: 22.5,\n    }\n  };\n}\n\n/**\n * Encode downlink function.\n * \n * @param {object} input\n * @param {object} input.data Object representing the payload that must be encoded.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{bytes: number[], fPort: number, errors: string[], warnings: string[]}}\n * An object containing:\n * - bytes: Byte array containing the downlink payload.\n * - fPort: The downlink LoRaWAN fPort.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction encodeDownlink(input) {\n  return {\n    fPort: 10,\n    bytes: [225, 230, 255, 0],\n  };\n}\n	t	Devide Profile Region AU915 - Region configuration 1 - MAC version LoRaWAN 1.0.3 - Regional parameters revision B (ABP)	{}	t	au915_1	f	0	{"rx2_dr": 8, "rx2_freq": 923300000, "rx1_delay": 1, "rx1_dr_offset": 0}	\N	\N	\N	{"ts003_f_port": 202, "ts004_f_port": 201, "ts005_f_port": 200, "ts003_version": null, "ts004_version": null, "ts005_version": null}
+COPY public.device_profile (id, tenant_id, created_at, updated_at, name, region, mac_version, reg_params_revision, adr_algorithm_id, payload_codec_runtime, uplink_interval, device_status_req_interval, supports_otaa, supports_class_b, supports_class_c, tags, payload_codec_script, flush_queue_on_activate, description, measurements, auto_detect_measurements, region_config_id, allow_roaming, rx1_delay, abp_params, class_b_params, class_c_params, relay_params, app_layer_params, device_id, firmware_version, vendor_profile_id, supported_uplink_data_rates) FROM stdin;
+6d427ef3-0285-40b6-97ee-419cd1454da6	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-10 14:33:18.153052+00	2026-11-09 20:29:08.561011+00	Devide Profile - AU915_0 - 1.0.3 - A (OTAA)	AU915	1.0.3	A	default	NONE	3600	1	t	f	t	{}	/**\n * Decode uplink function\n * \n * @param {object} input\n * @param {number[]} input.bytes Byte array containing the uplink payload, e.g. [255, 230, 255, 0]\n * @param {number} input.fPort Uplink fPort.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{data: object, errors: string[], warnings: string[]}}\n * An object containing:\n * - data: Object representing the decoded payload.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction decodeUplink(input) {\n  return {\n    data: {\n      temp: 22.5,\n    }\n  };\n}\n\n/**\n * Encode downlink function.\n * \n * @param {object} input\n * @param {object} input.data Object representing the payload that must be encoded.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{bytes: number[], fPort: number, errors: string[], warnings: string[]}}\n * An object containing:\n * - bytes: Byte array containing the downlink payload.\n * - fPort: The downlink LoRaWAN fPort.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction encodeDownlink(input) {\n  return {\n    fPort: 10,\n    bytes: [225, 230, 255, 0],\n  };\n}\n	t	Devide Profile Region AU915 - Region configuration 0 - MAC version LoRaWAN 1.0.3 - Regional parameters revision A (OTAA)	{}	t	au915_0	f	0	\N	\N	{"timeout": 0}	\N	{"ts003_f_port": 202, "ts004_f_port": 201, "ts005_f_port": 200, "ts003_version": null, "ts004_version": null, "ts005_version": null}	\N		0	{}
+f984c66c-b3a6-4edb-85bb-ea5617d036a4	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-01 19:55:26.187824+00	2026-11-09 20:29:21.553443+00	Devide Profile - AU915_1 - 1.0.3 - A (ABP)	AU915	1.0.3	A	default	NONE	3600	1	f	f	t	{}	/**\n * Decode uplink function\n * \n * @param {object} input\n * @param {number[]} input.bytes Byte array containing the uplink payload, e.g. [255, 230, 255, 0]\n * @param {number} input.fPort Uplink fPort.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{data: object, errors: string[], warnings: string[]}}\n * An object containing:\n * - data: Object representing the decoded payload.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction decodeUplink(input) {\n  return {\n    data: {\n      temp: 22.5,\n    }\n  };\n}\n\n/**\n * Encode downlink function.\n * \n * @param {object} input\n * @param {object} input.data Object representing the payload that must be encoded.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{bytes: number[], fPort: number, errors: string[], warnings: string[]}}\n * An object containing:\n * - bytes: Byte array containing the downlink payload.\n * - fPort: The downlink LoRaWAN fPort.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction encodeDownlink(input) {\n  return {\n    fPort: 10,\n    bytes: [225, 230, 255, 0],\n  };\n}\n	t	Devide Profile Region AU915 - Region configuration 1 - MAC version LoRaWAN 1.0.3 - Regional parameters revision A (ABP)	{}	t	au915_1	f	0	{"rx2_dr": 8, "rx2_freq": 923300000, "rx1_delay": 1, "rx1_dr_offset": 0}	\N	{"timeout": 0}	\N	{"ts003_f_port": 202, "ts004_f_port": 201, "ts005_f_port": 200, "ts003_version": null, "ts004_version": null, "ts005_version": null}	\N		0	{}
+a82611dc-b236-422c-a1e5-87c155cfb3d7	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-10 14:33:45.174072+00	2026-11-09 20:29:25.195945+00	Devide Profile - AU915_1 - 1.0.3 - A (OTAA)	AU915	1.0.3	A	default	NONE	3600	1	t	f	t	{}	/**\n * Decode uplink function\n * \n * @param {object} input\n * @param {number[]} input.bytes Byte array containing the uplink payload, e.g. [255, 230, 255, 0]\n * @param {number} input.fPort Uplink fPort.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{data: object, errors: string[], warnings: string[]}}\n * An object containing:\n * - data: Object representing the decoded payload.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction decodeUplink(input) {\n  return {\n    data: {\n      temp: 22.5,\n    }\n  };\n}\n\n/**\n * Encode downlink function.\n * \n * @param {object} input\n * @param {object} input.data Object representing the payload that must be encoded.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{bytes: number[], fPort: number, errors: string[], warnings: string[]}}\n * An object containing:\n * - bytes: Byte array containing the downlink payload.\n * - fPort: The downlink LoRaWAN fPort.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction encodeDownlink(input) {\n  return {\n    fPort: 10,\n    bytes: [225, 230, 255, 0],\n  };\n}\n	t	Devide Profile Region AU915 - Region configuration 1 - MAC version LoRaWAN 1.0.3 - Regional parameters revision A (OTAA)	{}	t	au915_1	f	0	\N	\N	{"timeout": 0}	\N	{"ts003_f_port": 202, "ts004_f_port": 201, "ts005_f_port": 200, "ts003_version": null, "ts004_version": null, "ts005_version": null}	\N		0	{}
+cff3ab28-afa3-4909-8958-e01ab4984a3b	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-10 14:34:42.556927+00	2026-11-09 20:29:34.899577+00	Devide Profile - AU915_1 - 1.0.3 - B (OTAA)	AU915	1.0.3	B	default	NONE	3600	1	t	f	t	{}	/**\n * Decode uplink function\n * \n * @param {object} input\n * @param {number[]} input.bytes Byte array containing the uplink payload, e.g. [255, 230, 255, 0]\n * @param {number} input.fPort Uplink fPort.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{data: object, errors: string[], warnings: string[]}}\n * An object containing:\n * - data: Object representing the decoded payload.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction decodeUplink(input) {\n  return {\n    data: {\n      temp: 22.5,\n    }\n  };\n}\n\n/**\n * Encode downlink function.\n * \n * @param {object} input\n * @param {object} input.data Object representing the payload that must be encoded.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{bytes: number[], fPort: number, errors: string[], warnings: string[]}}\n * An object containing:\n * - bytes: Byte array containing the downlink payload.\n * - fPort: The downlink LoRaWAN fPort.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction encodeDownlink(input) {\n  return {\n    fPort: 10,\n    bytes: [225, 230, 255, 0],\n  };\n}\n	t	Devide Profile Region AU915 - Region configuration 1 - MAC version LoRaWAN 1.0.3 - Regional parameters revision B (OTAA)	{}	t	au915_1	f	0	\N	\N	{"timeout": 0}	\N	{"ts003_f_port": 202, "ts004_f_port": 201, "ts005_f_port": 200, "ts003_version": null, "ts004_version": null, "ts005_version": null}	\N		0	{}
+b9f5f095-7bcc-427f-8381-b9dd8eba0e1a	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-01 19:54:50.69657+00	2026-11-09 20:29:02.731209+00	Devide Profile - AU915_0 - 1.0.3 - A (ABP)	AU915	1.0.3	A	default	NONE	3600	1	f	f	t	{}	/**\n * Decode uplink function\n * \n * @param {object} input\n * @param {number[]} input.bytes Byte array containing the uplink payload, e.g. [255, 230, 255, 0]\n * @param {number} input.fPort Uplink fPort.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{data: object, errors: string[], warnings: string[]}}\n * An object containing:\n * - data: Object representing the decoded payload.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction decodeUplink(input) {\n  return {\n    data: {\n      temp: 22.5,\n    }\n  };\n}\n\n/**\n * Encode downlink function.\n * \n * @param {object} input\n * @param {object} input.data Object representing the payload that must be encoded.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{bytes: number[], fPort: number, errors: string[], warnings: string[]}}\n * An object containing:\n * - bytes: Byte array containing the downlink payload.\n * - fPort: The downlink LoRaWAN fPort.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction encodeDownlink(input) {\n  return {\n    fPort: 10,\n    bytes: [225, 230, 255, 0],\n  };\n}\n	t	Devide Profile Region AU915 - Region configuration 0 - MAC version LoRaWAN 1.0.3 - Regional parameters revision A (ABP)	{}	t	au915_0	f	0	{"rx2_dr": 8, "rx2_freq": 923300000, "rx1_delay": 1, "rx1_dr_offset": 0}	\N	{"timeout": 0}	\N	{"ts003_f_port": 202, "ts004_f_port": 201, "ts005_f_port": 200, "ts003_version": null, "ts004_version": null, "ts005_version": null}	\N		0	{}
+e630fede-3319-4974-931d-6bc00ee12c15	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-01 19:55:57.800665+00	2026-11-09 20:29:12.564107+00	Devide Profile - AU915_0 - 1.0.3 - B (ABP)	AU915	1.0.3	B	default	NONE	3600	1	f	f	t	{}	/**\n * Decode uplink function\n * \n * @param {object} input\n * @param {number[]} input.bytes Byte array containing the uplink payload, e.g. [255, 230, 255, 0]\n * @param {number} input.fPort Uplink fPort.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{data: object, errors: string[], warnings: string[]}}\n * An object containing:\n * - data: Object representing the decoded payload.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction decodeUplink(input) {\n  return {\n    data: {\n      temp: 22.5,\n    }\n  };\n}\n\n/**\n * Encode downlink function.\n * \n * @param {object} input\n * @param {object} input.data Object representing the payload that must be encoded.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{bytes: number[], fPort: number, errors: string[], warnings: string[]}}\n * An object containing:\n * - bytes: Byte array containing the downlink payload.\n * - fPort: The downlink LoRaWAN fPort.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction encodeDownlink(input) {\n  return {\n    fPort: 10,\n    bytes: [225, 230, 255, 0],\n  };\n}\n	t	Devide Profile Region AU915 - Region configuration 0 - MAC version LoRaWAN 1.0.3 - Regional parameters revision B (ABP)	{}	t	au915_0	f	0	{"rx2_dr": 8, "rx2_freq": 923300000, "rx1_delay": 1, "rx1_dr_offset": 0}	\N	{"timeout": 0}	\N	{"ts003_f_port": 202, "ts004_f_port": 201, "ts005_f_port": 200, "ts003_version": null, "ts004_version": null, "ts005_version": null}	\N		0	{}
+0cc8dba0-cbea-4784-b769-b0dcf0dab8ff	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-10 14:34:14.531822+00	2026-11-09 20:29:17.555455+00	Devide Profile - AU915_0 - 1.0.3 - B (OTAA)	AU915	1.0.3	B	default	NONE	3600	1	t	f	t	{}	/**\n * Decode uplink function\n * \n * @param {object} input\n * @param {number[]} input.bytes Byte array containing the uplink payload, e.g. [255, 230, 255, 0]\n * @param {number} input.fPort Uplink fPort.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{data: object, errors: string[], warnings: string[]}}\n * An object containing:\n * - data: Object representing the decoded payload.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction decodeUplink(input) {\n  return {\n    data: {\n      temp: 22.5,\n    }\n  };\n}\n\n/**\n * Encode downlink function.\n * \n * @param {object} input\n * @param {object} input.data Object representing the payload that must be encoded.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{bytes: number[], fPort: number, errors: string[], warnings: string[]}}\n * An object containing:\n * - bytes: Byte array containing the downlink payload.\n * - fPort: The downlink LoRaWAN fPort.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction encodeDownlink(input) {\n  return {\n    fPort: 10,\n    bytes: [225, 230, 255, 0],\n  };\n}\n	t	Devide Profile Region AU915 - Region configuration 0 - MAC version LoRaWAN 1.0.3 - Regional parameters revision B (OTAA)	{}	t	au915_0	f	0	\N	\N	{"timeout": 0}	\N	{"ts003_f_port": 202, "ts004_f_port": 201, "ts005_f_port": 200, "ts003_version": null, "ts004_version": null, "ts005_version": null}	\N		0	{}
+1bbfac1d-4e6f-44b4-8e48-aae6dcf6c591	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-01 19:56:31.807982+00	2026-11-09 20:29:30.644014+00	Devide Profile - AU915_1 - 1.0.3 - B (ABP)	AU915	1.0.3	B	default	NONE	3600	1	f	f	t	{}	/**\n * Decode uplink function\n * \n * @param {object} input\n * @param {number[]} input.bytes Byte array containing the uplink payload, e.g. [255, 230, 255, 0]\n * @param {number} input.fPort Uplink fPort.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{data: object, errors: string[], warnings: string[]}}\n * An object containing:\n * - data: Object representing the decoded payload.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction decodeUplink(input) {\n  return {\n    data: {\n      temp: 22.5,\n    }\n  };\n}\n\n/**\n * Encode downlink function.\n * \n * @param {object} input\n * @param {object} input.data Object representing the payload that must be encoded.\n * @param {Record<string, string>} input.variables Object containing the configured device variables.\n * \n * @returns {{bytes: number[], fPort: number, errors: string[], warnings: string[]}}\n * An object containing:\n * - bytes: Byte array containing the downlink payload.\n * - fPort: The downlink LoRaWAN fPort.\n * - errors: An array of errors (optional).\n * - warnings: An array of warnings (optional).\n */\nfunction encodeDownlink(input) {\n  return {\n    fPort: 10,\n    bytes: [225, 230, 255, 0],\n  };\n}\n	t	Devide Profile Region AU915 - Region configuration 1 - MAC version LoRaWAN 1.0.3 - Regional parameters revision B (ABP)	{}	t	au915_1	f	0	{"rx2_dr": 8, "rx2_freq": 923300000, "rx1_delay": 1, "rx1_dr_offset": 0}	\N	{"timeout": 0}	\N	{"ts003_f_port": 202, "ts004_f_port": 201, "ts005_f_port": 200, "ts003_version": null, "ts004_version": null, "ts005_version": null}	\N		0	{}
 \.
 
 
 --
--- TOC entry 3765 (class 0 OID 25029)
+-- TOC entry 3802 (class 0 OID 17789)
+-- Dependencies: 243
+-- Data for Name: device_profile_device; Type: TABLE DATA; Schema: public; Owner: chirpstack
+--
+
+COPY public.device_profile_device (id, vendor_id, created_at, updated_at, name, description, metadata) FROM stdin;
+\.
+
+
+--
+-- TOC entry 3785 (class 0 OID 17481)
 -- Dependencies: 226
 -- Data for Name: device_profile_template; Type: TABLE DATA; Schema: public; Owner: chirpstack
 --
@@ -692,7 +782,17 @@ Devide_Profile_Template_AU915_1_0_3_B_ABP	2026-05-01 19:53:52.729292+00	2026-05-
 
 
 --
--- TOC entry 3766 (class 0 OID 25034)
+-- TOC entry 3801 (class 0 OID 17779)
+-- Dependencies: 242
+-- Data for Name: device_profile_vendor; Type: TABLE DATA; Schema: public; Owner: chirpstack
+--
+
+COPY public.device_profile_vendor (id, created_at, updated_at, name, vendor_id, ouis, metadata) FROM stdin;
+\.
+
+
+--
+-- TOC entry 3786 (class 0 OID 17486)
 -- Dependencies: 227
 -- Data for Name: device_queue_item; Type: TABLE DATA; Schema: public; Owner: chirpstack
 --
@@ -702,7 +802,7 @@ COPY public.device_queue_item (id, dev_eui, created_at, f_port, confirmed, data,
 
 
 --
--- TOC entry 3767 (class 0 OID 25039)
+-- TOC entry 3787 (class 0 OID 17491)
 -- Dependencies: 228
 -- Data for Name: fuota_deployment; Type: TABLE DATA; Schema: public; Owner: chirpstack
 --
@@ -712,7 +812,7 @@ COPY public.fuota_deployment (id, created_at, updated_at, started_at, completed_
 
 
 --
--- TOC entry 3768 (class 0 OID 25044)
+-- TOC entry 3788 (class 0 OID 17496)
 -- Dependencies: 229
 -- Data for Name: fuota_deployment_device; Type: TABLE DATA; Schema: public; Owner: chirpstack
 --
@@ -722,7 +822,7 @@ COPY public.fuota_deployment_device (fuota_deployment_id, dev_eui, created_at, c
 
 
 --
--- TOC entry 3769 (class 0 OID 25049)
+-- TOC entry 3789 (class 0 OID 17501)
 -- Dependencies: 230
 -- Data for Name: fuota_deployment_gateway; Type: TABLE DATA; Schema: public; Owner: chirpstack
 --
@@ -732,7 +832,7 @@ COPY public.fuota_deployment_gateway (fuota_deployment_id, gateway_id, created_a
 
 
 --
--- TOC entry 3770 (class 0 OID 25054)
+-- TOC entry 3790 (class 0 OID 17506)
 -- Dependencies: 231
 -- Data for Name: fuota_deployment_job; Type: TABLE DATA; Schema: public; Owner: chirpstack
 --
@@ -742,23 +842,25 @@ COPY public.fuota_deployment_job (fuota_deployment_id, job, created_at, complete
 
 
 --
--- TOC entry 3771 (class 0 OID 25059)
+-- TOC entry 3791 (class 0 OID 17511)
 -- Dependencies: 232
 -- Data for Name: gateway; Type: TABLE DATA; Schema: public; Owner: chirpstack
 --
 
-COPY public.gateway (gateway_id, tenant_id, created_at, updated_at, last_seen_at, name, description, latitude, longitude, altitude, stats_interval_secs, tls_certificate, tags, properties) FROM stdin;
-\\xe45f01fffe10e12e	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-01 19:58:53.71564+00	2026-05-01 19:58:53.71564+00	2026-05-16 17:43:02.886344+00	005-gtw-elecrow-001 | IP: 192.168.18.205	Elecrow RPi4-GPS (Multi Channel)	51.482594	-0.007661	0	30	\N	{}	{"region_config_id": "au915_1", "region_common_name": "AU915"}
-\\xa840411b7dcc4150	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-01 19:59:14.136588+00	2026-05-01 19:59:14.136588+00	\N	006-gtw-dragino_lg02-001 | IP: 10.130.1.1	Dragino LG02 (Dual Channel)	51.482594	-0.007661	0	30	\N	{}	{}
-\\xb827ebfffea04db6	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-01 19:57:06.297593+00	2026-05-01 19:57:06.297593+00	2026-10-06 14:10:08.032284+00	001-gtw-rak831-001 | IP: 192.168.3.201	RAK831 RPi3-GPS (Multi Channel)	-3.73041	-40.98801	783	30	\N	{}	{"region_config_id": "au915_1", "region_common_name": "AU915"}
-\\xb827ebfffe158993	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-01 19:57:52.319327+00	2026-05-01 19:57:52.319327+00	2026-10-06 14:10:08.181173+00	002-gtw-radioenge-001 | IP: 192.168.3.202	Radioenge RPi3-RD43HATGPS (Multi Channel)	-3.73042	-40.98804	777	30	\N	{}	{"region_config_id": "au915_1", "region_common_name": "AU915"}
-\\xb827ebfffef81e69	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-01 19:58:11.271739+00	2026-05-01 19:58:11.271739+00	2026-10-06 14:10:20.070019+00	003-gtw-radioenge-002 | IP: 192.168.3.203	Radioenge RPi3-RD43HATGPS (Multi Channel)	-3.73039	-40.98797	778	30	\N	{}	{"region_config_id": "au915_1", "region_common_name": "AU915"}
-\\xb827ebfffe78ffce	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-01 19:58:29.414872+00	2026-05-01 19:58:29.414872+00	2026-10-06 14:10:26.487966+00	004-gtw-radioenge-003 | IP: 192.168.3.204	Radioenge RPi3-RD43HATGPS (Multi Channel)	-3.7304	-40.98807	779	30	\N	{}	{"region_config_id": "au915_1", "region_common_name": "AU915"}
+COPY public.gateway (gateway_id, tenant_id, created_at, updated_at, last_seen_at, name, description, latitude, longitude, altitude, stats_interval_secs, tls_certificate, tags, properties, downlink_priority) FROM stdin;
+\\xe45f01fffe10e12e	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-01 19:58:53.71564+00	2026-05-01 19:58:53.71564+00	2026-05-16 17:43:02.886344+00	005-gtw-elecrow-001 | IP: 192.168.18.205	Elecrow RPi4-GPS (Multi Channel)	51.482594	-0.007661	0	30	\N	{}	{"region_config_id": "au915_1", "region_common_name": "AU915"}	10
+\\xa840411b7dcc4150	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-01 19:59:14.136588+00	2026-05-01 19:59:14.136588+00	\N	006-gtw-dragino_lg02-001 | IP: 10.130.1.1	Dragino LG02 (Dual Channel)	51.482594	-0.007661	0	30	\N	{}	{}	10
+\\xb827ebfffea04db6	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-01 19:57:06.297593+00	2026-11-09 20:28:00.28573+00	2026-10-06 14:10:08.032284+00	001-gtw-rak831-001 | IP: 192.168.18.201	RAK831 RPi3-GPS (Multi Channel)	-3.73041	-40.98801	0	30	\N	{}	{"region_config_id": "au915_1", "region_common_name": "AU915"}	10
+\\xb827ebfffe158993	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-01 19:57:52.319327+00	2026-11-09 20:28:10.855955+00	2026-10-06 14:10:08.181173+00	002-gtw-radioenge-001 | IP: 192.168.18.202	Radioenge RPi3-RD43HATGPS (Multi Channel)	-3.73042	-40.98804	0	30	\N	{}	{"region_config_id": "au915_1", "region_common_name": "AU915"}	10
+\\xb827ebfffef81e69	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-01 19:58:11.271739+00	2026-11-09 20:28:19.756505+00	2026-10-06 14:10:20.070019+00	003-gtw-radioenge-002 | IP: 192.168.18.203	Radioenge RPi3-RD43HATGPS (Multi Channel)	-3.73039	-40.98797	0	30	\N	{}	{"region_config_id": "au915_1", "region_common_name": "AU915"}	10
+\\xb827ebfffe78ffce	3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-01 19:58:29.414872+00	2026-11-09 20:28:28.75735+00	2026-10-06 14:10:26.487966+00	004-gtw-radioenge-003 | IP: 192.168.18.204	Radioenge RPi3-RD43HATGPS (Multi Channel)	-3.7304	-40.98807	0	30	\N	{}	{"region_config_id": "au915_1", "region_common_name": "AU915"}	10
+\\xa842e3fffe90a3d5	3e00683f-4c83-4c14-b1e1-afe543221836	2026-11-09 20:32:05.495236+00	2026-11-09 20:32:05.495236+00	\N	008-gtw-elecrow-002 | IP: 192.168.18.102	Elecrow RPi4-GPS (Multi Channel)	0	0	0	30	\N	{}	{}	10
+\\xa842e3fffe90a3d4	3e00683f-4c83-4c14-b1e1-afe543221836	2026-11-09 20:30:47.616057+00	2026-11-09 20:30:47.616057+00	2026-11-09 21:05:40.003087+00	007-gtw-radioenge-004 | IP: 192.168.18.101	Radioenge RPi3-RD43HATGPS (Multi Channel)	-3.73039	-40.98799	769	30	\N	{}	{"gateway": "Gateway ESP32 with SX1301", "version": "0.0.1", "region_config_id": "au915_1", "region_common_name": "AU915"}	10
 \.
 
 
 --
--- TOC entry 3772 (class 0 OID 25064)
+-- TOC entry 3792 (class 0 OID 17516)
 -- Dependencies: 233
 -- Data for Name: multicast_group; Type: TABLE DATA; Schema: public; Owner: chirpstack
 --
@@ -768,7 +870,7 @@ COPY public.multicast_group (id, application_id, created_at, updated_at, name, r
 
 
 --
--- TOC entry 3773 (class 0 OID 25069)
+-- TOC entry 3793 (class 0 OID 17521)
 -- Dependencies: 234
 -- Data for Name: multicast_group_device; Type: TABLE DATA; Schema: public; Owner: chirpstack
 --
@@ -778,7 +880,7 @@ COPY public.multicast_group_device (multicast_group_id, dev_eui, created_at) FRO
 
 
 --
--- TOC entry 3774 (class 0 OID 25074)
+-- TOC entry 3794 (class 0 OID 17526)
 -- Dependencies: 235
 -- Data for Name: multicast_group_gateway; Type: TABLE DATA; Schema: public; Owner: chirpstack
 --
@@ -788,7 +890,7 @@ COPY public.multicast_group_gateway (multicast_group_id, gateway_id, created_at)
 
 
 --
--- TOC entry 3775 (class 0 OID 25079)
+-- TOC entry 3795 (class 0 OID 17531)
 -- Dependencies: 236
 -- Data for Name: multicast_group_queue_item; Type: TABLE DATA; Schema: public; Owner: chirpstack
 --
@@ -798,7 +900,7 @@ COPY public.multicast_group_queue_item (id, created_at, scheduler_run_after, mul
 
 
 --
--- TOC entry 3776 (class 0 OID 25084)
+-- TOC entry 3796 (class 0 OID 17536)
 -- Dependencies: 237
 -- Data for Name: relay_device; Type: TABLE DATA; Schema: public; Owner: chirpstack
 --
@@ -808,7 +910,7 @@ COPY public.relay_device (relay_dev_eui, dev_eui, created_at) FROM stdin;
 
 
 --
--- TOC entry 3777 (class 0 OID 25089)
+-- TOC entry 3797 (class 0 OID 17541)
 -- Dependencies: 238
 -- Data for Name: relay_gateway; Type: TABLE DATA; Schema: public; Owner: chirpstack
 --
@@ -818,18 +920,18 @@ COPY public.relay_gateway (tenant_id, relay_id, created_at, updated_at, last_see
 
 
 --
--- TOC entry 3778 (class 0 OID 25094)
+-- TOC entry 3798 (class 0 OID 17546)
 -- Dependencies: 239
 -- Data for Name: tenant; Type: TABLE DATA; Schema: public; Owner: chirpstack
 --
 
-COPY public.tenant (id, created_at, updated_at, name, description, can_have_gateways, max_device_count, max_gateway_count, private_gateways_up, private_gateways_down, tags) FROM stdin;
-3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-01 16:21:10.253969+00	2026-05-08 16:23:47.31098+00	ChirpStack	AdailSilva-IoT	t	0	0	f	f	{}
+COPY public.tenant (id, created_at, updated_at, name, description, can_have_gateways, max_device_count, max_gateway_count, private_gateways_up, private_gateways_down, tags, dev_addr_prefixes) FROM stdin;
+3e00683f-4c83-4c14-b1e1-afe543221836	2026-05-01 16:21:10.253969+00	2026-05-08 16:23:47.31098+00	ChirpStack	AdailSilva-IoT	t	0	0	f	f	{}	{}
 \.
 
 
 --
--- TOC entry 3779 (class 0 OID 25099)
+-- TOC entry 3799 (class 0 OID 17551)
 -- Dependencies: 240
 -- Data for Name: tenant_user; Type: TABLE DATA; Schema: public; Owner: chirpstack
 --
@@ -840,7 +942,7 @@ COPY public.tenant_user (tenant_id, user_id, created_at, updated_at, is_admin, i
 
 
 --
--- TOC entry 3780 (class 0 OID 25102)
+-- TOC entry 3800 (class 0 OID 17554)
 -- Dependencies: 241
 -- Data for Name: user; Type: TABLE DATA; Schema: public; Owner: chirpstack
 --
@@ -851,7 +953,7 @@ COPY public."user" (id, external_id, created_at, updated_at, is_admin, is_active
 
 
 --
--- TOC entry 3507 (class 2606 OID 25108)
+-- TOC entry 3515 (class 2606 OID 17560)
 -- Name: __diesel_schema_migrations __diesel_schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -860,7 +962,7 @@ ALTER TABLE ONLY public.__diesel_schema_migrations
 
 
 --
--- TOC entry 3509 (class 2606 OID 25110)
+-- TOC entry 3517 (class 2606 OID 17562)
 -- Name: api_key api_key_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -869,7 +971,7 @@ ALTER TABLE ONLY public.api_key
 
 
 --
--- TOC entry 3517 (class 2606 OID 25112)
+-- TOC entry 3525 (class 2606 OID 17564)
 -- Name: application_integration application_integration_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -878,7 +980,7 @@ ALTER TABLE ONLY public.application_integration
 
 
 --
--- TOC entry 3512 (class 2606 OID 25114)
+-- TOC entry 3520 (class 2606 OID 17566)
 -- Name: application application_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -887,7 +989,7 @@ ALTER TABLE ONLY public.application
 
 
 --
--- TOC entry 3529 (class 2606 OID 25116)
+-- TOC entry 3537 (class 2606 OID 17568)
 -- Name: device_keys device_keys_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -896,7 +998,7 @@ ALTER TABLE ONLY public.device_keys
 
 
 --
--- TOC entry 3519 (class 2606 OID 25118)
+-- TOC entry 3527 (class 2606 OID 17570)
 -- Name: device device_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -905,7 +1007,16 @@ ALTER TABLE ONLY public.device
 
 
 --
--- TOC entry 3531 (class 2606 OID 25120)
+-- TOC entry 3600 (class 2606 OID 17795)
+-- Name: device_profile_device device_profile_device_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
+--
+
+ALTER TABLE ONLY public.device_profile_device
+    ADD CONSTRAINT device_profile_device_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3539 (class 2606 OID 17572)
 -- Name: device_profile device_profile_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -914,7 +1025,7 @@ ALTER TABLE ONLY public.device_profile
 
 
 --
--- TOC entry 3536 (class 2606 OID 25122)
+-- TOC entry 3545 (class 2606 OID 17574)
 -- Name: device_profile_template device_profile_template_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -923,7 +1034,16 @@ ALTER TABLE ONLY public.device_profile_template
 
 
 --
--- TOC entry 3538 (class 2606 OID 25124)
+-- TOC entry 3595 (class 2606 OID 17785)
+-- Name: device_profile_vendor device_profile_vendor_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
+--
+
+ALTER TABLE ONLY public.device_profile_vendor
+    ADD CONSTRAINT device_profile_vendor_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3547 (class 2606 OID 17576)
 -- Name: device_queue_item device_queue_item_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -932,7 +1052,7 @@ ALTER TABLE ONLY public.device_queue_item
 
 
 --
--- TOC entry 3545 (class 2606 OID 25126)
+-- TOC entry 3554 (class 2606 OID 17578)
 -- Name: fuota_deployment_device fuota_deployment_device_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -941,7 +1061,7 @@ ALTER TABLE ONLY public.fuota_deployment_device
 
 
 --
--- TOC entry 3547 (class 2606 OID 25128)
+-- TOC entry 3556 (class 2606 OID 17580)
 -- Name: fuota_deployment_gateway fuota_deployment_gateway_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -950,7 +1070,7 @@ ALTER TABLE ONLY public.fuota_deployment_gateway
 
 
 --
--- TOC entry 3549 (class 2606 OID 25130)
+-- TOC entry 3558 (class 2606 OID 17582)
 -- Name: fuota_deployment_job fuota_deployment_job_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -959,7 +1079,7 @@ ALTER TABLE ONLY public.fuota_deployment_job
 
 
 --
--- TOC entry 3543 (class 2606 OID 25132)
+-- TOC entry 3552 (class 2606 OID 17584)
 -- Name: fuota_deployment fuota_deployment_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -968,7 +1088,7 @@ ALTER TABLE ONLY public.fuota_deployment
 
 
 --
--- TOC entry 3553 (class 2606 OID 25134)
+-- TOC entry 3562 (class 2606 OID 17586)
 -- Name: gateway gateway_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -977,7 +1097,7 @@ ALTER TABLE ONLY public.gateway
 
 
 --
--- TOC entry 3563 (class 2606 OID 25136)
+-- TOC entry 3572 (class 2606 OID 17588)
 -- Name: multicast_group_device multicast_group_device_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -986,7 +1106,7 @@ ALTER TABLE ONLY public.multicast_group_device
 
 
 --
--- TOC entry 3565 (class 2606 OID 25138)
+-- TOC entry 3574 (class 2606 OID 17590)
 -- Name: multicast_group_gateway multicast_group_gateway_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -995,7 +1115,7 @@ ALTER TABLE ONLY public.multicast_group_gateway
 
 
 --
--- TOC entry 3561 (class 2606 OID 25140)
+-- TOC entry 3570 (class 2606 OID 17592)
 -- Name: multicast_group multicast_group_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1004,7 +1124,7 @@ ALTER TABLE ONLY public.multicast_group
 
 
 --
--- TOC entry 3569 (class 2606 OID 25142)
+-- TOC entry 3578 (class 2606 OID 17594)
 -- Name: multicast_group_queue_item multicast_group_queue_item_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1013,7 +1133,7 @@ ALTER TABLE ONLY public.multicast_group_queue_item
 
 
 --
--- TOC entry 3571 (class 2606 OID 25144)
+-- TOC entry 3580 (class 2606 OID 17596)
 -- Name: relay_device relay_device_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1022,7 +1142,7 @@ ALTER TABLE ONLY public.relay_device
 
 
 --
--- TOC entry 3573 (class 2606 OID 25146)
+-- TOC entry 3582 (class 2606 OID 17598)
 -- Name: relay_gateway relay_gateway_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1031,7 +1151,7 @@ ALTER TABLE ONLY public.relay_gateway
 
 
 --
--- TOC entry 3577 (class 2606 OID 25148)
+-- TOC entry 3586 (class 2606 OID 17600)
 -- Name: tenant tenant_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1040,7 +1160,7 @@ ALTER TABLE ONLY public.tenant
 
 
 --
--- TOC entry 3580 (class 2606 OID 25150)
+-- TOC entry 3589 (class 2606 OID 17602)
 -- Name: tenant_user tenant_user_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1049,7 +1169,7 @@ ALTER TABLE ONLY public.tenant_user
 
 
 --
--- TOC entry 3584 (class 2606 OID 25152)
+-- TOC entry 3593 (class 2606 OID 17604)
 -- Name: user user_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1058,7 +1178,7 @@ ALTER TABLE ONLY public."user"
 
 
 --
--- TOC entry 3510 (class 1259 OID 25153)
+-- TOC entry 3518 (class 1259 OID 17605)
 -- Name: idx_api_key_tenant_id; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1066,7 +1186,7 @@ CREATE INDEX idx_api_key_tenant_id ON public.api_key USING btree (tenant_id);
 
 
 --
--- TOC entry 3513 (class 1259 OID 25154)
+-- TOC entry 3521 (class 1259 OID 17606)
 -- Name: idx_application_name_trgm; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1074,7 +1194,7 @@ CREATE INDEX idx_application_name_trgm ON public.application USING gin (name pub
 
 
 --
--- TOC entry 3514 (class 1259 OID 25155)
+-- TOC entry 3522 (class 1259 OID 17607)
 -- Name: idx_application_tags; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1082,7 +1202,7 @@ CREATE INDEX idx_application_tags ON public.application USING gin (tags);
 
 
 --
--- TOC entry 3515 (class 1259 OID 25156)
+-- TOC entry 3523 (class 1259 OID 17608)
 -- Name: idx_application_tenant_id; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1090,7 +1210,7 @@ CREATE INDEX idx_application_tenant_id ON public.application USING btree (tenant
 
 
 --
--- TOC entry 3520 (class 1259 OID 25157)
+-- TOC entry 3528 (class 1259 OID 17609)
 -- Name: idx_device_application_id; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1098,7 +1218,7 @@ CREATE INDEX idx_device_application_id ON public.device USING btree (application
 
 
 --
--- TOC entry 3521 (class 1259 OID 25158)
+-- TOC entry 3529 (class 1259 OID 17610)
 -- Name: idx_device_dev_addr; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1106,7 +1226,7 @@ CREATE INDEX idx_device_dev_addr ON public.device USING btree (dev_addr);
 
 
 --
--- TOC entry 3522 (class 1259 OID 25159)
+-- TOC entry 3530 (class 1259 OID 17611)
 -- Name: idx_device_dev_addr_trgm; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1114,7 +1234,7 @@ CREATE INDEX idx_device_dev_addr_trgm ON public.device USING gin (encode(dev_add
 
 
 --
--- TOC entry 3523 (class 1259 OID 25160)
+-- TOC entry 3531 (class 1259 OID 17612)
 -- Name: idx_device_dev_eui_trgm; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1122,7 +1242,7 @@ CREATE INDEX idx_device_dev_eui_trgm ON public.device USING gin (encode(dev_eui,
 
 
 --
--- TOC entry 3524 (class 1259 OID 25161)
+-- TOC entry 3532 (class 1259 OID 17613)
 -- Name: idx_device_device_profile_id; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1130,7 +1250,7 @@ CREATE INDEX idx_device_device_profile_id ON public.device USING btree (device_p
 
 
 --
--- TOC entry 3525 (class 1259 OID 25162)
+-- TOC entry 3533 (class 1259 OID 17614)
 -- Name: idx_device_name_trgm; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1138,7 +1258,31 @@ CREATE INDEX idx_device_name_trgm ON public.device USING gin (name public.gin_tr
 
 
 --
--- TOC entry 3532 (class 1259 OID 25163)
+-- TOC entry 3540 (class 1259 OID 17810)
+-- Name: idx_device_profile_device_id; Type: INDEX; Schema: public; Owner: chirpstack
+--
+
+CREATE INDEX idx_device_profile_device_id ON public.device_profile USING btree (device_id);
+
+
+--
+-- TOC entry 3601 (class 1259 OID 17802)
+-- Name: idx_device_profile_device_name_trgm; Type: INDEX; Schema: public; Owner: chirpstack
+--
+
+CREATE INDEX idx_device_profile_device_name_trgm ON public.device_profile_device USING gin (name public.gin_trgm_ops);
+
+
+--
+-- TOC entry 3602 (class 1259 OID 17801)
+-- Name: idx_device_profile_device_vendor_id; Type: INDEX; Schema: public; Owner: chirpstack
+--
+
+CREATE INDEX idx_device_profile_device_vendor_id ON public.device_profile_device USING btree (vendor_id);
+
+
+--
+-- TOC entry 3541 (class 1259 OID 17615)
 -- Name: idx_device_profile_name_trgm; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1146,7 +1290,7 @@ CREATE INDEX idx_device_profile_name_trgm ON public.device_profile USING gin (na
 
 
 --
--- TOC entry 3533 (class 1259 OID 25164)
+-- TOC entry 3542 (class 1259 OID 17616)
 -- Name: idx_device_profile_tags; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1154,7 +1298,7 @@ CREATE INDEX idx_device_profile_tags ON public.device_profile USING gin (tags);
 
 
 --
--- TOC entry 3534 (class 1259 OID 25165)
+-- TOC entry 3543 (class 1259 OID 17617)
 -- Name: idx_device_profile_tenant_id; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1162,7 +1306,31 @@ CREATE INDEX idx_device_profile_tenant_id ON public.device_profile USING btree (
 
 
 --
--- TOC entry 3539 (class 1259 OID 25166)
+-- TOC entry 3596 (class 1259 OID 17786)
+-- Name: idx_device_profile_vendor_name_trgm; Type: INDEX; Schema: public; Owner: chirpstack
+--
+
+CREATE INDEX idx_device_profile_vendor_name_trgm ON public.device_profile_vendor USING gin (name public.gin_trgm_ops);
+
+
+--
+-- TOC entry 3597 (class 1259 OID 17787)
+-- Name: idx_device_profile_vendor_ouis; Type: INDEX; Schema: public; Owner: chirpstack
+--
+
+CREATE INDEX idx_device_profile_vendor_ouis ON public.device_profile_vendor USING btree (ouis);
+
+
+--
+-- TOC entry 3598 (class 1259 OID 17788)
+-- Name: idx_device_profile_vendor_vendor_id; Type: INDEX; Schema: public; Owner: chirpstack
+--
+
+CREATE INDEX idx_device_profile_vendor_vendor_id ON public.device_profile_vendor USING btree (vendor_id);
+
+
+--
+-- TOC entry 3548 (class 1259 OID 17618)
 -- Name: idx_device_queue_item_created_at; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1170,7 +1338,7 @@ CREATE INDEX idx_device_queue_item_created_at ON public.device_queue_item USING 
 
 
 --
--- TOC entry 3540 (class 1259 OID 25167)
+-- TOC entry 3549 (class 1259 OID 17619)
 -- Name: idx_device_queue_item_dev_eui; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1178,7 +1346,7 @@ CREATE INDEX idx_device_queue_item_dev_eui ON public.device_queue_item USING btr
 
 
 --
--- TOC entry 3541 (class 1259 OID 25168)
+-- TOC entry 3550 (class 1259 OID 17620)
 -- Name: idx_device_queue_item_timeout_after; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1186,7 +1354,7 @@ CREATE INDEX idx_device_queue_item_timeout_after ON public.device_queue_item USI
 
 
 --
--- TOC entry 3526 (class 1259 OID 25169)
+-- TOC entry 3534 (class 1259 OID 17621)
 -- Name: idx_device_secondary_dev_addr; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1194,7 +1362,7 @@ CREATE INDEX idx_device_secondary_dev_addr ON public.device USING btree (seconda
 
 
 --
--- TOC entry 3527 (class 1259 OID 25170)
+-- TOC entry 3535 (class 1259 OID 17622)
 -- Name: idx_device_tags; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1202,7 +1370,7 @@ CREATE INDEX idx_device_tags ON public.device USING gin (tags);
 
 
 --
--- TOC entry 3550 (class 1259 OID 25171)
+-- TOC entry 3559 (class 1259 OID 17623)
 -- Name: idx_fuota_deployment_job_completed_at; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1210,7 +1378,7 @@ CREATE INDEX idx_fuota_deployment_job_completed_at ON public.fuota_deployment_jo
 
 
 --
--- TOC entry 3551 (class 1259 OID 25172)
+-- TOC entry 3560 (class 1259 OID 17624)
 -- Name: idx_fuota_deployment_job_scheduler_run_after; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1218,7 +1386,7 @@ CREATE INDEX idx_fuota_deployment_job_scheduler_run_after ON public.fuota_deploy
 
 
 --
--- TOC entry 3554 (class 1259 OID 25173)
+-- TOC entry 3563 (class 1259 OID 17625)
 -- Name: idx_gateway_id_trgm; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1226,7 +1394,7 @@ CREATE INDEX idx_gateway_id_trgm ON public.gateway USING gin (encode(gateway_id,
 
 
 --
--- TOC entry 3555 (class 1259 OID 25174)
+-- TOC entry 3564 (class 1259 OID 17626)
 -- Name: idx_gateway_name_trgm; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1234,7 +1402,7 @@ CREATE INDEX idx_gateway_name_trgm ON public.gateway USING gin (name public.gin_
 
 
 --
--- TOC entry 3556 (class 1259 OID 25175)
+-- TOC entry 3565 (class 1259 OID 17627)
 -- Name: idx_gateway_tags; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1242,7 +1410,7 @@ CREATE INDEX idx_gateway_tags ON public.gateway USING gin (tags);
 
 
 --
--- TOC entry 3557 (class 1259 OID 25176)
+-- TOC entry 3566 (class 1259 OID 17628)
 -- Name: idx_gateway_tenant_id; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1250,7 +1418,7 @@ CREATE INDEX idx_gateway_tenant_id ON public.gateway USING btree (tenant_id);
 
 
 --
--- TOC entry 3558 (class 1259 OID 25177)
+-- TOC entry 3567 (class 1259 OID 17629)
 -- Name: idx_multicast_group_application_id; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1258,7 +1426,7 @@ CREATE INDEX idx_multicast_group_application_id ON public.multicast_group USING 
 
 
 --
--- TOC entry 3559 (class 1259 OID 25178)
+-- TOC entry 3568 (class 1259 OID 17630)
 -- Name: idx_multicast_group_name_trgm; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1266,7 +1434,7 @@ CREATE INDEX idx_multicast_group_name_trgm ON public.multicast_group USING gin (
 
 
 --
--- TOC entry 3566 (class 1259 OID 25179)
+-- TOC entry 3575 (class 1259 OID 17631)
 -- Name: idx_multicast_group_queue_item_multicast_group_id; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1274,7 +1442,7 @@ CREATE INDEX idx_multicast_group_queue_item_multicast_group_id ON public.multica
 
 
 --
--- TOC entry 3567 (class 1259 OID 25180)
+-- TOC entry 3576 (class 1259 OID 17632)
 -- Name: idx_multicast_group_queue_item_scheduler_run_after; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1282,7 +1450,7 @@ CREATE INDEX idx_multicast_group_queue_item_scheduler_run_after ON public.multic
 
 
 --
--- TOC entry 3574 (class 1259 OID 25181)
+-- TOC entry 3583 (class 1259 OID 17633)
 -- Name: idx_tenant_name_trgm; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1290,7 +1458,7 @@ CREATE INDEX idx_tenant_name_trgm ON public.tenant USING gin (name public.gin_tr
 
 
 --
--- TOC entry 3575 (class 1259 OID 25182)
+-- TOC entry 3584 (class 1259 OID 17634)
 -- Name: idx_tenant_tags; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1298,7 +1466,7 @@ CREATE INDEX idx_tenant_tags ON public.tenant USING gin (tags);
 
 
 --
--- TOC entry 3578 (class 1259 OID 25183)
+-- TOC entry 3587 (class 1259 OID 17635)
 -- Name: idx_tenant_user_user_id; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1306,7 +1474,7 @@ CREATE INDEX idx_tenant_user_user_id ON public.tenant_user USING btree (user_id)
 
 
 --
--- TOC entry 3581 (class 1259 OID 25184)
+-- TOC entry 3590 (class 1259 OID 17636)
 -- Name: idx_user_email; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1314,7 +1482,7 @@ CREATE UNIQUE INDEX idx_user_email ON public."user" USING btree (email);
 
 
 --
--- TOC entry 3582 (class 1259 OID 25185)
+-- TOC entry 3591 (class 1259 OID 17637)
 -- Name: idx_user_external_id; Type: INDEX; Schema: public; Owner: chirpstack
 --
 
@@ -1322,7 +1490,7 @@ CREATE UNIQUE INDEX idx_user_external_id ON public."user" USING btree (external_
 
 
 --
--- TOC entry 3585 (class 2606 OID 25186)
+-- TOC entry 3603 (class 2606 OID 17638)
 -- Name: api_key api_key_tenant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1331,7 +1499,7 @@ ALTER TABLE ONLY public.api_key
 
 
 --
--- TOC entry 3587 (class 2606 OID 25191)
+-- TOC entry 3605 (class 2606 OID 17643)
 -- Name: application_integration application_integration_application_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1340,7 +1508,7 @@ ALTER TABLE ONLY public.application_integration
 
 
 --
--- TOC entry 3586 (class 2606 OID 25196)
+-- TOC entry 3604 (class 2606 OID 17648)
 -- Name: application application_tenant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1349,7 +1517,7 @@ ALTER TABLE ONLY public.application
 
 
 --
--- TOC entry 3588 (class 2606 OID 25201)
+-- TOC entry 3606 (class 2606 OID 17653)
 -- Name: device device_application_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1358,7 +1526,7 @@ ALTER TABLE ONLY public.device
 
 
 --
--- TOC entry 3589 (class 2606 OID 25206)
+-- TOC entry 3607 (class 2606 OID 17658)
 -- Name: device device_device_profile_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1367,7 +1535,7 @@ ALTER TABLE ONLY public.device
 
 
 --
--- TOC entry 3590 (class 2606 OID 25211)
+-- TOC entry 3608 (class 2606 OID 17663)
 -- Name: device_keys device_keys_dev_eui_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1376,7 +1544,25 @@ ALTER TABLE ONLY public.device_keys
 
 
 --
--- TOC entry 3591 (class 2606 OID 25216)
+-- TOC entry 3609 (class 2606 OID 17805)
+-- Name: device_profile device_profile_device_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
+--
+
+ALTER TABLE ONLY public.device_profile
+    ADD CONSTRAINT device_profile_device_id_fkey FOREIGN KEY (device_id) REFERENCES public.device_profile_device(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3632 (class 2606 OID 17796)
+-- Name: device_profile_device device_profile_device_vendor_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
+--
+
+ALTER TABLE ONLY public.device_profile_device
+    ADD CONSTRAINT device_profile_device_vendor_id_fkey FOREIGN KEY (vendor_id) REFERENCES public.device_profile_vendor(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3610 (class 2606 OID 17668)
 -- Name: device_profile device_profile_tenant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1385,7 +1571,7 @@ ALTER TABLE ONLY public.device_profile
 
 
 --
--- TOC entry 3592 (class 2606 OID 25221)
+-- TOC entry 3611 (class 2606 OID 17673)
 -- Name: device_queue_item device_queue_item_dev_eui_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1394,7 +1580,7 @@ ALTER TABLE ONLY public.device_queue_item
 
 
 --
--- TOC entry 3593 (class 2606 OID 25226)
+-- TOC entry 3612 (class 2606 OID 17678)
 -- Name: fuota_deployment fuota_deployment_application_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1403,7 +1589,7 @@ ALTER TABLE ONLY public.fuota_deployment
 
 
 --
--- TOC entry 3595 (class 2606 OID 25231)
+-- TOC entry 3614 (class 2606 OID 17683)
 -- Name: fuota_deployment_device fuota_deployment_device_dev_eui_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1412,7 +1598,7 @@ ALTER TABLE ONLY public.fuota_deployment_device
 
 
 --
--- TOC entry 3596 (class 2606 OID 25236)
+-- TOC entry 3615 (class 2606 OID 17688)
 -- Name: fuota_deployment_device fuota_deployment_device_fuota_deployment_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1421,7 +1607,7 @@ ALTER TABLE ONLY public.fuota_deployment_device
 
 
 --
--- TOC entry 3594 (class 2606 OID 25241)
+-- TOC entry 3613 (class 2606 OID 17693)
 -- Name: fuota_deployment fuota_deployment_device_profile_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1430,7 +1616,7 @@ ALTER TABLE ONLY public.fuota_deployment
 
 
 --
--- TOC entry 3597 (class 2606 OID 25246)
+-- TOC entry 3616 (class 2606 OID 17698)
 -- Name: fuota_deployment_gateway fuota_deployment_gateway_fuota_deployment_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1439,7 +1625,7 @@ ALTER TABLE ONLY public.fuota_deployment_gateway
 
 
 --
--- TOC entry 3598 (class 2606 OID 25251)
+-- TOC entry 3617 (class 2606 OID 17703)
 -- Name: fuota_deployment_gateway fuota_deployment_gateway_gateway_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1448,7 +1634,7 @@ ALTER TABLE ONLY public.fuota_deployment_gateway
 
 
 --
--- TOC entry 3599 (class 2606 OID 25256)
+-- TOC entry 3618 (class 2606 OID 17708)
 -- Name: fuota_deployment_job fuota_deployment_job_fuota_deployment_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1457,7 +1643,7 @@ ALTER TABLE ONLY public.fuota_deployment_job
 
 
 --
--- TOC entry 3600 (class 2606 OID 25261)
+-- TOC entry 3619 (class 2606 OID 17713)
 -- Name: gateway gateway_tenant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1466,7 +1652,7 @@ ALTER TABLE ONLY public.gateway
 
 
 --
--- TOC entry 3601 (class 2606 OID 25266)
+-- TOC entry 3620 (class 2606 OID 17718)
 -- Name: multicast_group multicast_group_application_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1475,7 +1661,7 @@ ALTER TABLE ONLY public.multicast_group
 
 
 --
--- TOC entry 3602 (class 2606 OID 25271)
+-- TOC entry 3621 (class 2606 OID 17723)
 -- Name: multicast_group_device multicast_group_device_dev_eui_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1484,7 +1670,7 @@ ALTER TABLE ONLY public.multicast_group_device
 
 
 --
--- TOC entry 3603 (class 2606 OID 25276)
+-- TOC entry 3622 (class 2606 OID 17728)
 -- Name: multicast_group_device multicast_group_device_multicast_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1493,7 +1679,7 @@ ALTER TABLE ONLY public.multicast_group_device
 
 
 --
--- TOC entry 3604 (class 2606 OID 25281)
+-- TOC entry 3623 (class 2606 OID 17733)
 -- Name: multicast_group_gateway multicast_group_gateway_gateway_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1502,7 +1688,7 @@ ALTER TABLE ONLY public.multicast_group_gateway
 
 
 --
--- TOC entry 3605 (class 2606 OID 25286)
+-- TOC entry 3624 (class 2606 OID 17738)
 -- Name: multicast_group_gateway multicast_group_gateway_multicast_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1511,7 +1697,7 @@ ALTER TABLE ONLY public.multicast_group_gateway
 
 
 --
--- TOC entry 3606 (class 2606 OID 25291)
+-- TOC entry 3625 (class 2606 OID 17743)
 -- Name: multicast_group_queue_item multicast_group_queue_item_gateway_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1520,7 +1706,7 @@ ALTER TABLE ONLY public.multicast_group_queue_item
 
 
 --
--- TOC entry 3607 (class 2606 OID 25296)
+-- TOC entry 3626 (class 2606 OID 17748)
 -- Name: multicast_group_queue_item multicast_group_queue_item_multicast_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1529,7 +1715,7 @@ ALTER TABLE ONLY public.multicast_group_queue_item
 
 
 --
--- TOC entry 3608 (class 2606 OID 25301)
+-- TOC entry 3627 (class 2606 OID 17753)
 -- Name: relay_device relay_device_dev_eui_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1538,7 +1724,7 @@ ALTER TABLE ONLY public.relay_device
 
 
 --
--- TOC entry 3609 (class 2606 OID 25306)
+-- TOC entry 3628 (class 2606 OID 17758)
 -- Name: relay_device relay_device_relay_dev_eui_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1547,7 +1733,7 @@ ALTER TABLE ONLY public.relay_device
 
 
 --
--- TOC entry 3610 (class 2606 OID 25311)
+-- TOC entry 3629 (class 2606 OID 17763)
 -- Name: relay_gateway relay_gateway_tenant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1556,7 +1742,7 @@ ALTER TABLE ONLY public.relay_gateway
 
 
 --
--- TOC entry 3611 (class 2606 OID 25316)
+-- TOC entry 3630 (class 2606 OID 17768)
 -- Name: tenant_user tenant_user_tenant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1565,7 +1751,7 @@ ALTER TABLE ONLY public.tenant_user
 
 
 --
--- TOC entry 3612 (class 2606 OID 25321)
+-- TOC entry 3631 (class 2606 OID 17773)
 -- Name: tenant_user tenant_user_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack
 --
 
@@ -1573,9 +1759,11 @@ ALTER TABLE ONLY public.tenant_user
     ADD CONSTRAINT tenant_user_user_id_fkey FOREIGN KEY (user_id) REFERENCES public."user"(id) ON DELETE CASCADE;
 
 
--- Completed on 2026-10-06 14:10:31 UTC
+-- Completed on 2026-11-09 18:05:48 -03
 
 --
 -- PostgreSQL database dump complete
 --
+
+\unrestrict 2kamwaTHZqBKXDoeW6ScJM09yVfXiA4T1TvVKeVqreajRSe4Kp2TnAS5uPFTpHz
 
