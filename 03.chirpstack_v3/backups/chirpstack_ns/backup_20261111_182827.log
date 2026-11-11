@@ -1,18 +1,18 @@
-[2026-11-11 09:15:42] ============================================================
-[2026-11-11 09:15:42]  Iniciando backup: chirpstack_ns
-[2026-11-11 09:15:42]  Namespace: chirpstack-v3 | Service: chirpstack-v3-ns-postgresql-service
-[2026-11-11 09:15:42]  Host: 127.0.0.1:5437
-[2026-11-11 09:15:42]  Usuario: chirpstack_ns
-[2026-11-11 09:15:42]  Destino: /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/03.chirpstack_v3/backups/chirpstack_ns
-[2026-11-11 09:15:42]  Versao: pg_dump (PostgreSQL) 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
-[2026-11-11 09:15:42] ============================================================
-[2026-11-11 09:15:42] Port-forward: kubectl port-forward -n chirpstack-v3 svc/chirpstack-v3-ns-postgresql-service 5437:5437
+[2026-11-11 18:28:27] ============================================================
+[2026-11-11 18:28:27]  Iniciando backup: chirpstack_ns
+[2026-11-11 18:28:27]  Namespace: chirpstack-v3 | Service: chirpstack-v3-ns-postgresql-service
+[2026-11-11 18:28:28]  Host: 127.0.0.1:5437
+[2026-11-11 18:28:28]  Usuario: chirpstack_ns
+[2026-11-11 18:28:28]  Destino: /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/03.chirpstack_v3/backups/chirpstack_ns
+[2026-11-11 18:28:28]  Versao: pg_dump (PostgreSQL) 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
+[2026-11-11 18:28:28] ============================================================
+[2026-11-11 18:28:28] Port-forward: kubectl port-forward -n chirpstack-v3 svc/chirpstack-v3-ns-postgresql-service 5437:5437
 Forwarding from 127.0.0.1:5437 -> 5432
 Forwarding from [::1]:5437 -> 5432
 Handling connection for 5437
-[2026-11-11 09:15:43]   OK - port-forward ativo (PID 39000)
-[2026-11-11 09:15:43] 
-[2026-11-11 09:15:43] [1/2] Gerando .backup (formato custom)...
+[2026-11-11 18:28:44]   OK - port-forward ativo (PID 265271)
+[2026-11-11 18:28:44] 
+[2026-11-11 18:28:44] [1/2] Gerando .backup (formato custom)...
 Handling connection for 5437
 pg_dump: last built-in OID is 16383
 pg_dump: reading extensions
@@ -80,9 +80,9 @@ pg_dump: dumping contents of table "public.multicast_queue"
 pg_dump: dumping contents of table "public.routing_profile"
 pg_dump: dumping contents of table "public.schema_migrations"
 pg_dump: dumping contents of table "public.service_profile"
-[2026-11-11 09:15:48]   OK - 41356 bytes - /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/03.chirpstack_v3/backups/chirpstack_ns/chirpstack_ns_20261111_091542.backup
-[2026-11-11 09:15:48] 
-[2026-11-11 09:15:48] [2/2] Gerando .sql (plain SQL)...
+[2026-11-11 18:28:49]   OK - 42058 bytes - /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/03.chirpstack_v3/backups/chirpstack_ns/chirpstack_ns_20261111_182827.backup
+[2026-11-11 18:28:49] 
+[2026-11-11 18:28:49] [2/2] Gerando .sql (plain SQL)...
 Handling connection for 5437
 pg_dump: last built-in OID is 16383
 pg_dump: reading extensions
@@ -251,9 +251,9 @@ pg_dump: creating FK CONSTRAINT "public.multicast_group multicast_group_service_
 pg_dump: creating FK CONSTRAINT "public.multicast_queue multicast_queue_gateway_id_fkey"
 pg_dump: creating FK CONSTRAINT "public.multicast_queue multicast_queue_multicast_group_id_fkey"
 pg_dump: creating ACL "SCHEMA public"
-[2026-11-11 09:15:53]   OK - 38881 bytes - /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/03.chirpstack_v3/backups/chirpstack_ns/chirpstack_ns_20261111_091542.sql
-[2026-11-11 09:15:53] 
-[2026-11-11 09:15:53] ============================================================
-[2026-11-11 09:15:53]  STATUS FINAL (chirpstack_ns): SUCESSO
-[2026-11-11 09:15:53]  Log: /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/03.chirpstack_v3/backups/chirpstack_ns/backup_20261111_091542.log
-[2026-11-11 09:15:53] ============================================================
+[2026-11-11 18:28:54]   OK - 42805 bytes - /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/03.chirpstack_v3/backups/chirpstack_ns/chirpstack_ns_20261111_182827.sql
+[2026-11-11 18:28:54] 
+[2026-11-11 18:28:54] ============================================================
+[2026-11-11 18:28:54]  STATUS FINAL (chirpstack_ns): SUCESSO
+[2026-11-11 18:28:54]  Log: /home/adailsilva/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/03.chirpstack_v3/backups/chirpstack_ns/backup_20261111_182827.log
+[2026-11-11 18:28:54] ============================================================

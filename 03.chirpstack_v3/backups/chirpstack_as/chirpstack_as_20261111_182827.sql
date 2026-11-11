@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict bO1AuxcSMe4A5MjQgAJWzCam38zQfLhmDPGM2zI4UVkacGLrFldwatdRjhnmGSZ
+\restrict RyPP0sFWYP17hCY7058WdC82Xjo9wedBybKu8hqfwJ6IRpvpiepApEwNWyLmaaY
 
 -- Dumped from database version 14.24
 -- Dumped by pg_dump version 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
 
--- Started on 2026-11-11 09:16:02 -03
+-- Started on 2026-11-11 18:29:07 -03
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -23,7 +23,7 @@ SET row_security = off;
 
 DROP DATABASE IF EXISTS chirpstack_as;
 --
--- TOC entry 3824 (class 1262 OID 17493)
+-- TOC entry 3826 (class 1262 OID 17493)
 -- Name: chirpstack_as; Type: DATABASE; Schema: -; Owner: chirpstack_as
 --
 
@@ -32,9 +32,9 @@ CREATE DATABASE chirpstack_as WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE
 
 ALTER DATABASE chirpstack_as OWNER TO chirpstack_as;
 
-\unrestrict bO1AuxcSMe4A5MjQgAJWzCam38zQfLhmDPGM2zI4UVkacGLrFldwatdRjhnmGSZ
+\unrestrict RyPP0sFWYP17hCY7058WdC82Xjo9wedBybKu8hqfwJ6IRpvpiepApEwNWyLmaaY
 \connect chirpstack_as
-\restrict bO1AuxcSMe4A5MjQgAJWzCam38zQfLhmDPGM2zI4UVkacGLrFldwatdRjhnmGSZ
+\restrict RyPP0sFWYP17hCY7058WdC82Xjo9wedBybKu8hqfwJ6IRpvpiepApEwNWyLmaaY
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -67,7 +67,7 @@ CREATE EXTENSION IF NOT EXISTS hstore WITH SCHEMA public;
 
 
 --
--- TOC entry 3826 (class 0 OID 0)
+-- TOC entry 3828 (class 0 OID 0)
 -- Dependencies: 2
 -- Name: EXTENSION hstore; Type: COMMENT; Schema: -; Owner: 
 --
@@ -84,7 +84,7 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
 
 
 --
--- TOC entry 3827 (class 0 OID 0)
+-- TOC entry 3829 (class 0 OID 0)
 -- Dependencies: 3
 -- Name: EXTENSION pg_trgm; Type: COMMENT; Schema: -; Owner: 
 --
@@ -97,7 +97,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 213 (class 1259 OID 17703)
+-- TOC entry 215 (class 1259 OID 17703)
 -- Name: api_key; Type: TABLE; Schema: public; Owner: chirpstack_as
 --
 
@@ -114,7 +114,7 @@ CREATE TABLE public.api_key (
 ALTER TABLE public.api_key OWNER TO chirpstack_as;
 
 --
--- TOC entry 214 (class 1259 OID 17707)
+-- TOC entry 216 (class 1259 OID 17707)
 -- Name: application; Type: TABLE; Schema: public; Owner: chirpstack_as
 --
 
@@ -134,7 +134,7 @@ CREATE TABLE public.application (
 ALTER TABLE public.application OWNER TO chirpstack_as;
 
 --
--- TOC entry 215 (class 1259 OID 17715)
+-- TOC entry 217 (class 1259 OID 17715)
 -- Name: application_id_seq; Type: SEQUENCE; Schema: public; Owner: chirpstack_as
 --
 
@@ -149,8 +149,8 @@ CREATE SEQUENCE public.application_id_seq
 ALTER SEQUENCE public.application_id_seq OWNER TO chirpstack_as;
 
 --
--- TOC entry 3828 (class 0 OID 0)
--- Dependencies: 215
+-- TOC entry 3830 (class 0 OID 0)
+-- Dependencies: 217
 -- Name: application_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chirpstack_as
 --
 
@@ -158,7 +158,7 @@ ALTER SEQUENCE public.application_id_seq OWNED BY public.application.id;
 
 
 --
--- TOC entry 216 (class 1259 OID 17716)
+-- TOC entry 218 (class 1259 OID 17716)
 -- Name: code_migration; Type: TABLE; Schema: public; Owner: chirpstack_as
 --
 
@@ -171,7 +171,7 @@ CREATE TABLE public.code_migration (
 ALTER TABLE public.code_migration OWNER TO chirpstack_as;
 
 --
--- TOC entry 217 (class 1259 OID 17721)
+-- TOC entry 219 (class 1259 OID 17721)
 -- Name: device; Type: TABLE; Schema: public; Owner: chirpstack_as
 --
 
@@ -201,7 +201,7 @@ CREATE TABLE public.device (
 ALTER TABLE public.device OWNER TO chirpstack_as;
 
 --
--- TOC entry 218 (class 1259 OID 17726)
+-- TOC entry 220 (class 1259 OID 17726)
 -- Name: device_keys; Type: TABLE; Schema: public; Owner: chirpstack_as
 --
 
@@ -218,7 +218,7 @@ CREATE TABLE public.device_keys (
 ALTER TABLE public.device_keys OWNER TO chirpstack_as;
 
 --
--- TOC entry 219 (class 1259 OID 17731)
+-- TOC entry 221 (class 1259 OID 17731)
 -- Name: device_multicast_group; Type: TABLE; Schema: public; Owner: chirpstack_as
 --
 
@@ -232,7 +232,7 @@ CREATE TABLE public.device_multicast_group (
 ALTER TABLE public.device_multicast_group OWNER TO chirpstack_as;
 
 --
--- TOC entry 220 (class 1259 OID 17736)
+-- TOC entry 222 (class 1259 OID 17736)
 -- Name: device_profile; Type: TABLE; Schema: public; Owner: chirpstack_as
 --
 
@@ -254,7 +254,7 @@ CREATE TABLE public.device_profile (
 ALTER TABLE public.device_profile OWNER TO chirpstack_as;
 
 --
--- TOC entry 221 (class 1259 OID 17741)
+-- TOC entry 223 (class 1259 OID 17741)
 -- Name: gateway; Type: TABLE; Schema: public; Owner: chirpstack_as
 --
 
@@ -284,7 +284,7 @@ CREATE TABLE public.gateway (
 ALTER TABLE public.gateway OWNER TO chirpstack_as;
 
 --
--- TOC entry 222 (class 1259 OID 17747)
+-- TOC entry 224 (class 1259 OID 17747)
 -- Name: gateway_ping; Type: TABLE; Schema: public; Owner: chirpstack_as
 --
 
@@ -300,7 +300,7 @@ CREATE TABLE public.gateway_ping (
 ALTER TABLE public.gateway_ping OWNER TO chirpstack_as;
 
 --
--- TOC entry 223 (class 1259 OID 17752)
+-- TOC entry 225 (class 1259 OID 17752)
 -- Name: gateway_ping_id_seq; Type: SEQUENCE; Schema: public; Owner: chirpstack_as
 --
 
@@ -315,8 +315,8 @@ CREATE SEQUENCE public.gateway_ping_id_seq
 ALTER SEQUENCE public.gateway_ping_id_seq OWNER TO chirpstack_as;
 
 --
--- TOC entry 3829 (class 0 OID 0)
--- Dependencies: 223
+-- TOC entry 3831 (class 0 OID 0)
+-- Dependencies: 225
 -- Name: gateway_ping_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chirpstack_as
 --
 
@@ -324,7 +324,7 @@ ALTER SEQUENCE public.gateway_ping_id_seq OWNED BY public.gateway_ping.id;
 
 
 --
--- TOC entry 224 (class 1259 OID 17753)
+-- TOC entry 226 (class 1259 OID 17753)
 -- Name: gateway_ping_rx; Type: TABLE; Schema: public; Owner: chirpstack_as
 --
 
@@ -344,7 +344,7 @@ CREATE TABLE public.gateway_ping_rx (
 ALTER TABLE public.gateway_ping_rx OWNER TO chirpstack_as;
 
 --
--- TOC entry 225 (class 1259 OID 17758)
+-- TOC entry 227 (class 1259 OID 17758)
 -- Name: gateway_ping_rx_id_seq; Type: SEQUENCE; Schema: public; Owner: chirpstack_as
 --
 
@@ -359,8 +359,8 @@ CREATE SEQUENCE public.gateway_ping_rx_id_seq
 ALTER SEQUENCE public.gateway_ping_rx_id_seq OWNER TO chirpstack_as;
 
 --
--- TOC entry 3830 (class 0 OID 0)
--- Dependencies: 225
+-- TOC entry 3832 (class 0 OID 0)
+-- Dependencies: 227
 -- Name: gateway_ping_rx_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chirpstack_as
 --
 
@@ -368,7 +368,7 @@ ALTER SEQUENCE public.gateway_ping_rx_id_seq OWNED BY public.gateway_ping_rx.id;
 
 
 --
--- TOC entry 226 (class 1259 OID 17759)
+-- TOC entry 228 (class 1259 OID 17759)
 -- Name: gateway_profile; Type: TABLE; Schema: public; Owner: chirpstack_as
 --
 
@@ -385,7 +385,7 @@ CREATE TABLE public.gateway_profile (
 ALTER TABLE public.gateway_profile OWNER TO chirpstack_as;
 
 --
--- TOC entry 227 (class 1259 OID 17762)
+-- TOC entry 229 (class 1259 OID 17762)
 -- Name: integration; Type: TABLE; Schema: public; Owner: chirpstack_as
 --
 
@@ -402,7 +402,7 @@ CREATE TABLE public.integration (
 ALTER TABLE public.integration OWNER TO chirpstack_as;
 
 --
--- TOC entry 228 (class 1259 OID 17767)
+-- TOC entry 230 (class 1259 OID 17767)
 -- Name: integration_id_seq; Type: SEQUENCE; Schema: public; Owner: chirpstack_as
 --
 
@@ -417,8 +417,8 @@ CREATE SEQUENCE public.integration_id_seq
 ALTER SEQUENCE public.integration_id_seq OWNER TO chirpstack_as;
 
 --
--- TOC entry 3831 (class 0 OID 0)
--- Dependencies: 228
+-- TOC entry 3833 (class 0 OID 0)
+-- Dependencies: 230
 -- Name: integration_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chirpstack_as
 --
 
@@ -426,7 +426,7 @@ ALTER SEQUENCE public.integration_id_seq OWNED BY public.integration.id;
 
 
 --
--- TOC entry 229 (class 1259 OID 17768)
+-- TOC entry 231 (class 1259 OID 17768)
 -- Name: multicast_group; Type: TABLE; Schema: public; Owner: chirpstack_as
 --
 
@@ -443,7 +443,7 @@ CREATE TABLE public.multicast_group (
 ALTER TABLE public.multicast_group OWNER TO chirpstack_as;
 
 --
--- TOC entry 230 (class 1259 OID 17773)
+-- TOC entry 232 (class 1259 OID 17773)
 -- Name: network_server; Type: TABLE; Schema: public; Owner: chirpstack_as
 --
 
@@ -469,7 +469,7 @@ CREATE TABLE public.network_server (
 ALTER TABLE public.network_server OWNER TO chirpstack_as;
 
 --
--- TOC entry 231 (class 1259 OID 17788)
+-- TOC entry 233 (class 1259 OID 17788)
 -- Name: network_server_id_seq; Type: SEQUENCE; Schema: public; Owner: chirpstack_as
 --
 
@@ -484,8 +484,8 @@ CREATE SEQUENCE public.network_server_id_seq
 ALTER SEQUENCE public.network_server_id_seq OWNER TO chirpstack_as;
 
 --
--- TOC entry 3832 (class 0 OID 0)
--- Dependencies: 231
+-- TOC entry 3834 (class 0 OID 0)
+-- Dependencies: 233
 -- Name: network_server_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chirpstack_as
 --
 
@@ -493,7 +493,7 @@ ALTER SEQUENCE public.network_server_id_seq OWNED BY public.network_server.id;
 
 
 --
--- TOC entry 232 (class 1259 OID 17789)
+-- TOC entry 234 (class 1259 OID 17789)
 -- Name: organization; Type: TABLE; Schema: public; Owner: chirpstack_as
 --
 
@@ -512,7 +512,7 @@ CREATE TABLE public.organization (
 ALTER TABLE public.organization OWNER TO chirpstack_as;
 
 --
--- TOC entry 233 (class 1259 OID 17792)
+-- TOC entry 235 (class 1259 OID 17792)
 -- Name: organization_id_seq; Type: SEQUENCE; Schema: public; Owner: chirpstack_as
 --
 
@@ -527,8 +527,8 @@ CREATE SEQUENCE public.organization_id_seq
 ALTER SEQUENCE public.organization_id_seq OWNER TO chirpstack_as;
 
 --
--- TOC entry 3833 (class 0 OID 0)
--- Dependencies: 233
+-- TOC entry 3835 (class 0 OID 0)
+-- Dependencies: 235
 -- Name: organization_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chirpstack_as
 --
 
@@ -536,7 +536,7 @@ ALTER SEQUENCE public.organization_id_seq OWNED BY public.organization.id;
 
 
 --
--- TOC entry 234 (class 1259 OID 17793)
+-- TOC entry 236 (class 1259 OID 17793)
 -- Name: organization_user; Type: TABLE; Schema: public; Owner: chirpstack_as
 --
 
@@ -555,7 +555,7 @@ CREATE TABLE public.organization_user (
 ALTER TABLE public.organization_user OWNER TO chirpstack_as;
 
 --
--- TOC entry 235 (class 1259 OID 17796)
+-- TOC entry 237 (class 1259 OID 17796)
 -- Name: organization_user_id_seq; Type: SEQUENCE; Schema: public; Owner: chirpstack_as
 --
 
@@ -570,8 +570,8 @@ CREATE SEQUENCE public.organization_user_id_seq
 ALTER SEQUENCE public.organization_user_id_seq OWNER TO chirpstack_as;
 
 --
--- TOC entry 3834 (class 0 OID 0)
--- Dependencies: 235
+-- TOC entry 3836 (class 0 OID 0)
+-- Dependencies: 237
 -- Name: organization_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chirpstack_as
 --
 
@@ -579,7 +579,7 @@ ALTER SEQUENCE public.organization_user_id_seq OWNED BY public.organization_user
 
 
 --
--- TOC entry 236 (class 1259 OID 17797)
+-- TOC entry 238 (class 1259 OID 17797)
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: chirpstack_as
 --
 
@@ -592,7 +592,7 @@ CREATE TABLE public.schema_migrations (
 ALTER TABLE public.schema_migrations OWNER TO chirpstack_as;
 
 --
--- TOC entry 237 (class 1259 OID 17800)
+-- TOC entry 239 (class 1259 OID 17800)
 -- Name: service_profile; Type: TABLE; Schema: public; Owner: chirpstack_as
 --
 
@@ -609,7 +609,7 @@ CREATE TABLE public.service_profile (
 ALTER TABLE public.service_profile OWNER TO chirpstack_as;
 
 --
--- TOC entry 238 (class 1259 OID 17803)
+-- TOC entry 240 (class 1259 OID 17803)
 -- Name: user; Type: TABLE; Schema: public; Owner: chirpstack_as
 --
 
@@ -632,7 +632,7 @@ CREATE TABLE public."user" (
 ALTER TABLE public."user" OWNER TO chirpstack_as;
 
 --
--- TOC entry 239 (class 1259 OID 17809)
+-- TOC entry 241 (class 1259 OID 17809)
 -- Name: user_id_seq; Type: SEQUENCE; Schema: public; Owner: chirpstack_as
 --
 
@@ -647,8 +647,8 @@ CREATE SEQUENCE public.user_id_seq
 ALTER SEQUENCE public.user_id_seq OWNER TO chirpstack_as;
 
 --
--- TOC entry 3835 (class 0 OID 0)
--- Dependencies: 239
+-- TOC entry 3837 (class 0 OID 0)
+-- Dependencies: 241
 -- Name: user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chirpstack_as
 --
 
@@ -656,7 +656,7 @@ ALTER SEQUENCE public.user_id_seq OWNED BY public."user".id;
 
 
 --
--- TOC entry 3517 (class 2604 OID 17810)
+-- TOC entry 3519 (class 2604 OID 17810)
 -- Name: application id; Type: DEFAULT; Schema: public; Owner: chirpstack_as
 --
 
@@ -664,7 +664,7 @@ ALTER TABLE ONLY public.application ALTER COLUMN id SET DEFAULT nextval('public.
 
 
 --
--- TOC entry 3522 (class 2604 OID 17811)
+-- TOC entry 3524 (class 2604 OID 17811)
 -- Name: gateway_ping id; Type: DEFAULT; Schema: public; Owner: chirpstack_as
 --
 
@@ -672,7 +672,7 @@ ALTER TABLE ONLY public.gateway_ping ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 3523 (class 2604 OID 17812)
+-- TOC entry 3525 (class 2604 OID 17812)
 -- Name: gateway_ping_rx id; Type: DEFAULT; Schema: public; Owner: chirpstack_as
 --
 
@@ -680,7 +680,7 @@ ALTER TABLE ONLY public.gateway_ping_rx ALTER COLUMN id SET DEFAULT nextval('pub
 
 
 --
--- TOC entry 3524 (class 2604 OID 17813)
+-- TOC entry 3526 (class 2604 OID 17813)
 -- Name: integration id; Type: DEFAULT; Schema: public; Owner: chirpstack_as
 --
 
@@ -688,7 +688,7 @@ ALTER TABLE ONLY public.integration ALTER COLUMN id SET DEFAULT nextval('public.
 
 
 --
--- TOC entry 3525 (class 2604 OID 17814)
+-- TOC entry 3527 (class 2604 OID 17814)
 -- Name: network_server id; Type: DEFAULT; Schema: public; Owner: chirpstack_as
 --
 
@@ -696,7 +696,7 @@ ALTER TABLE ONLY public.network_server ALTER COLUMN id SET DEFAULT nextval('publ
 
 
 --
--- TOC entry 3536 (class 2604 OID 17815)
+-- TOC entry 3538 (class 2604 OID 17815)
 -- Name: organization id; Type: DEFAULT; Schema: public; Owner: chirpstack_as
 --
 
@@ -704,7 +704,7 @@ ALTER TABLE ONLY public.organization ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 3537 (class 2604 OID 17816)
+-- TOC entry 3539 (class 2604 OID 17816)
 -- Name: organization_user id; Type: DEFAULT; Schema: public; Owner: chirpstack_as
 --
 
@@ -712,7 +712,7 @@ ALTER TABLE ONLY public.organization_user ALTER COLUMN id SET DEFAULT nextval('p
 
 
 --
--- TOC entry 3538 (class 2604 OID 17817)
+-- TOC entry 3540 (class 2604 OID 17817)
 -- Name: user id; Type: DEFAULT; Schema: public; Owner: chirpstack_as
 --
 
@@ -720,8 +720,8 @@ ALTER TABLE ONLY public."user" ALTER COLUMN id SET DEFAULT nextval('public.user_
 
 
 --
--- TOC entry 3792 (class 0 OID 17703)
--- Dependencies: 213
+-- TOC entry 3794 (class 0 OID 17703)
+-- Dependencies: 215
 -- Data for Name: api_key; Type: TABLE DATA; Schema: public; Owner: chirpstack_as
 --
 
@@ -730,8 +730,8 @@ COPY public.api_key (id, created_at, name, is_admin, organization_id, applicatio
 
 
 --
--- TOC entry 3793 (class 0 OID 17707)
--- Dependencies: 214
+-- TOC entry 3795 (class 0 OID 17707)
+-- Dependencies: 216
 -- Data for Name: application; Type: TABLE DATA; Schema: public; Owner: chirpstack_as
 --
 
@@ -741,8 +741,8 @@ COPY public.application (id, name, description, organization_id, service_profile
 
 
 --
--- TOC entry 3795 (class 0 OID 17716)
--- Dependencies: 216
+-- TOC entry 3797 (class 0 OID 17716)
+-- Dependencies: 218
 -- Data for Name: code_migration; Type: TABLE DATA; Schema: public; Owner: chirpstack_as
 --
 
@@ -755,22 +755,22 @@ validate_multicast_group_devices	2026-10-06 13:50:00.537245+00
 
 
 --
--- TOC entry 3796 (class 0 OID 17721)
--- Dependencies: 217
+-- TOC entry 3798 (class 0 OID 17721)
+-- Dependencies: 219
 -- Data for Name: device; Type: TABLE DATA; Schema: public; Owner: chirpstack_as
 --
 
 COPY public.device (dev_eui, created_at, updated_at, application_id, device_profile_id, name, description, last_seen_at, device_status_battery, device_status_margin, latitude, longitude, altitude, device_status_external_power_source, dr, variables, tags, dev_addr, app_s_key) FROM stdin;
-\\x08fdbe4bc604e8f8	2026-05-17 14:44:05.641163+00	2026-05-17 14:44:05.641163+00	1	1ba78642-7e07-4f89-8dd9-4e2f7a025348	ESP32 RF95W (ABP)	ESP32 with RF95W (ABP)	\N	\N	\N	\N	\N	\N	f	\N			\\x00aa88ca	\\xfd91d55dce3af1023093e289a1d9f3df
-\\xf38df5e5a31e63de	2026-05-17 14:45:29.062776+00	2026-05-17 14:45:29.062776+00	1	014c944b-cfa0-472d-94df-fd6c18843572	ESP32 RF95W (OTAA)	ESP32 with RF95W (OTAA)	\N	\N	\N	\N	\N	\N	f	\N			\\x00000000	\\x00000000000000000000000000000000
-\\x5f904b22e1ce458c	2026-11-09 20:36:18.591893+00	2026-11-10 15:10:05.372602+00	1	1ba78642-7e07-4f89-8dd9-4e2f7a025348	Radioenge EndDevice (STM32L071) - ABP	Radioenge LoRaWAN EndDevice - STM32L071CZT6 - AU915 - ABP	\N	\N	\N	\N	\N	\N	f	\N			\\x00d382ec	\\x677c441968c784f6f67be569d9320b70
-\\x0379385c33313636	2026-11-09 20:37:38.838725+00	2026-11-10 15:13:56.083793+00	1	014c944b-cfa0-472d-94df-fd6c18843572	Radioenge EndDevice (STM32L071) - OTAA	Radioenge LoRaWAN EndDevice - STM32L071CZT6 - AU915 - OTAA	\N	\N	\N	\N	\N	\N	f	\N			\\x00000000	\\x00000000000000000000000000000000
+\\x08fdbe4bc604e8f8	2026-05-17 14:44:05.641163+00	2026-11-11 20:49:27.065075+00	1	1ba78642-7e07-4f89-8dd9-4e2f7a025348	ESP32 RF95W (ABP)	ESP32 with RF95W (ABP)	\N	\N	\N	\N	\N	\N	f	\N			\\x00aa88ca	\\xfd91d55dce3af1023093e289a1d9f3df
+\\xf38df5e5a31e63de	2026-05-17 14:45:29.062776+00	2026-11-11 20:49:52.047054+00	1	014c944b-cfa0-472d-94df-fd6c18843572	ESP32 RF95W (OTAA)	ESP32 with RF95W (OTAA)	\N	\N	\N	\N	\N	\N	f	\N			\\x00000000	\\x00000000000000000000000000000000
+\\x5f904b22e1ce458c	2026-11-09 20:36:18.591893+00	2026-11-11 20:50:19.589749+00	1	27b8058c-f0ac-41d5-b64a-46416260f6fd	Radioenge EndDevice (STM32L071) - ABP	Radioenge LoRaWAN EndDevice - STM32L071CZT6 - AU915 - ABP	\N	\N	\N	\N	\N	\N	f	\N			\\x00d382ec	\\x677c441968c784f6f67be569d9320b70
+\\x0379385c33313636	2026-11-09 20:37:38.838725+00	2026-11-11 20:50:32.354676+00	1	9ba1268a-1f93-44bd-b8f8-d8c445e687a3	Radioenge EndDevice (STM32L071) - OTAA	Radioenge LoRaWAN EndDevice - STM32L071CZT6 - AU915 - OTAA	\N	\N	\N	\N	\N	\N	f	\N			\\x00000000	\\x00000000000000000000000000000000
 \.
 
 
 --
--- TOC entry 3797 (class 0 OID 17726)
--- Dependencies: 218
+-- TOC entry 3799 (class 0 OID 17726)
+-- Dependencies: 220
 -- Data for Name: device_keys; Type: TABLE DATA; Schema: public; Owner: chirpstack_as
 --
 
@@ -781,8 +781,8 @@ COPY public.device_keys (dev_eui, created_at, updated_at, nwk_key, join_nonce, a
 
 
 --
--- TOC entry 3798 (class 0 OID 17731)
--- Dependencies: 219
+-- TOC entry 3800 (class 0 OID 17731)
+-- Dependencies: 221
 -- Data for Name: device_multicast_group; Type: TABLE DATA; Schema: public; Owner: chirpstack_as
 --
 
@@ -791,44 +791,68 @@ COPY public.device_multicast_group (dev_eui, multicast_group_id, created_at) FRO
 
 
 --
--- TOC entry 3799 (class 0 OID 17736)
--- Dependencies: 220
+-- TOC entry 3801 (class 0 OID 17736)
+-- Dependencies: 222
 -- Data for Name: device_profile; Type: TABLE DATA; Schema: public; Owner: chirpstack_as
 --
 
 COPY public.device_profile (device_profile_id, network_server_id, organization_id, created_at, updated_at, name, payload_codec, payload_encoder_script, payload_decoder_script, tags, uplink_interval) FROM stdin;
-47dbd59c-dbeb-4341-a0ee-78ac23caa698	1	1	2026-05-10 15:51:16.571347+00	2026-11-09 21:37:38.425551+00	Devide Profile - AU915_0 - 1.0.3 - B (OTAA)	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}		60000000000
-1ba78642-7e07-4f89-8dd9-4e2f7a025348	1	1	2026-05-01 19:46:21.935149+00	2026-11-09 21:39:07.851814+00	Devide Profile - AU915_1 - 1.0.3 - B (ABP)	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}		60000000000
-d39827e9-1e0c-4f90-94c3-04df5fe12a25	1	1	2026-05-01 19:43:58.130383+00	2026-11-09 21:36:26.51386+00	Devide Profile - AU915_0 - 1.0.3 - A (ABP)	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}		60000000000
-014c944b-cfa0-472d-94df-fd6c18843572	1	1	2026-05-10 15:51:49.820815+00	2026-11-09 21:39:30.542078+00	Devide Profile - AU915_1 - 1.0.3 - B (OTAA)	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}		60000000000
-098744b6-72ba-494e-b276-2a5b831abde5	1	1	2026-05-01 19:44:53.822344+00	2026-11-09 21:38:02.225653+00	Devide Profile - AU915_1 - 1.0.3 - A (ABP)	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}		60000000000
-dbace6c1-ee3b-4b64-a737-499589bcad82	1	1	2026-05-10 15:49:27.072209+00	2026-11-09 21:36:48.714903+00	Devide Profile - AU915_0 - 1.0.3 - A (OTAA)	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}		60000000000
-1cf78205-847a-46f3-acef-8f55842431c9	1	1	2026-05-01 19:45:40.616376+00	2026-11-09 21:37:06.714621+00	Devide Profile - AU915_0 - 1.0.3 - B (ABP)	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}		60000000000
-edb8165c-2f2b-49ff-8dd9-448484c1f92a	1	1	2026-05-10 15:50:43.503973+00	2026-11-09 21:38:34.360636+00	Devide Profile - AU915_1 - 1.0.3 - A (OTAA)	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}		60000000000
+104cd055-dccf-463e-93cb-c9ab654d8a05	1	1	2026-11-11 20:14:05.414953+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_0 - 1.0.3 - B - ABP - Class A+B+C	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+96efa32d-213f-4ba8-97c5-ac68aad4dc7d	1	1	2026-11-11 20:14:05.414953+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_0 - 1.0.3 - B - OTAA - Class A+B	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+d39827e9-1e0c-4f90-94c3-04df5fe12a25	1	1	2026-05-01 19:43:58.130383+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_0 - 1.0.3 - A - ABP - Class A+C	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+9b3b4663-0c02-4d9e-846a-478ff35bea4b	1	1	2026-11-11 20:14:05.414953+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_1 - 1.0.3 - A - ABP - Class A	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+3bdc845c-988a-4854-ae37-b0c360b88888	1	1	2026-11-11 20:14:05.414953+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_1 - 1.0.3 - A - ABP - Class A+B+C	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+dbace6c1-ee3b-4b64-a737-499589bcad82	1	1	2026-05-10 15:49:27.072209+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_0 - 1.0.3 - A - OTAA - Class A+C	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+19bc5305-9df6-41a9-8579-d95b831dfe21	1	1	2026-11-11 20:14:05.414953+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_0 - 1.0.3 - A - ABP - Class A	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+5fcc3bd5-ee0a-443a-bd36-dc8090c9c829	1	1	2026-11-11 20:14:05.414953+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_0 - 1.0.3 - A - ABP - Class A+B	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+ca190bd8-03d3-4de0-bbd1-55b17951aa3c	1	1	2026-11-11 20:14:05.414953+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_0 - 1.0.3 - A - ABP - Class A+B+C	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+d5a66c27-ef0c-40d7-830a-7fcb83dcdb6c	1	1	2026-11-11 20:14:05.414953+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_0 - 1.0.3 - A - OTAA - Class A	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+95a463e5-a2df-4085-82fe-54de6cb1d049	1	1	2026-11-11 20:14:05.414953+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_0 - 1.0.3 - A - OTAA - Class A+B	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+f28cb0e4-c628-4e16-bb92-c2d8c1364a12	1	1	2026-11-11 20:14:05.414953+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_0 - 1.0.3 - A - OTAA - Class A+B+C	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+555168af-da8e-424d-b472-9870e1a5ed41	1	1	2026-11-11 20:14:05.414953+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_0 - 1.0.3 - B - ABP - Class A	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+57df4655-4f5d-4910-b370-fbdeb8a8ec08	1	1	2026-11-11 20:14:05.414953+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_0 - 1.0.3 - B - ABP - Class A+B	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+1cf78205-847a-46f3-acef-8f55842431c9	1	1	2026-05-01 19:45:40.616376+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_0 - 1.0.3 - B - ABP - Class A+C	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+14d9d145-1a45-4c76-bb47-65475489723d	1	1	2026-11-11 20:14:05.414953+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_0 - 1.0.3 - B - OTAA - Class A	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+94517506-edf7-4004-b7c7-01ade05f1693	1	1	2026-11-11 20:14:05.414953+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_0 - 1.0.3 - B - OTAA - Class A+B+C	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+47dbd59c-dbeb-4341-a0ee-78ac23caa698	1	1	2026-05-10 15:51:16.571347+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_0 - 1.0.3 - B - OTAA - Class A+C	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+e9d4aa8d-1d25-420d-9fa2-f679f66b56f4	1	1	2026-11-11 20:14:05.414953+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_1 - 1.0.3 - A - ABP - Class A+B	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+098744b6-72ba-494e-b276-2a5b831abde5	1	1	2026-05-01 19:44:53.822344+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_1 - 1.0.3 - A - ABP - Class A+C	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+0c74b73b-752d-4510-8cfe-eb42eb540610	1	1	2026-11-11 20:14:05.414953+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_1 - 1.0.3 - A - OTAA - Class A	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+8f59ed88-43c4-4192-83a7-4b409d8819a4	1	1	2026-11-11 20:14:05.414953+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_1 - 1.0.3 - A - OTAA - Class A+B	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+a61d9cfc-0de7-40ce-bfab-343d8d580e1a	1	1	2026-11-11 20:14:05.414953+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_1 - 1.0.3 - A - OTAA - Class A+B+C	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+edb8165c-2f2b-49ff-8dd9-448484c1f92a	1	1	2026-05-10 15:50:43.503973+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_1 - 1.0.3 - A - OTAA - Class A+C	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+1ba78642-7e07-4f89-8dd9-4e2f7a025348	1	1	2026-05-01 19:46:21.935149+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_1 - 1.0.3 - B - ABP - Class A	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+f71394cd-3746-40e5-867a-033706060da1	1	1	2026-11-11 20:14:05.414953+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_1 - 1.0.3 - B - ABP - Class A+B	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+6fe77ac6-9b6b-4a3e-b6f1-bb1372df0b25	1	1	2026-11-11 20:14:05.414953+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_1 - 1.0.3 - B - ABP - Class A+B+C	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+27b8058c-f0ac-41d5-b64a-46416260f6fd	1	1	2026-11-11 20:14:05.414953+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_1 - 1.0.3 - B - ABP - Class A+C	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+014c944b-cfa0-472d-94df-fd6c18843572	1	1	2026-05-10 15:51:49.820815+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_1 - 1.0.3 - B - OTAA - Class A	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+ef0a5d73-937a-43f4-8135-5c8fd970d075	1	1	2026-11-11 20:14:05.414953+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_1 - 1.0.3 - B - OTAA - Class A+B	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+ce7b57bb-e483-4659-8df9-7ee3b00451f7	1	1	2026-11-11 20:14:05.414953+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_1 - 1.0.3 - B - OTAA - Class A+B+C	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
+9ba1268a-1f93-44bd-b8f8-d8c445e687a3	1	1	2026-11-11 20:14:05.414953+00	2026-11-11 20:21:45.012989+00	Device Profile - AU915_1 - 1.0.3 - B - OTAA - Class A+C	CUSTOM_JS	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Downlink: { "text": "LED ON" } -> bytes\nfunction Encode(fPort, obj, variables) {\n  var text = obj && obj.text;\n\n  if (typeof text !== "string" || text.length === 0) {\n    throw new Error("informe o campo 'text' (string não vazia)");\n  }\n\n  var bytes = [];\n  for (var i = 0; i < text.length; i++) {\n    var c = text.charCodeAt(i);\n    if (c > 0x7e) {\n      throw new Error("caractere não ASCII na posição " + i + ": '" + text.charAt(i) + "'");\n    }\n    bytes.push(c);\n  }\n\n  return bytes;\n}\n	// Codec ASCII — ChirpStack v3 (otto / ES5)\n// Uplink: bytes -> { text, length, hex, fPort }\nfunction Decode(fPort, bytes, variables) {\n  if (!bytes || bytes.length === 0) {\n    throw new Error("payload vazio");\n  }\n\n  var text = "";\n  var hex = "";\n  var nonPrintable = 0;\n\n  for (var i = 0; i < bytes.length; i++) {\n    var b = bytes[i] & 0xff;\n    hex += (b < 16 ? "0" : "") + b.toString(16);\n\n    if (b >= 0x20 && b <= 0x7e) {\n      text += String.fromCharCode(b);          // ASCII imprimível\n    } else if (b === 0x0a || b === 0x0d || b === 0x09) {\n      text += String.fromCharCode(b);          // \\n \\r \\t\n    } else if (b === 0x00 && i === bytes.length - 1) {\n      // '\\0' final (string C): ignora\n    } else {\n      text += "?";\n      nonPrintable++;\n    }\n  }\n\n  var result = { text: text, length: bytes.length, hex: hex, fPort: fPort };\n\n  if (nonPrintable > 0) {\n    result.warning = nonPrintable + " byte(s) fora do ASCII imprimível substituído(s) por '?'";\n  }\n\n  return result;\n}\n		60000000000
 \.
 
 
 --
--- TOC entry 3800 (class 0 OID 17741)
--- Dependencies: 221
+-- TOC entry 3802 (class 0 OID 17741)
+-- Dependencies: 223
 -- Data for Name: gateway; Type: TABLE DATA; Schema: public; Owner: chirpstack_as
 --
 
 COPY public.gateway (mac, created_at, updated_at, name, description, organization_id, ping, last_ping_id, last_ping_sent_at, network_server_id, gateway_profile_id, first_seen_at, last_seen_at, latitude, longitude, altitude, tags, metadata, service_profile_id) FROM stdin;
-\\xb827ebfffe158993	2026-05-01 19:47:40.938468+00	2026-11-11 11:26:35.697075+00	002-gtw-radioenge-001	IP: 192.168.18.202 - Radioenge RPi3-RD43HATGPS (Multi Channel)	1	t	3099990	2026-11-11 11:26:35.686607+00	1	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	\N	\N	51.482594	-0.007661	0		\N	3dd33931-1cf7-4a56-8479-e88afa94a9e5
-\\xb827ebfffef81e69	2026-05-01 19:48:08.11787+00	2026-11-11 11:26:38.714424+00	003-gtw-radioenge-002	IP: 192.168.18.203 - Radioenge RPi3-RD43HATGPS (Multi Channel)	1	t	3099991	2026-11-11 11:26:38.711325+00	1	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	\N	\N	51.482594	-0.007661	0		\N	3dd33931-1cf7-4a56-8479-e88afa94a9e5
-\\xb827ebfffe78ffce	2026-05-01 19:48:38.200052+00	2026-11-11 11:26:39.724902+00	004-gtw-radioenge-003	IP: 192.168.18.204 - Radioenge RPi3-RD43HATGPS (Multi Channel)	1	t	3099992	2026-11-11 11:26:39.721889+00	1	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	\N	\N	51.482594	-0.007661	0		\N	3dd33931-1cf7-4a56-8479-e88afa94a9e5
-\\xe45f01fffe10e12e	2026-05-01 19:49:17.460415+00	2026-11-11 11:26:41.739311+00	005-gtw-elecrow-001	IP: 192.168.18.101 - Elecrow RPi4-GPS (Multi Channel)	1	t	3099993	2026-11-11 11:26:41.736367+00	1	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	\N	\N	51.482594	-0.007661	0		\N	3dd33931-1cf7-4a56-8479-e88afa94a9e5
-\\xa840411b7dcc4150	2026-05-01 19:49:45.273375+00	2026-11-11 11:26:42.752629+00	006-gtw-dragino_lg02-001	IP: 10.130.1.1 - Dragino LG02 (Dual Channel)	1	t	3099994	2026-11-11 11:26:42.749775+00	1	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	\N	\N	51.482594	-0.007661	0		\N	3dd33931-1cf7-4a56-8479-e88afa94a9e5
-\\xb827ebfffea04db6	2026-05-01 19:47:14.924914+00	2026-11-11 11:26:45.769208+00	001-gtw-rak831-001	IP: 192.168.18.201 - RAK831 RPi3-GPS (Multi Channel)	1	t	3099995	2026-11-11 11:26:45.766168+00	1	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	\N	\N	51.482594	-0.007661	0		\N	3dd33931-1cf7-4a56-8479-e88afa94a9e5
-\\xa842e3fffe90a3d4	2026-11-09 20:34:16.193031+00	2026-11-11 11:34:38.018139+00	007-gtw-radioenge-004	IP: 192.168.18.101 - Radioenge RPi3-RD43HATGPS (Multi Channel)	1	t	3099996	2026-11-11 11:34:37.88628+00	1	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	\N	\N	-3.735552	-40.9894912	0		\N	3dd33931-1cf7-4a56-8479-e88afa94a9e5
-\\xa842e3fffe90a3d5	2026-11-09 20:34:54.731018+00	2026-11-11 11:35:18.155204+00	008-gtw-elecrow-002	IP: 192.168.18.102 - Elecrow RPi4-GPS (Multi Channel)	1	t	3099997	2026-11-11 11:35:18.15184+00	1	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	\N	\N	-3.735552	-40.9894912	0		\N	3dd33931-1cf7-4a56-8479-e88afa94a9e5
+\\xa842e3fffe90a3d4	2026-11-09 20:34:16.193031+00	2026-11-11 20:34:44.305549+00	007-gtw-radioenge-004	IP: 192.168.18.101 - Radioenge RPi3-RD43HATGPS (Multi Channel)	1	t	3100068	2026-11-11 20:34:44.2884+00	1	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	\N	\N	-3.735552	-40.9894912	0		\N	3dd33931-1cf7-4a56-8479-e88afa94a9e5
+\\xa842e3fffe90a3d5	2026-11-09 20:34:54.731018+00	2026-11-11 20:35:24.470896+00	008-gtw-elecrow-002	IP: 192.168.18.102 - Elecrow RPi4-GPS (Multi Channel)	1	t	3100069	2026-11-11 20:35:24.467079+00	1	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	\N	\N	-3.735552	-40.9894912	0		\N	3dd33931-1cf7-4a56-8479-e88afa94a9e5
+\\xb827ebfffe158993	2026-05-01 19:47:40.938468+00	2026-11-11 21:26:41.545519+00	002-gtw-radioenge-001	IP: 192.168.18.202 - Radioenge RPi3-RD43HATGPS (Multi Channel)	1	t	3100070	2026-11-11 21:26:41.532335+00	1	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	\N	\N	51.482594	-0.007661	0		\N	3dd33931-1cf7-4a56-8479-e88afa94a9e5
+\\xb827ebfffef81e69	2026-05-01 19:48:08.11787+00	2026-11-11 21:26:44.569459+00	003-gtw-radioenge-002	IP: 192.168.18.203 - Radioenge RPi3-RD43HATGPS (Multi Channel)	1	t	3100071	2026-11-11 21:26:44.56239+00	1	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	\N	\N	51.482594	-0.007661	0		\N	3dd33931-1cf7-4a56-8479-e88afa94a9e5
+\\xb827ebfffe78ffce	2026-05-01 19:48:38.200052+00	2026-11-11 21:26:45.586982+00	004-gtw-radioenge-003	IP: 192.168.18.204 - Radioenge RPi3-RD43HATGPS (Multi Channel)	1	t	3100072	2026-11-11 21:26:45.580025+00	1	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	\N	\N	51.482594	-0.007661	0		\N	3dd33931-1cf7-4a56-8479-e88afa94a9e5
+\\xe45f01fffe10e12e	2026-05-01 19:49:17.460415+00	2026-11-11 21:26:47.600901+00	005-gtw-elecrow-001	IP: 192.168.18.101 - Elecrow RPi4-GPS (Multi Channel)	1	t	3100073	2026-11-11 21:26:47.597411+00	1	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	\N	\N	51.482594	-0.007661	0		\N	3dd33931-1cf7-4a56-8479-e88afa94a9e5
+\\xa840411b7dcc4150	2026-05-01 19:49:45.273375+00	2026-11-11 21:26:48.612456+00	006-gtw-dragino_lg02-001	IP: 10.130.1.1 - Dragino LG02 (Dual Channel)	1	t	3100074	2026-11-11 21:26:48.609337+00	1	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	\N	\N	51.482594	-0.007661	0		\N	3dd33931-1cf7-4a56-8479-e88afa94a9e5
+\\xb827ebfffea04db6	2026-05-01 19:47:14.924914+00	2026-11-11 21:26:51.631832+00	001-gtw-rak831-001	IP: 192.168.18.201 - RAK831 RPi3-GPS (Multi Channel)	1	t	3100075	2026-11-11 21:26:51.629051+00	1	2064912e-be4a-4dd2-9b7e-702ccff3dcb4	\N	\N	51.482594	-0.007661	0		\N	3dd33931-1cf7-4a56-8479-e88afa94a9e5
 \.
 
 
 --
--- TOC entry 3801 (class 0 OID 17747)
--- Dependencies: 222
+-- TOC entry 3803 (class 0 OID 17747)
+-- Dependencies: 224
 -- Data for Name: gateway_ping; Type: TABLE DATA; Schema: public; Owner: chirpstack_as
 --
 
@@ -1968,91 +1992,109 @@ COPY public.gateway_ping (id, created_at, gateway_mac, frequency, dr) FROM stdin
 165595	2026-05-11 02:48:13.475153+00	\\xb827ebfffe158993	916800000	5
 165596	2026-05-11 02:48:14.495281+00	\\xb827ebfffef81e69	916800000	5
 165597	2026-05-11 02:48:15.510419+00	\\xb827ebfffe78ffce	916800000	5
+3099998	2026-11-11 12:26:36.133074+00	\\xb827ebfffe158993	916800000	5
 165599	2026-05-11 02:48:17.529882+00	\\xa840411b7dcc4150	916800000	5
 165600	2026-05-11 02:48:18.540795+00	\\xb827ebfffea04db6	916800000	5
 165601	2026-05-11 03:48:14.310995+00	\\xb827ebfffe158993	916800000	5
 165602	2026-05-11 03:48:15.328934+00	\\xb827ebfffef81e69	916800000	5
 165603	2026-05-11 03:48:16.341487+00	\\xb827ebfffe78ffce	916800000	5
+3099999	2026-11-11 12:26:39.167903+00	\\xb827ebfffef81e69	916800000	5
 165605	2026-05-11 03:48:18.376705+00	\\xa840411b7dcc4150	916800000	5
 165606	2026-05-11 03:48:19.388215+00	\\xb827ebfffea04db6	916800000	5
 165607	2026-05-11 04:48:14.985071+00	\\xb827ebfffe158993	916800000	5
 165608	2026-05-11 04:48:16.007251+00	\\xb827ebfffef81e69	916800000	5
 165609	2026-05-11 04:48:17.025662+00	\\xb827ebfffe78ffce	916800000	5
+3100000	2026-11-11 12:26:40.179702+00	\\xb827ebfffe78ffce	916800000	5
 165611	2026-05-11 04:48:19.062431+00	\\xa840411b7dcc4150	916800000	5
 165612	2026-05-11 04:48:20.072667+00	\\xb827ebfffea04db6	916800000	5
 165613	2026-05-11 05:48:15.479804+00	\\xb827ebfffe158993	916800000	5
 165614	2026-05-11 05:48:16.499157+00	\\xb827ebfffef81e69	916800000	5
 165615	2026-05-11 05:48:17.508287+00	\\xb827ebfffe78ffce	916800000	5
+3100001	2026-11-11 12:26:42.194292+00	\\xe45f01fffe10e12e	916800000	5
 165617	2026-05-11 05:48:19.528072+00	\\xa840411b7dcc4150	916800000	5
 165618	2026-05-11 05:48:20.537501+00	\\xb827ebfffea04db6	916800000	5
 165774	2026-05-12 07:48:33.911584+00	\\xb827ebfffea04db6	916800000	5
 165775	2026-05-12 08:48:29.001804+00	\\xb827ebfffe158993	916800000	5
 165776	2026-05-12 08:48:30.019271+00	\\xb827ebfffef81e69	916800000	5
 165777	2026-05-12 08:48:31.037303+00	\\xb827ebfffe78ffce	916800000	5
+3100002	2026-11-11 12:26:43.208019+00	\\xa840411b7dcc4150	916800000	5
 165779	2026-05-12 08:48:33.067527+00	\\xa840411b7dcc4150	916800000	5
 165780	2026-05-12 08:48:34.078961+00	\\xb827ebfffea04db6	916800000	5
 165823	2026-05-12 16:48:33.131953+00	\\xb827ebfffe158993	916800000	5
 165824	2026-05-12 16:48:34.150005+00	\\xb827ebfffef81e69	916800000	5
 165825	2026-05-12 16:48:35.158893+00	\\xb827ebfffe78ffce	916800000	5
+3100003	2026-11-11 12:26:46.225635+00	\\xb827ebfffea04db6	916800000	5
 165827	2026-05-12 16:48:37.178403+00	\\xa840411b7dcc4150	916800000	5
 165828	2026-05-12 16:48:38.187546+00	\\xb827ebfffea04db6	916800000	5
 165829	2026-05-12 17:48:33.877617+00	\\xb827ebfffe158993	916800000	5
 165830	2026-05-12 17:48:34.897499+00	\\xb827ebfffef81e69	916800000	5
 165831	2026-05-12 17:48:35.906366+00	\\xb827ebfffe78ffce	916800000	5
+3100004	2026-11-11 12:34:38.861669+00	\\xa842e3fffe90a3d4	916800000	5
 165833	2026-05-12 17:48:37.925196+00	\\xa840411b7dcc4150	916800000	5
 165834	2026-05-12 17:48:38.934726+00	\\xb827ebfffea04db6	916800000	5
 165835	2026-05-12 18:48:34.132681+00	\\xb827ebfffe158993	916800000	5
 165836	2026-05-12 18:48:35.151078+00	\\xb827ebfffef81e69	916800000	5
 165837	2026-05-12 18:48:36.16037+00	\\xb827ebfffe78ffce	916800000	5
+3100005	2026-11-11 12:35:19.129538+00	\\xa842e3fffe90a3d5	916800000	5
 165839	2026-05-12 18:48:38.181774+00	\\xa840411b7dcc4150	916800000	5
 165840	2026-05-12 18:48:39.194485+00	\\xb827ebfffea04db6	916800000	5
 165841	2026-05-12 19:48:34.517673+00	\\xb827ebfffe158993	916800000	5
 165842	2026-05-12 19:48:35.537806+00	\\xb827ebfffef81e69	916800000	5
 165843	2026-05-12 19:48:36.548686+00	\\xb827ebfffe78ffce	916800000	5
+3100006	2026-11-11 13:26:37.10376+00	\\xb827ebfffe158993	916800000	5
 165845	2026-05-12 19:48:38.568024+00	\\xa840411b7dcc4150	916800000	5
 165846	2026-05-12 19:48:39.576871+00	\\xb827ebfffea04db6	916800000	5
 165847	2026-05-12 20:48:34.941105+00	\\xb827ebfffe158993	916800000	5
 165848	2026-05-12 20:48:35.962135+00	\\xb827ebfffef81e69	916800000	5
 165849	2026-05-12 20:48:36.97081+00	\\xb827ebfffe78ffce	916800000	5
+3100007	2026-11-11 13:26:40.128797+00	\\xb827ebfffef81e69	916800000	5
 165851	2026-05-12 20:48:38.992811+00	\\xa840411b7dcc4150	916800000	5
 165619	2026-05-11 06:48:16.156517+00	\\xb827ebfffe158993	916800000	5
 165620	2026-05-11 06:48:17.177262+00	\\xb827ebfffef81e69	916800000	5
 165621	2026-05-11 06:48:18.189164+00	\\xb827ebfffe78ffce	916800000	5
+3100008	2026-11-11 13:26:41.139727+00	\\xb827ebfffe78ffce	916800000	5
 165623	2026-05-11 06:48:20.211122+00	\\xa840411b7dcc4150	916800000	5
 165624	2026-05-11 06:48:21.222194+00	\\xb827ebfffea04db6	916800000	5
 165625	2026-05-11 07:48:16.283476+00	\\xb827ebfffe158993	916800000	5
 165626	2026-05-11 07:48:17.30326+00	\\xb827ebfffef81e69	916800000	5
 165627	2026-05-11 07:48:18.313153+00	\\xb827ebfffe78ffce	916800000	5
+3100009	2026-11-11 13:26:43.154114+00	\\xe45f01fffe10e12e	916800000	5
 165629	2026-05-11 07:48:20.335581+00	\\xa840411b7dcc4150	916800000	5
 165630	2026-05-11 07:48:21.345105+00	\\xb827ebfffea04db6	916800000	5
 165631	2026-05-11 08:48:17.266113+00	\\xb827ebfffe158993	916800000	5
 165632	2026-05-11 08:48:18.285667+00	\\xb827ebfffef81e69	916800000	5
 165633	2026-05-11 08:48:19.295267+00	\\xb827ebfffe78ffce	916800000	5
+3100010	2026-11-11 13:26:44.171291+00	\\xa840411b7dcc4150	916800000	5
 165635	2026-05-11 08:48:21.316231+00	\\xa840411b7dcc4150	916800000	5
 165636	2026-05-11 08:48:22.330955+00	\\xb827ebfffea04db6	916800000	5
 165637	2026-05-11 09:48:17.473362+00	\\xb827ebfffe158993	916800000	5
 165638	2026-05-11 09:48:18.491093+00	\\xb827ebfffef81e69	916800000	5
 165639	2026-05-11 09:48:19.503418+00	\\xb827ebfffe78ffce	916800000	5
+3100011	2026-11-11 13:26:47.195361+00	\\xb827ebfffea04db6	916800000	5
 165641	2026-05-11 09:48:21.524731+00	\\xa840411b7dcc4150	916800000	5
 165642	2026-05-11 09:48:22.535465+00	\\xb827ebfffea04db6	916800000	5
 165643	2026-05-11 10:48:17.668647+00	\\xb827ebfffe158993	916800000	5
 165644	2026-05-11 10:48:18.686707+00	\\xb827ebfffef81e69	916800000	5
 165645	2026-05-11 10:48:19.695995+00	\\xb827ebfffe78ffce	916800000	5
+3100012	2026-11-11 13:34:39.342052+00	\\xa842e3fffe90a3d4	916800000	5
 165647	2026-05-11 10:48:21.719337+00	\\xa840411b7dcc4150	916800000	5
 165648	2026-05-11 10:48:22.741354+00	\\xb827ebfffea04db6	916800000	5
 165649	2026-05-11 11:48:18.269046+00	\\xb827ebfffe158993	916800000	5
 165650	2026-05-11 11:48:19.28986+00	\\xb827ebfffef81e69	916800000	5
 165651	2026-05-11 11:48:20.299206+00	\\xb827ebfffe78ffce	916800000	5
+3100013	2026-11-11 13:35:19.547656+00	\\xa842e3fffe90a3d5	916800000	5
 165653	2026-05-11 11:48:22.318867+00	\\xa840411b7dcc4150	916800000	5
 165654	2026-05-11 11:48:23.329313+00	\\xb827ebfffea04db6	916800000	5
 165655	2026-05-11 12:48:18.749639+00	\\xb827ebfffe158993	916800000	5
 165656	2026-05-11 12:48:19.770785+00	\\xb827ebfffef81e69	916800000	5
 165657	2026-05-11 12:48:20.785509+00	\\xb827ebfffe78ffce	916800000	5
+3100014	2026-11-11 14:26:37.337057+00	\\xb827ebfffe158993	916800000	5
 165659	2026-05-11 12:48:22.811539+00	\\xa840411b7dcc4150	916800000	5
 165660	2026-05-11 12:48:23.821349+00	\\xb827ebfffea04db6	916800000	5
 165661	2026-05-11 13:48:19.262976+00	\\xb827ebfffe158993	916800000	5
 165662	2026-05-11 13:48:20.286225+00	\\xb827ebfffef81e69	916800000	5
 165663	2026-05-11 13:48:21.297598+00	\\xb827ebfffe78ffce	916800000	5
+3100015	2026-11-11 14:26:40.361896+00	\\xb827ebfffef81e69	916800000	5
 165665	2026-05-11 13:48:23.320827+00	\\xa840411b7dcc4150	916800000	5
 165666	2026-05-11 13:48:24.331563+00	\\xb827ebfffea04db6	916800000	5
 165667	2026-05-11 14:48:19.962258+00	\\xb827ebfffe158993	916800000	5
@@ -2060,230 +2102,276 @@ COPY public.gateway_ping (id, created_at, gateway_mac, frequency, dr) FROM stdin
 165523	2026-05-10 14:48:08.156916+00	\\xb827ebfffe158993	916800000	5
 165524	2026-05-10 14:48:09.206454+00	\\xb827ebfffef81e69	916800000	5
 165525	2026-05-10 14:48:10.216878+00	\\xb827ebfffe78ffce	916800000	5
+3100016	2026-11-11 14:26:41.373864+00	\\xb827ebfffe78ffce	916800000	5
 165527	2026-05-10 14:48:12.240617+00	\\xa840411b7dcc4150	916800000	5
 165528	2026-05-10 14:48:13.249941+00	\\xb827ebfffea04db6	916800000	5
 165669	2026-05-11 14:48:21.990219+00	\\xb827ebfffe78ffce	916800000	5
+3100017	2026-11-11 14:26:43.390397+00	\\xe45f01fffe10e12e	916800000	5
 165671	2026-05-11 14:48:24.018989+00	\\xa840411b7dcc4150	916800000	5
 165672	2026-05-11 14:48:25.029618+00	\\xb827ebfffea04db6	916800000	5
 165673	2026-05-11 15:48:20.433046+00	\\xb827ebfffe158993	916800000	5
 165674	2026-05-11 15:48:21.455728+00	\\xb827ebfffef81e69	916800000	5
 165675	2026-05-11 15:48:22.470581+00	\\xb827ebfffe78ffce	916800000	5
+3100018	2026-11-11 14:26:44.405813+00	\\xa840411b7dcc4150	916800000	5
 165677	2026-05-11 15:48:24.495811+00	\\xa840411b7dcc4150	916800000	5
 165678	2026-05-11 15:48:25.505525+00	\\xb827ebfffea04db6	916800000	5
 165679	2026-05-11 16:48:20.476438+00	\\xb827ebfffe158993	916800000	5
 165680	2026-05-11 16:48:21.497207+00	\\xb827ebfffef81e69	916800000	5
 165681	2026-05-11 16:48:22.513637+00	\\xb827ebfffe78ffce	916800000	5
+3100019	2026-11-11 14:26:47.423328+00	\\xb827ebfffea04db6	916800000	5
 165683	2026-05-11 16:48:24.533664+00	\\xa840411b7dcc4150	916800000	5
 165684	2026-05-11 16:48:25.545223+00	\\xb827ebfffea04db6	916800000	5
 165685	2026-05-11 17:48:21.485656+00	\\xb827ebfffe158993	916800000	5
 165686	2026-05-11 17:48:22.520653+00	\\xb827ebfffef81e69	916800000	5
 165687	2026-05-11 17:48:23.53729+00	\\xb827ebfffe78ffce	916800000	5
+3100020	2026-11-11 14:34:40.167083+00	\\xa842e3fffe90a3d4	916800000	5
 165689	2026-05-11 17:48:25.557705+00	\\xa840411b7dcc4150	916800000	5
 165690	2026-05-11 17:48:26.57132+00	\\xb827ebfffea04db6	916800000	5
 165781	2026-05-12 09:48:29.312579+00	\\xb827ebfffe158993	916800000	5
 165782	2026-05-12 09:48:30.331225+00	\\xb827ebfffef81e69	916800000	5
 165783	2026-05-12 09:48:31.340461+00	\\xb827ebfffe78ffce	916800000	5
+3100021	2026-11-11 14:35:20.341029+00	\\xa842e3fffe90a3d5	916800000	5
 165785	2026-05-12 09:48:33.360079+00	\\xa840411b7dcc4150	916800000	5
 165786	2026-05-12 09:48:34.370014+00	\\xb827ebfffea04db6	916800000	5
 165787	2026-05-12 10:48:29.341811+00	\\xb827ebfffe158993	916800000	5
 165788	2026-05-12 10:48:30.362177+00	\\xb827ebfffef81e69	916800000	5
 165789	2026-05-12 10:48:31.375442+00	\\xb827ebfffe78ffce	916800000	5
+3100022	2026-11-11 15:26:38.305553+00	\\xb827ebfffe158993	916800000	5
 165791	2026-05-12 10:48:33.399375+00	\\xa840411b7dcc4150	916800000	5
 165792	2026-05-12 10:48:34.409989+00	\\xb827ebfffea04db6	916800000	5
 165793	2026-05-12 11:48:30.352659+00	\\xb827ebfffe158993	916800000	5
 165794	2026-05-12 11:48:31.373852+00	\\xb827ebfffef81e69	916800000	5
 165795	2026-05-12 11:48:32.385168+00	\\xb827ebfffe78ffce	916800000	5
+3100023	2026-11-11 15:26:41.329201+00	\\xb827ebfffef81e69	916800000	5
 165797	2026-05-12 11:48:34.409001+00	\\xa840411b7dcc4150	916800000	5
 165798	2026-05-12 11:48:35.418514+00	\\xb827ebfffea04db6	916800000	5
 165799	2026-05-12 12:48:31.281895+00	\\xb827ebfffe158993	916800000	5
 165800	2026-05-12 12:48:32.302732+00	\\xb827ebfffef81e69	916800000	5
 165801	2026-05-12 12:48:33.313735+00	\\xb827ebfffe78ffce	916800000	5
+3100024	2026-11-11 15:26:42.340096+00	\\xb827ebfffe78ffce	916800000	5
 165803	2026-05-12 12:48:35.4857+00	\\xa840411b7dcc4150	916800000	5
 165804	2026-05-12 12:48:36.495444+00	\\xb827ebfffea04db6	916800000	5
 165805	2026-05-12 13:48:31.913126+00	\\xb827ebfffe158993	916800000	5
 165806	2026-05-12 13:48:32.930253+00	\\xb827ebfffef81e69	916800000	5
 165807	2026-05-12 13:48:33.940613+00	\\xb827ebfffe78ffce	916800000	5
+3100025	2026-11-11 15:26:44.364319+00	\\xe45f01fffe10e12e	916800000	5
 165809	2026-05-12 13:48:35.96261+00	\\xa840411b7dcc4150	916800000	5
 165810	2026-05-12 13:48:36.974472+00	\\xb827ebfffea04db6	916800000	5
 165811	2026-05-12 14:48:32.469137+00	\\xb827ebfffe158993	916800000	5
 165812	2026-05-12 14:48:33.49566+00	\\xb827ebfffef81e69	916800000	5
 165813	2026-05-12 14:48:34.505881+00	\\xb827ebfffe78ffce	916800000	5
+3100026	2026-11-11 15:26:45.374521+00	\\xa840411b7dcc4150	916800000	5
 165815	2026-05-12 14:48:36.525161+00	\\xa840411b7dcc4150	916800000	5
 165816	2026-05-12 14:48:37.534712+00	\\xb827ebfffea04db6	916800000	5
 165817	2026-05-12 15:48:32.786635+00	\\xb827ebfffe158993	916800000	5
 165818	2026-05-12 15:48:33.806575+00	\\xb827ebfffef81e69	916800000	5
 165819	2026-05-12 15:48:34.816448+00	\\xb827ebfffe78ffce	916800000	5
+3100027	2026-11-11 15:26:48.402358+00	\\xb827ebfffea04db6	916800000	5
 165821	2026-05-12 15:48:36.835006+00	\\xa840411b7dcc4150	916800000	5
 165822	2026-05-12 15:48:37.844118+00	\\xb827ebfffea04db6	916800000	5
 165852	2026-05-12 20:48:40.004345+00	\\xb827ebfffea04db6	916800000	5
 165853	2026-05-12 21:48:35.394643+00	\\xb827ebfffe158993	916800000	5
 165854	2026-05-12 21:48:36.411662+00	\\xb827ebfffef81e69	916800000	5
 165855	2026-05-12 21:48:37.42106+00	\\xb827ebfffe78ffce	916800000	5
+3100028	2026-11-11 15:34:41.137049+00	\\xa842e3fffe90a3d4	916800000	5
 165857	2026-05-12 21:48:39.441067+00	\\xa840411b7dcc4150	916800000	5
 165858	2026-05-12 21:48:40.452879+00	\\xb827ebfffea04db6	916800000	5
 165859	2026-05-12 22:48:35.413967+00	\\xb827ebfffe158993	916800000	5
 165860	2026-05-12 22:48:36.431881+00	\\xb827ebfffef81e69	916800000	5
 165861	2026-05-12 22:48:37.442023+00	\\xb827ebfffe78ffce	916800000	5
+3100029	2026-11-11 15:35:21.335256+00	\\xa842e3fffe90a3d5	916800000	5
 165863	2026-05-12 22:48:39.461376+00	\\xa840411b7dcc4150	916800000	5
 165864	2026-05-12 22:48:40.470932+00	\\xb827ebfffea04db6	916800000	5
 165865	2026-05-12 23:48:35.945126+00	\\xb827ebfffe158993	916800000	5
 165866	2026-05-12 23:48:36.97108+00	\\xb827ebfffef81e69	916800000	5
 165867	2026-05-12 23:48:37.980999+00	\\xb827ebfffe78ffce	916800000	5
+3100030	2026-11-11 16:26:39.19817+00	\\xb827ebfffe158993	916800000	5
 165869	2026-05-12 23:48:39.99969+00	\\xa840411b7dcc4150	916800000	5
 165870	2026-05-12 23:48:41.009007+00	\\xb827ebfffea04db6	916800000	5
 165871	2026-05-13 00:48:36.339007+00	\\xb827ebfffe158993	916800000	5
 165872	2026-05-13 00:48:37.35566+00	\\xb827ebfffef81e69	916800000	5
 165873	2026-05-13 00:48:38.36446+00	\\xb827ebfffe78ffce	916800000	5
+3100031	2026-11-11 16:26:42.223017+00	\\xb827ebfffef81e69	916800000	5
 165875	2026-05-13 00:48:40.382923+00	\\xa840411b7dcc4150	916800000	5
 165876	2026-05-13 00:48:41.395102+00	\\xb827ebfffea04db6	916800000	5
 165877	2026-05-13 01:48:36.45461+00	\\xb827ebfffe158993	916800000	5
 165878	2026-05-13 01:48:37.474099+00	\\xb827ebfffef81e69	916800000	5
 165879	2026-05-13 01:48:38.48328+00	\\xb827ebfffe78ffce	916800000	5
+3100032	2026-11-11 16:26:43.233763+00	\\xb827ebfffe78ffce	916800000	5
 165881	2026-05-13 01:48:40.501473+00	\\xa840411b7dcc4150	916800000	5
 165882	2026-05-13 01:48:41.515383+00	\\xb827ebfffea04db6	916800000	5
 165883	2026-05-13 02:48:36.706873+00	\\xb827ebfffe158993	916800000	5
 165884	2026-05-13 02:48:37.723356+00	\\xb827ebfffef81e69	916800000	5
 165885	2026-05-13 02:48:38.733013+00	\\xb827ebfffe78ffce	916800000	5
+3100033	2026-11-11 16:26:45.249783+00	\\xe45f01fffe10e12e	916800000	5
 165887	2026-05-13 02:48:40.75449+00	\\xa840411b7dcc4150	916800000	5
 165888	2026-05-13 02:48:41.767702+00	\\xb827ebfffea04db6	916800000	5
 165889	2026-05-13 03:48:37.28628+00	\\xb827ebfffe158993	916800000	5
 165890	2026-05-13 03:48:38.302986+00	\\xb827ebfffef81e69	916800000	5
 165891	2026-05-13 03:48:39.312902+00	\\xb827ebfffe78ffce	916800000	5
+3100034	2026-11-11 16:26:46.261103+00	\\xa840411b7dcc4150	916800000	5
 165893	2026-05-13 03:48:41.338737+00	\\xa840411b7dcc4150	916800000	5
 165894	2026-05-13 03:48:42.351492+00	\\xb827ebfffea04db6	916800000	5
 165895	2026-05-13 04:48:37.729115+00	\\xb827ebfffe158993	916800000	5
 165896	2026-05-13 04:48:38.75032+00	\\xb827ebfffef81e69	916800000	5
 165897	2026-05-13 04:48:39.759777+00	\\xb827ebfffe78ffce	916800000	5
+3100035	2026-11-11 16:26:49.277502+00	\\xb827ebfffea04db6	916800000	5
 165899	2026-05-13 04:48:41.790316+00	\\xa840411b7dcc4150	916800000	5
 165900	2026-05-13 04:48:42.799359+00	\\xb827ebfffea04db6	916800000	5
 165901	2026-05-13 05:48:38.269342+00	\\xb827ebfffe158993	916800000	5
 165902	2026-05-13 05:48:39.287389+00	\\xb827ebfffef81e69	916800000	5
 165903	2026-05-13 05:48:40.297158+00	\\xb827ebfffe78ffce	916800000	5
+3100036	2026-11-11 16:34:41.920173+00	\\xa842e3fffe90a3d4	916800000	5
 165905	2026-05-13 05:48:42.316602+00	\\xa840411b7dcc4150	916800000	5
 165906	2026-05-13 05:48:43.32557+00	\\xb827ebfffea04db6	916800000	5
 165907	2026-05-13 06:48:38.498857+00	\\xb827ebfffe158993	916800000	5
 165908	2026-05-13 06:48:39.514373+00	\\xb827ebfffef81e69	916800000	5
 165909	2026-05-13 06:48:40.523289+00	\\xb827ebfffe78ffce	916800000	5
+3100037	2026-11-11 16:35:22.167922+00	\\xa842e3fffe90a3d5	916800000	5
 165911	2026-05-13 06:48:42.545068+00	\\xa840411b7dcc4150	916800000	5
 165912	2026-05-13 06:48:43.555852+00	\\xb827ebfffea04db6	916800000	5
 165913	2026-05-13 07:48:39.022578+00	\\xb827ebfffe158993	916800000	5
 165914	2026-05-13 07:48:40.040583+00	\\xb827ebfffef81e69	916800000	5
 165915	2026-05-13 07:48:41.054616+00	\\xb827ebfffe78ffce	916800000	5
+3100038	2026-11-11 17:26:39.810717+00	\\xb827ebfffe158993	916800000	5
 165917	2026-05-13 07:48:43.075562+00	\\xa840411b7dcc4150	916800000	5
 165918	2026-05-13 07:48:44.085378+00	\\xb827ebfffea04db6	916800000	5
 165919	2026-05-13 08:48:39.977558+00	\\xb827ebfffe158993	916800000	5
 165920	2026-05-13 08:48:40.993798+00	\\xb827ebfffef81e69	916800000	5
 165921	2026-05-13 08:48:42.003037+00	\\xb827ebfffe78ffce	916800000	5
+3100039	2026-11-11 17:26:42.836695+00	\\xb827ebfffef81e69	916800000	5
 165923	2026-05-13 08:48:44.034806+00	\\xa840411b7dcc4150	916800000	5
 165924	2026-05-13 08:48:45.044106+00	\\xb827ebfffea04db6	916800000	5
 165925	2026-05-13 09:48:40.108725+00	\\xb827ebfffe158993	916800000	5
 165926	2026-05-13 09:48:41.12534+00	\\xb827ebfffef81e69	916800000	5
 165927	2026-05-13 09:48:42.134284+00	\\xb827ebfffe78ffce	916800000	5
+3100040	2026-11-11 17:26:43.852509+00	\\xb827ebfffe78ffce	916800000	5
 165929	2026-05-13 09:48:44.15671+00	\\xa840411b7dcc4150	916800000	5
 165930	2026-05-13 09:48:45.166109+00	\\xb827ebfffea04db6	916800000	5
 165931	2026-05-13 10:48:40.35097+00	\\xb827ebfffe158993	916800000	5
 165932	2026-05-13 10:48:41.372871+00	\\xb827ebfffef81e69	916800000	5
 165933	2026-05-13 10:48:42.386155+00	\\xb827ebfffe78ffce	916800000	5
+3100041	2026-11-11 17:26:45.87147+00	\\xe45f01fffe10e12e	916800000	5
 165935	2026-05-13 10:48:44.407467+00	\\xa840411b7dcc4150	916800000	5
 165936	2026-05-13 10:48:45.416977+00	\\xb827ebfffea04db6	916800000	5
 165937	2026-05-13 11:48:40.728812+00	\\xb827ebfffe158993	916800000	5
 165938	2026-05-13 11:48:41.759083+00	\\xb827ebfffef81e69	916800000	5
 165939	2026-05-13 11:48:42.768989+00	\\xb827ebfffe78ffce	916800000	5
+3100042	2026-11-11 17:26:46.882217+00	\\xa840411b7dcc4150	916800000	5
 165941	2026-05-13 11:48:44.791654+00	\\xa840411b7dcc4150	916800000	5
 165942	2026-05-13 11:48:45.800944+00	\\xb827ebfffea04db6	916800000	5
 165943	2026-05-13 12:48:41.173518+00	\\xb827ebfffe158993	916800000	5
 165944	2026-05-13 12:48:42.197734+00	\\xb827ebfffef81e69	916800000	5
 165945	2026-05-13 12:48:43.224239+00	\\xb827ebfffe78ffce	916800000	5
+3100043	2026-11-11 17:26:49.90067+00	\\xb827ebfffea04db6	916800000	5
 165947	2026-05-13 12:48:45.247016+00	\\xa840411b7dcc4150	916800000	5
 165948	2026-05-13 12:48:46.256858+00	\\xb827ebfffea04db6	916800000	5
 165949	2026-05-13 13:48:41.345262+00	\\xb827ebfffe158993	916800000	5
 165950	2026-05-13 13:48:42.368386+00	\\xb827ebfffef81e69	916800000	5
 165951	2026-05-13 13:48:43.378458+00	\\xb827ebfffe78ffce	916800000	5
+3100044	2026-11-11 17:34:42.121261+00	\\xa842e3fffe90a3d4	916800000	5
 165953	2026-05-13 13:48:45.398066+00	\\xa840411b7dcc4150	916800000	5
 165954	2026-05-13 13:48:46.408647+00	\\xb827ebfffea04db6	916800000	5
 165955	2026-05-13 14:48:41.835719+00	\\xb827ebfffe158993	916800000	5
 165956	2026-05-13 14:48:42.867238+00	\\xb827ebfffef81e69	916800000	5
 165957	2026-05-13 14:48:43.880645+00	\\xb827ebfffe78ffce	916800000	5
+3100045	2026-11-11 17:35:22.321625+00	\\xa842e3fffe90a3d5	916800000	5
 165959	2026-05-13 14:48:45.900121+00	\\xa840411b7dcc4150	916800000	5
 165960	2026-05-13 14:48:46.912333+00	\\xb827ebfffea04db6	916800000	5
 165961	2026-05-13 15:48:41.951638+00	\\xb827ebfffe158993	916800000	5
 165962	2026-05-13 15:48:42.973921+00	\\xb827ebfffef81e69	916800000	5
 165963	2026-05-13 15:48:43.99954+00	\\xb827ebfffe78ffce	916800000	5
+3100046	2026-11-11 18:26:40.520586+00	\\xb827ebfffe158993	916800000	5
 165965	2026-05-13 15:48:46.020476+00	\\xa840411b7dcc4150	916800000	5
 165966	2026-05-13 15:48:47.030132+00	\\xb827ebfffea04db6	916800000	5
 165967	2026-05-13 16:48:42.403908+00	\\xb827ebfffe158993	916800000	5
 165968	2026-05-13 16:48:43.444755+00	\\xb827ebfffef81e69	916800000	5
 165969	2026-05-13 16:48:44.4567+00	\\xb827ebfffe78ffce	916800000	5
+3100047	2026-11-11 18:26:43.546999+00	\\xb827ebfffef81e69	916800000	5
 165971	2026-05-13 16:48:46.478215+00	\\xa840411b7dcc4150	916800000	5
 165972	2026-05-13 16:48:47.487558+00	\\xb827ebfffea04db6	916800000	5
 165973	2026-05-13 17:48:42.76136+00	\\xb827ebfffe158993	916800000	5
 165974	2026-05-13 17:48:43.789078+00	\\xb827ebfffef81e69	916800000	5
 165975	2026-05-13 17:48:44.799329+00	\\xb827ebfffe78ffce	916800000	5
+3100048	2026-11-11 18:26:44.561812+00	\\xb827ebfffe78ffce	916800000	5
 165977	2026-05-13 17:48:46.824118+00	\\xa840411b7dcc4150	916800000	5
 165978	2026-05-13 17:48:47.834363+00	\\xb827ebfffea04db6	916800000	5
 165979	2026-05-13 18:48:43.704329+00	\\xb827ebfffe158993	916800000	5
 165980	2026-05-13 18:48:44.725832+00	\\xb827ebfffef81e69	916800000	5
 165981	2026-05-13 18:48:45.735836+00	\\xb827ebfffe78ffce	916800000	5
+3100049	2026-11-11 18:26:46.584747+00	\\xe45f01fffe10e12e	916800000	5
 165983	2026-05-13 18:48:47.754752+00	\\xa840411b7dcc4150	916800000	5
 165984	2026-05-13 18:48:48.76487+00	\\xb827ebfffea04db6	916800000	5
 165985	2026-05-13 19:48:44.218909+00	\\xb827ebfffe158993	916800000	5
 165986	2026-05-13 19:48:45.235359+00	\\xb827ebfffef81e69	916800000	5
 165987	2026-05-13 19:48:46.244607+00	\\xb827ebfffe78ffce	916800000	5
+3100050	2026-11-11 18:26:47.595631+00	\\xa840411b7dcc4150	916800000	5
 165989	2026-05-13 19:48:48.266364+00	\\xa840411b7dcc4150	916800000	5
 165990	2026-05-13 19:48:49.276252+00	\\xb827ebfffea04db6	916800000	5
 165991	2026-05-13 20:48:44.554841+00	\\xb827ebfffe158993	916800000	5
 165992	2026-05-13 20:48:45.574891+00	\\xb827ebfffef81e69	916800000	5
 165993	2026-05-13 20:48:46.585041+00	\\xb827ebfffe78ffce	916800000	5
+3100051	2026-11-11 18:26:50.6124+00	\\xb827ebfffea04db6	916800000	5
 165995	2026-05-13 20:48:48.603757+00	\\xa840411b7dcc4150	916800000	5
 165996	2026-05-13 20:48:49.613265+00	\\xb827ebfffea04db6	916800000	5
 165997	2026-05-13 21:48:44.568235+00	\\xb827ebfffe158993	916800000	5
 165998	2026-05-13 21:48:45.588271+00	\\xb827ebfffef81e69	916800000	5
 165999	2026-05-13 21:48:46.597374+00	\\xb827ebfffe78ffce	916800000	5
+3100052	2026-11-11 18:34:43.08806+00	\\xa842e3fffe90a3d4	916800000	5
 166001	2026-05-13 21:48:48.618558+00	\\xa840411b7dcc4150	916800000	5
 166002	2026-05-13 21:48:49.628718+00	\\xb827ebfffea04db6	916800000	5
 166003	2026-05-13 22:48:44.638286+00	\\xb827ebfffe158993	916800000	5
 166004	2026-05-13 22:48:45.654549+00	\\xb827ebfffef81e69	916800000	5
 166005	2026-05-13 22:48:46.665065+00	\\xb827ebfffe78ffce	916800000	5
+3100053	2026-11-11 18:35:23.286075+00	\\xa842e3fffe90a3d5	916800000	5
 166007	2026-05-13 22:48:48.684692+00	\\xa840411b7dcc4150	916800000	5
 166008	2026-05-13 22:48:49.694174+00	\\xb827ebfffea04db6	916800000	5
 166009	2026-05-13 23:48:45.198474+00	\\xb827ebfffe158993	916800000	5
 166010	2026-05-13 23:48:46.227939+00	\\xb827ebfffef81e69	916800000	5
 166011	2026-05-13 23:48:47.237691+00	\\xb827ebfffe78ffce	916800000	5
+3100054	2026-11-11 19:26:40.567254+00	\\xb827ebfffe158993	916800000	5
 166013	2026-05-13 23:48:49.25871+00	\\xa840411b7dcc4150	916800000	5
 166014	2026-05-13 23:48:50.269593+00	\\xb827ebfffea04db6	916800000	5
 166015	2026-05-14 00:48:45.235961+00	\\xb827ebfffe158993	916800000	5
 166016	2026-05-14 00:48:46.251662+00	\\xb827ebfffef81e69	916800000	5
 166017	2026-05-14 00:48:47.261329+00	\\xb827ebfffe78ffce	916800000	5
+3100055	2026-11-11 19:26:43.590444+00	\\xb827ebfffef81e69	916800000	5
 166019	2026-05-14 00:48:49.282753+00	\\xa840411b7dcc4150	916800000	5
 166020	2026-05-14 00:48:50.29267+00	\\xb827ebfffea04db6	916800000	5
 166021	2026-05-14 01:48:45.366727+00	\\xb827ebfffe158993	916800000	5
 166022	2026-05-14 01:48:46.384419+00	\\xb827ebfffef81e69	916800000	5
 166023	2026-05-14 01:48:47.395653+00	\\xb827ebfffe78ffce	916800000	5
+3100056	2026-11-11 19:26:44.617367+00	\\xb827ebfffe78ffce	916800000	5
 166025	2026-05-14 01:48:49.418349+00	\\xa840411b7dcc4150	916800000	5
 166026	2026-05-14 01:48:50.428137+00	\\xb827ebfffea04db6	916800000	5
 166027	2026-05-14 02:48:45.804889+00	\\xb827ebfffe158993	916800000	5
 166028	2026-05-14 02:48:46.823264+00	\\xb827ebfffef81e69	916800000	5
 166029	2026-05-14 02:48:47.835509+00	\\xb827ebfffe78ffce	916800000	5
+3100057	2026-11-11 19:26:46.664956+00	\\xe45f01fffe10e12e	916800000	5
 166031	2026-05-14 02:48:49.854971+00	\\xa840411b7dcc4150	916800000	5
 166032	2026-05-14 02:48:50.870511+00	\\xb827ebfffea04db6	916800000	5
 166033	2026-05-14 03:48:46.472389+00	\\xb827ebfffe158993	916800000	5
 166034	2026-05-14 03:48:47.491271+00	\\xb827ebfffef81e69	916800000	5
 166035	2026-05-14 03:48:48.500241+00	\\xb827ebfffe78ffce	916800000	5
+3100058	2026-11-11 19:26:47.676501+00	\\xa840411b7dcc4150	916800000	5
 166037	2026-05-14 03:48:50.521961+00	\\xa840411b7dcc4150	916800000	5
 166038	2026-05-14 03:48:51.532515+00	\\xb827ebfffea04db6	916800000	5
 166039	2026-05-14 04:48:47.253053+00	\\xb827ebfffe158993	916800000	5
 166040	2026-05-14 04:48:48.276046+00	\\xb827ebfffef81e69	916800000	5
 166041	2026-05-14 04:48:49.28805+00	\\xb827ebfffe78ffce	916800000	5
+3100059	2026-11-11 19:26:50.706068+00	\\xb827ebfffea04db6	916800000	5
 166043	2026-05-14 04:48:51.309602+00	\\xa840411b7dcc4150	916800000	5
 166044	2026-05-14 04:48:52.319274+00	\\xb827ebfffea04db6	916800000	5
 166045	2026-05-14 05:48:47.529563+00	\\xb827ebfffe158993	916800000	5
 166046	2026-05-14 05:48:48.548874+00	\\xb827ebfffef81e69	916800000	5
 166047	2026-05-14 05:48:49.559302+00	\\xb827ebfffe78ffce	916800000	5
+3100060	2026-11-11 19:34:43.391028+00	\\xa842e3fffe90a3d4	916800000	5
 166049	2026-05-14 05:48:51.580556+00	\\xa840411b7dcc4150	916800000	5
 166050	2026-05-14 05:48:52.591598+00	\\xb827ebfffea04db6	916800000	5
 166051	2026-05-14 06:48:47.804184+00	\\xb827ebfffe158993	916800000	5
 166052	2026-05-14 06:48:48.822698+00	\\xb827ebfffef81e69	916800000	5
 166053	2026-05-14 06:48:49.832678+00	\\xb827ebfffe78ffce	916800000	5
+3100061	2026-11-11 19:35:23.563065+00	\\xa842e3fffe90a3d5	916800000	5
 166055	2026-05-14 06:48:51.862718+00	\\xa840411b7dcc4150	916800000	5
 166056	2026-05-14 06:48:52.872583+00	\\xb827ebfffea04db6	916800000	5
 166057	2026-05-14 07:48:48.484394+00	\\xb827ebfffe158993	916800000	5
@@ -2319,41 +2407,49 @@ COPY public.gateway_ping (id, created_at, gateway_mac, frequency, dr) FROM stdin
 166093	2026-05-14 13:48:52.910732+00	\\xb827ebfffe158993	916800000	5
 166094	2026-05-14 13:48:53.927783+00	\\xb827ebfffef81e69	916800000	5
 166095	2026-05-14 13:48:54.938011+00	\\xb827ebfffe78ffce	916800000	5
+3100062	2026-11-11 20:26:41.500645+00	\\xb827ebfffe158993	916800000	5
 166097	2026-05-14 13:48:56.959339+00	\\xa840411b7dcc4150	916800000	5
 166098	2026-05-14 13:48:57.968617+00	\\xb827ebfffea04db6	916800000	5
 166099	2026-05-14 14:48:53.204443+00	\\xb827ebfffe158993	916800000	5
 166100	2026-05-14 14:48:54.230755+00	\\xb827ebfffef81e69	916800000	5
 166101	2026-05-14 14:48:55.240715+00	\\xb827ebfffe78ffce	916800000	5
+3100063	2026-11-11 20:26:44.534366+00	\\xb827ebfffef81e69	916800000	5
 166103	2026-05-14 14:48:57.262859+00	\\xa840411b7dcc4150	916800000	5
 166104	2026-05-14 14:48:58.271962+00	\\xb827ebfffea04db6	916800000	5
 166105	2026-05-14 15:48:54.196575+00	\\xb827ebfffe158993	916800000	5
 166106	2026-05-14 15:48:55.212979+00	\\xb827ebfffef81e69	916800000	5
 166107	2026-05-14 15:48:56.222695+00	\\xb827ebfffe78ffce	916800000	5
+3100064	2026-11-11 20:26:45.545238+00	\\xb827ebfffe78ffce	916800000	5
 166109	2026-05-14 15:48:58.242245+00	\\xa840411b7dcc4150	916800000	5
 166110	2026-05-14 15:48:59.254911+00	\\xb827ebfffea04db6	916800000	5
 166111	2026-05-14 16:48:54.613676+00	\\xb827ebfffe158993	916800000	5
 166112	2026-05-14 16:48:55.634863+00	\\xb827ebfffef81e69	916800000	5
 166113	2026-05-14 16:48:56.644161+00	\\xb827ebfffe78ffce	916800000	5
+3100065	2026-11-11 20:26:47.566953+00	\\xe45f01fffe10e12e	916800000	5
 166115	2026-05-14 16:48:58.663678+00	\\xa840411b7dcc4150	916800000	5
 166116	2026-05-14 16:48:59.672754+00	\\xb827ebfffea04db6	916800000	5
 166117	2026-05-14 17:48:54.958982+00	\\xb827ebfffe158993	916800000	5
 166118	2026-05-14 17:48:55.983574+00	\\xb827ebfffef81e69	916800000	5
 166119	2026-05-14 17:48:56.995963+00	\\xb827ebfffe78ffce	916800000	5
+3100066	2026-11-11 20:26:48.580401+00	\\xa840411b7dcc4150	916800000	5
 166121	2026-05-14 17:48:59.018556+00	\\xa840411b7dcc4150	916800000	5
 166122	2026-05-14 17:49:00.028628+00	\\xb827ebfffea04db6	916800000	5
 166123	2026-05-14 18:48:55.338186+00	\\xb827ebfffe158993	916800000	5
 166124	2026-05-14 18:48:56.359603+00	\\xb827ebfffef81e69	916800000	5
 166125	2026-05-14 18:48:57.374797+00	\\xb827ebfffe78ffce	916800000	5
+3100067	2026-11-11 20:26:51.601712+00	\\xb827ebfffea04db6	916800000	5
 166127	2026-05-14 18:48:59.396009+00	\\xa840411b7dcc4150	916800000	5
 166128	2026-05-14 18:49:00.40565+00	\\xb827ebfffea04db6	916800000	5
 166129	2026-05-14 19:48:55.943122+00	\\xb827ebfffe158993	916800000	5
 166130	2026-05-14 19:48:56.962877+00	\\xb827ebfffef81e69	916800000	5
 166131	2026-05-14 19:48:57.976934+00	\\xb827ebfffe78ffce	916800000	5
+3100068	2026-11-11 20:34:44.2884+00	\\xa842e3fffe90a3d4	916800000	5
 166133	2026-05-14 19:48:59.995904+00	\\xa840411b7dcc4150	916800000	5
 166134	2026-05-14 19:49:01.006584+00	\\xb827ebfffea04db6	916800000	5
 166135	2026-05-14 20:48:56.704001+00	\\xb827ebfffe158993	916800000	5
 166136	2026-05-14 20:48:57.722721+00	\\xb827ebfffef81e69	916800000	5
 166137	2026-05-14 20:48:58.732458+00	\\xb827ebfffe78ffce	916800000	5
+3100069	2026-11-11 20:35:24.467079+00	\\xa842e3fffe90a3d5	916800000	5
 166139	2026-05-14 20:49:00.75709+00	\\xa840411b7dcc4150	916800000	5
 166140	2026-05-14 20:49:01.771305+00	\\xb827ebfffea04db6	916800000	5
 166141	2026-05-14 21:48:57.306486+00	\\xb827ebfffe158993	916800000	5
@@ -2419,31 +2515,37 @@ COPY public.gateway_ping (id, created_at, gateway_mac, frequency, dr) FROM stdin
 166213	2026-05-15 09:49:02.896018+00	\\xb827ebfffe158993	916800000	5
 166214	2026-05-15 09:49:03.91649+00	\\xb827ebfffef81e69	916800000	5
 166215	2026-05-15 09:49:04.927604+00	\\xb827ebfffe78ffce	916800000	5
+3100070	2026-11-11 21:26:41.532335+00	\\xb827ebfffe158993	916800000	5
 166217	2026-05-15 09:49:06.948175+00	\\xa840411b7dcc4150	916800000	5
 166218	2026-05-15 09:49:07.959025+00	\\xb827ebfffea04db6	916800000	5
 166219	2026-05-15 10:49:03.456306+00	\\xb827ebfffe158993	916800000	5
 166220	2026-05-15 10:49:04.474581+00	\\xb827ebfffef81e69	916800000	5
 166221	2026-05-15 10:49:05.487578+00	\\xb827ebfffe78ffce	916800000	5
+3100071	2026-11-11 21:26:44.56239+00	\\xb827ebfffef81e69	916800000	5
 166223	2026-05-15 10:49:07.506168+00	\\xa840411b7dcc4150	916800000	5
 166224	2026-05-15 10:49:08.51554+00	\\xb827ebfffea04db6	916800000	5
 166225	2026-05-15 11:49:03.929906+00	\\xb827ebfffe158993	916800000	5
 166226	2026-05-15 11:49:04.947389+00	\\xb827ebfffef81e69	916800000	5
 166227	2026-05-15 11:49:05.956782+00	\\xb827ebfffe78ffce	916800000	5
+3100072	2026-11-11 21:26:45.580025+00	\\xb827ebfffe78ffce	916800000	5
 166229	2026-05-15 11:49:07.977729+00	\\xa840411b7dcc4150	916800000	5
 166230	2026-05-15 11:49:08.989103+00	\\xb827ebfffea04db6	916800000	5
 166231	2026-05-15 12:49:04.367301+00	\\xb827ebfffe158993	916800000	5
 166232	2026-05-15 12:49:05.384849+00	\\xb827ebfffef81e69	916800000	5
 166233	2026-05-15 12:49:06.40638+00	\\xb827ebfffe78ffce	916800000	5
+3100073	2026-11-11 21:26:47.597411+00	\\xe45f01fffe10e12e	916800000	5
 166235	2026-05-15 12:49:08.431388+00	\\xa840411b7dcc4150	916800000	5
 166236	2026-05-15 12:49:09.443428+00	\\xb827ebfffea04db6	916800000	5
 166237	2026-05-15 13:49:04.854186+00	\\xb827ebfffe158993	916800000	5
 166238	2026-05-15 13:49:05.876324+00	\\xb827ebfffef81e69	916800000	5
 166239	2026-05-15 13:49:06.888103+00	\\xb827ebfffe78ffce	916800000	5
+3100074	2026-11-11 21:26:48.609337+00	\\xa840411b7dcc4150	916800000	5
 166241	2026-05-15 13:49:08.91151+00	\\xa840411b7dcc4150	916800000	5
 166242	2026-05-15 13:49:09.921606+00	\\xb827ebfffea04db6	916800000	5
 166243	2026-05-15 14:49:05.076861+00	\\xb827ebfffe158993	916800000	5
 166244	2026-05-15 14:49:06.094181+00	\\xb827ebfffef81e69	916800000	5
 166245	2026-05-15 14:49:07.124701+00	\\xb827ebfffe78ffce	916800000	5
+3100075	2026-11-11 21:26:51.629051+00	\\xb827ebfffea04db6	916800000	5
 166247	2026-05-15 14:49:09.145831+00	\\xa840411b7dcc4150	916800000	5
 166248	2026-05-15 14:49:10.155735+00	\\xb827ebfffea04db6	916800000	5
 166249	2026-05-15 15:49:05.553314+00	\\xb827ebfffe158993	916800000	5
@@ -3342,8 +3444,8 @@ COPY public.gateway_ping (id, created_at, gateway_mac, frequency, dr) FROM stdin
 
 
 --
--- TOC entry 3803 (class 0 OID 17753)
--- Dependencies: 224
+-- TOC entry 3805 (class 0 OID 17753)
+-- Dependencies: 226
 -- Data for Name: gateway_ping_rx; Type: TABLE DATA; Schema: public; Owner: chirpstack_as
 --
 
@@ -3352,8 +3454,8 @@ COPY public.gateway_ping_rx (id, created_at, ping_id, gateway_mac, received_at, 
 
 
 --
--- TOC entry 3805 (class 0 OID 17759)
--- Dependencies: 226
+-- TOC entry 3807 (class 0 OID 17759)
+-- Dependencies: 228
 -- Data for Name: gateway_profile; Type: TABLE DATA; Schema: public; Owner: chirpstack_as
 --
 
@@ -3364,8 +3466,8 @@ COPY public.gateway_profile (gateway_profile_id, network_server_id, created_at, 
 
 
 --
--- TOC entry 3806 (class 0 OID 17762)
--- Dependencies: 227
+-- TOC entry 3808 (class 0 OID 17762)
+-- Dependencies: 229
 -- Data for Name: integration; Type: TABLE DATA; Schema: public; Owner: chirpstack_as
 --
 
@@ -3374,8 +3476,8 @@ COPY public.integration (id, created_at, updated_at, application_id, kind, setti
 
 
 --
--- TOC entry 3808 (class 0 OID 17768)
--- Dependencies: 229
+-- TOC entry 3810 (class 0 OID 17768)
+-- Dependencies: 231
 -- Data for Name: multicast_group; Type: TABLE DATA; Schema: public; Owner: chirpstack_as
 --
 
@@ -3384,8 +3486,8 @@ COPY public.multicast_group (id, created_at, updated_at, name, mc_app_s_key, app
 
 
 --
--- TOC entry 3809 (class 0 OID 17773)
--- Dependencies: 230
+-- TOC entry 3811 (class 0 OID 17773)
+-- Dependencies: 232
 -- Data for Name: network_server; Type: TABLE DATA; Schema: public; Owner: chirpstack_as
 --
 
@@ -3395,8 +3497,8 @@ COPY public.network_server (id, created_at, updated_at, name, server, ca_cert, t
 
 
 --
--- TOC entry 3811 (class 0 OID 17789)
--- Dependencies: 232
+-- TOC entry 3813 (class 0 OID 17789)
+-- Dependencies: 234
 -- Data for Name: organization; Type: TABLE DATA; Schema: public; Owner: chirpstack_as
 --
 
@@ -3406,8 +3508,8 @@ COPY public.organization (id, created_at, updated_at, name, display_name, can_ha
 
 
 --
--- TOC entry 3813 (class 0 OID 17793)
--- Dependencies: 234
+-- TOC entry 3815 (class 0 OID 17793)
+-- Dependencies: 236
 -- Data for Name: organization_user; Type: TABLE DATA; Schema: public; Owner: chirpstack_as
 --
 
@@ -3417,8 +3519,8 @@ COPY public.organization_user (id, created_at, updated_at, user_id, organization
 
 
 --
--- TOC entry 3815 (class 0 OID 17797)
--- Dependencies: 236
+-- TOC entry 3817 (class 0 OID 17797)
+-- Dependencies: 238
 -- Data for Name: schema_migrations; Type: TABLE DATA; Schema: public; Owner: chirpstack_as
 --
 
@@ -3428,8 +3530,8 @@ COPY public.schema_migrations (version, dirty) FROM stdin;
 
 
 --
--- TOC entry 3816 (class 0 OID 17800)
--- Dependencies: 237
+-- TOC entry 3818 (class 0 OID 17800)
+-- Dependencies: 239
 -- Data for Name: service_profile; Type: TABLE DATA; Schema: public; Owner: chirpstack_as
 --
 
@@ -3439,8 +3541,8 @@ COPY public.service_profile (service_profile_id, organization_id, network_server
 
 
 --
--- TOC entry 3817 (class 0 OID 17803)
--- Dependencies: 238
+-- TOC entry 3819 (class 0 OID 17803)
+-- Dependencies: 240
 -- Data for Name: user; Type: TABLE DATA; Schema: public; Owner: chirpstack_as
 --
 
@@ -3450,8 +3552,8 @@ COPY public."user" (id, created_at, updated_at, email, password_hash, session_tt
 
 
 --
--- TOC entry 3836 (class 0 OID 0)
--- Dependencies: 215
+-- TOC entry 3838 (class 0 OID 0)
+-- Dependencies: 217
 -- Name: application_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chirpstack_as
 --
 
@@ -3459,17 +3561,17 @@ SELECT pg_catalog.setval('public.application_id_seq', 1, true);
 
 
 --
--- TOC entry 3837 (class 0 OID 0)
--- Dependencies: 223
+-- TOC entry 3839 (class 0 OID 0)
+-- Dependencies: 225
 -- Name: gateway_ping_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chirpstack_as
 --
 
-SELECT pg_catalog.setval('public.gateway_ping_id_seq', 3099997, true);
+SELECT pg_catalog.setval('public.gateway_ping_id_seq', 3100075, true);
 
 
 --
--- TOC entry 3838 (class 0 OID 0)
--- Dependencies: 225
+-- TOC entry 3840 (class 0 OID 0)
+-- Dependencies: 227
 -- Name: gateway_ping_rx_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chirpstack_as
 --
 
@@ -3477,8 +3579,8 @@ SELECT pg_catalog.setval('public.gateway_ping_rx_id_seq', 1, false);
 
 
 --
--- TOC entry 3839 (class 0 OID 0)
--- Dependencies: 228
+-- TOC entry 3841 (class 0 OID 0)
+-- Dependencies: 230
 -- Name: integration_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chirpstack_as
 --
 
@@ -3486,8 +3588,8 @@ SELECT pg_catalog.setval('public.integration_id_seq', 1, false);
 
 
 --
--- TOC entry 3840 (class 0 OID 0)
--- Dependencies: 231
+-- TOC entry 3842 (class 0 OID 0)
+-- Dependencies: 233
 -- Name: network_server_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chirpstack_as
 --
 
@@ -3495,8 +3597,8 @@ SELECT pg_catalog.setval('public.network_server_id_seq', 1, true);
 
 
 --
--- TOC entry 3841 (class 0 OID 0)
--- Dependencies: 233
+-- TOC entry 3843 (class 0 OID 0)
+-- Dependencies: 235
 -- Name: organization_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chirpstack_as
 --
 
@@ -3504,8 +3606,8 @@ SELECT pg_catalog.setval('public.organization_id_seq', 1, true);
 
 
 --
--- TOC entry 3842 (class 0 OID 0)
--- Dependencies: 235
+-- TOC entry 3844 (class 0 OID 0)
+-- Dependencies: 237
 -- Name: organization_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chirpstack_as
 --
 
@@ -3513,8 +3615,8 @@ SELECT pg_catalog.setval('public.organization_user_id_seq', 1, true);
 
 
 --
--- TOC entry 3843 (class 0 OID 0)
--- Dependencies: 239
+-- TOC entry 3845 (class 0 OID 0)
+-- Dependencies: 241
 -- Name: user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chirpstack_as
 --
 
@@ -3522,7 +3624,7 @@ SELECT pg_catalog.setval('public.user_id_seq', 1, true);
 
 
 --
--- TOC entry 3541 (class 2606 OID 17819)
+-- TOC entry 3543 (class 2606 OID 17819)
 -- Name: api_key api_key_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -3531,7 +3633,7 @@ ALTER TABLE ONLY public.api_key
 
 
 --
--- TOC entry 3545 (class 2606 OID 17821)
+-- TOC entry 3547 (class 2606 OID 17821)
 -- Name: application application_name_organization_id_key; Type: CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -3540,7 +3642,7 @@ ALTER TABLE ONLY public.application
 
 
 --
--- TOC entry 3547 (class 2606 OID 17823)
+-- TOC entry 3549 (class 2606 OID 17823)
 -- Name: application application_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -3549,7 +3651,7 @@ ALTER TABLE ONLY public.application
 
 
 --
--- TOC entry 3552 (class 2606 OID 17825)
+-- TOC entry 3554 (class 2606 OID 17825)
 -- Name: code_migration code_migration_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -3558,7 +3660,7 @@ ALTER TABLE ONLY public.code_migration
 
 
 --
--- TOC entry 3563 (class 2606 OID 17827)
+-- TOC entry 3565 (class 2606 OID 17827)
 -- Name: device_keys device_keys_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -3567,7 +3669,7 @@ ALTER TABLE ONLY public.device_keys
 
 
 --
--- TOC entry 3565 (class 2606 OID 17829)
+-- TOC entry 3567 (class 2606 OID 17829)
 -- Name: device_multicast_group device_multicast_group_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -3576,7 +3678,7 @@ ALTER TABLE ONLY public.device_multicast_group
 
 
 --
--- TOC entry 3554 (class 2606 OID 17831)
+-- TOC entry 3556 (class 2606 OID 17831)
 -- Name: device device_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -3585,7 +3687,7 @@ ALTER TABLE ONLY public.device
 
 
 --
--- TOC entry 3567 (class 2606 OID 17833)
+-- TOC entry 3569 (class 2606 OID 17833)
 -- Name: device_profile device_profile_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -3594,7 +3696,7 @@ ALTER TABLE ONLY public.device_profile
 
 
 --
--- TOC entry 3572 (class 2606 OID 17835)
+-- TOC entry 3574 (class 2606 OID 17835)
 -- Name: gateway gateway_name_organization_id_key; Type: CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -3603,7 +3705,7 @@ ALTER TABLE ONLY public.gateway
 
 
 --
--- TOC entry 3586 (class 2606 OID 17837)
+-- TOC entry 3588 (class 2606 OID 17837)
 -- Name: gateway_ping gateway_ping_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -3612,7 +3714,7 @@ ALTER TABLE ONLY public.gateway_ping
 
 
 --
--- TOC entry 3589 (class 2606 OID 17839)
+-- TOC entry 3591 (class 2606 OID 17839)
 -- Name: gateway_ping_rx gateway_ping_rx_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -3621,7 +3723,7 @@ ALTER TABLE ONLY public.gateway_ping_rx
 
 
 --
--- TOC entry 3574 (class 2606 OID 17841)
+-- TOC entry 3576 (class 2606 OID 17841)
 -- Name: gateway gateway_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -3630,7 +3732,7 @@ ALTER TABLE ONLY public.gateway
 
 
 --
--- TOC entry 3593 (class 2606 OID 17843)
+-- TOC entry 3595 (class 2606 OID 17843)
 -- Name: gateway_profile gateway_profile_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -3639,7 +3741,7 @@ ALTER TABLE ONLY public.gateway_profile
 
 
 --
--- TOC entry 3598 (class 2606 OID 17845)
+-- TOC entry 3600 (class 2606 OID 17845)
 -- Name: integration integration_kind_application_id; Type: CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -3648,7 +3750,7 @@ ALTER TABLE ONLY public.integration
 
 
 --
--- TOC entry 3600 (class 2606 OID 17847)
+-- TOC entry 3602 (class 2606 OID 17847)
 -- Name: integration integration_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -3657,7 +3759,7 @@ ALTER TABLE ONLY public.integration
 
 
 --
--- TOC entry 3604 (class 2606 OID 17849)
+-- TOC entry 3606 (class 2606 OID 17849)
 -- Name: multicast_group multicast_group_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -3666,7 +3768,7 @@ ALTER TABLE ONLY public.multicast_group
 
 
 --
--- TOC entry 3606 (class 2606 OID 17851)
+-- TOC entry 3608 (class 2606 OID 17851)
 -- Name: network_server network_server_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -3675,7 +3777,7 @@ ALTER TABLE ONLY public.network_server
 
 
 --
--- TOC entry 3610 (class 2606 OID 17853)
+-- TOC entry 3612 (class 2606 OID 17853)
 -- Name: organization organization_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -3684,7 +3786,7 @@ ALTER TABLE ONLY public.organization
 
 
 --
--- TOC entry 3614 (class 2606 OID 17855)
+-- TOC entry 3616 (class 2606 OID 17855)
 -- Name: organization_user organization_user_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -3693,7 +3795,7 @@ ALTER TABLE ONLY public.organization_user
 
 
 --
--- TOC entry 3616 (class 2606 OID 17857)
+-- TOC entry 3618 (class 2606 OID 17857)
 -- Name: organization_user organization_user_user_id_organization_id_key; Type: CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -3702,7 +3804,7 @@ ALTER TABLE ONLY public.organization_user
 
 
 --
--- TOC entry 3618 (class 2606 OID 17859)
+-- TOC entry 3620 (class 2606 OID 17859)
 -- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -3711,7 +3813,7 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
--- TOC entry 3622 (class 2606 OID 17861)
+-- TOC entry 3624 (class 2606 OID 17861)
 -- Name: service_profile service_profile_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -3720,7 +3822,7 @@ ALTER TABLE ONLY public.service_profile
 
 
 --
--- TOC entry 3626 (class 2606 OID 17863)
+-- TOC entry 3628 (class 2606 OID 17863)
 -- Name: user user_pkey; Type: CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -3729,7 +3831,7 @@ ALTER TABLE ONLY public."user"
 
 
 --
--- TOC entry 3542 (class 1259 OID 17864)
+-- TOC entry 3544 (class 1259 OID 17864)
 -- Name: idx_api_key_application_id; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3737,7 +3839,7 @@ CREATE INDEX idx_api_key_application_id ON public.api_key USING btree (applicati
 
 
 --
--- TOC entry 3543 (class 1259 OID 17865)
+-- TOC entry 3545 (class 1259 OID 17865)
 -- Name: idx_api_key_organization_id; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3745,7 +3847,7 @@ CREATE INDEX idx_api_key_organization_id ON public.api_key USING btree (organiza
 
 
 --
--- TOC entry 3548 (class 1259 OID 17866)
+-- TOC entry 3550 (class 1259 OID 17866)
 -- Name: idx_application_name_trgm; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3753,7 +3855,7 @@ CREATE INDEX idx_application_name_trgm ON public.application USING gin (name pub
 
 
 --
--- TOC entry 3549 (class 1259 OID 17867)
+-- TOC entry 3551 (class 1259 OID 17867)
 -- Name: idx_application_organization_id; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3761,7 +3863,7 @@ CREATE INDEX idx_application_organization_id ON public.application USING btree (
 
 
 --
--- TOC entry 3550 (class 1259 OID 17868)
+-- TOC entry 3552 (class 1259 OID 17868)
 -- Name: idx_application_service_profile_id; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3769,7 +3871,7 @@ CREATE INDEX idx_application_service_profile_id ON public.application USING btre
 
 
 --
--- TOC entry 3555 (class 1259 OID 17869)
+-- TOC entry 3557 (class 1259 OID 17869)
 -- Name: idx_device_application_id; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3777,7 +3879,7 @@ CREATE INDEX idx_device_application_id ON public.device USING btree (application
 
 
 --
--- TOC entry 3556 (class 1259 OID 17870)
+-- TOC entry 3558 (class 1259 OID 17870)
 -- Name: idx_device_dev_addr_trgm; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3785,7 +3887,7 @@ CREATE INDEX idx_device_dev_addr_trgm ON public.device USING gin (encode(dev_add
 
 
 --
--- TOC entry 3557 (class 1259 OID 17871)
+-- TOC entry 3559 (class 1259 OID 17871)
 -- Name: idx_device_dev_eui_trgm; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3793,7 +3895,7 @@ CREATE INDEX idx_device_dev_eui_trgm ON public.device USING gin (encode(dev_eui,
 
 
 --
--- TOC entry 3558 (class 1259 OID 17872)
+-- TOC entry 3560 (class 1259 OID 17872)
 -- Name: idx_device_device_profile_id; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3801,7 +3903,7 @@ CREATE INDEX idx_device_device_profile_id ON public.device USING btree (device_p
 
 
 --
--- TOC entry 3559 (class 1259 OID 17873)
+-- TOC entry 3561 (class 1259 OID 17873)
 -- Name: idx_device_name_application_id; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3809,7 +3911,7 @@ CREATE UNIQUE INDEX idx_device_name_application_id ON public.device USING btree 
 
 
 --
--- TOC entry 3560 (class 1259 OID 17874)
+-- TOC entry 3562 (class 1259 OID 17874)
 -- Name: idx_device_name_trgm; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3817,7 +3919,7 @@ CREATE INDEX idx_device_name_trgm ON public.device USING gin (name public.gin_tr
 
 
 --
--- TOC entry 3568 (class 1259 OID 17875)
+-- TOC entry 3570 (class 1259 OID 17875)
 -- Name: idx_device_profile_network_server_id; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3825,7 +3927,7 @@ CREATE INDEX idx_device_profile_network_server_id ON public.device_profile USING
 
 
 --
--- TOC entry 3569 (class 1259 OID 17876)
+-- TOC entry 3571 (class 1259 OID 17876)
 -- Name: idx_device_profile_organization_id; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3833,7 +3935,7 @@ CREATE INDEX idx_device_profile_organization_id ON public.device_profile USING b
 
 
 --
--- TOC entry 3570 (class 1259 OID 17877)
+-- TOC entry 3572 (class 1259 OID 17877)
 -- Name: idx_device_profile_tags; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3841,7 +3943,7 @@ CREATE INDEX idx_device_profile_tags ON public.device_profile USING gin (tags);
 
 
 --
--- TOC entry 3561 (class 1259 OID 17878)
+-- TOC entry 3563 (class 1259 OID 17878)
 -- Name: idx_device_tags; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3849,7 +3951,7 @@ CREATE INDEX idx_device_tags ON public.device USING gin (tags);
 
 
 --
--- TOC entry 3575 (class 1259 OID 17879)
+-- TOC entry 3577 (class 1259 OID 17879)
 -- Name: idx_gateway_gateway_profile_id; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3857,7 +3959,7 @@ CREATE INDEX idx_gateway_gateway_profile_id ON public.gateway USING btree (gatew
 
 
 --
--- TOC entry 3576 (class 1259 OID 17880)
+-- TOC entry 3578 (class 1259 OID 17880)
 -- Name: idx_gateway_last_ping_sent_at; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3865,7 +3967,7 @@ CREATE INDEX idx_gateway_last_ping_sent_at ON public.gateway USING btree (last_p
 
 
 --
--- TOC entry 3577 (class 1259 OID 17881)
+-- TOC entry 3579 (class 1259 OID 17881)
 -- Name: idx_gateway_mac_trgm; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3873,7 +3975,7 @@ CREATE INDEX idx_gateway_mac_trgm ON public.gateway USING gin (encode(mac, 'hex'
 
 
 --
--- TOC entry 3578 (class 1259 OID 17882)
+-- TOC entry 3580 (class 1259 OID 17882)
 -- Name: idx_gateway_name_organization_id; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3881,7 +3983,7 @@ CREATE UNIQUE INDEX idx_gateway_name_organization_id ON public.gateway USING btr
 
 
 --
--- TOC entry 3579 (class 1259 OID 17883)
+-- TOC entry 3581 (class 1259 OID 17883)
 -- Name: idx_gateway_name_trgm; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3889,7 +3991,7 @@ CREATE INDEX idx_gateway_name_trgm ON public.gateway USING gin (name public.gin_
 
 
 --
--- TOC entry 3580 (class 1259 OID 17884)
+-- TOC entry 3582 (class 1259 OID 17884)
 -- Name: idx_gateway_network_server_id; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3897,7 +3999,7 @@ CREATE INDEX idx_gateway_network_server_id ON public.gateway USING btree (networ
 
 
 --
--- TOC entry 3581 (class 1259 OID 17885)
+-- TOC entry 3583 (class 1259 OID 17885)
 -- Name: idx_gateway_organization_id; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3905,7 +4007,7 @@ CREATE INDEX idx_gateway_organization_id ON public.gateway USING btree (organiza
 
 
 --
--- TOC entry 3582 (class 1259 OID 17886)
+-- TOC entry 3584 (class 1259 OID 17886)
 -- Name: idx_gateway_ping; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3913,7 +4015,7 @@ CREATE INDEX idx_gateway_ping ON public.gateway USING btree (ping);
 
 
 --
--- TOC entry 3587 (class 1259 OID 17887)
+-- TOC entry 3589 (class 1259 OID 17887)
 -- Name: idx_gateway_ping_gateway_mac; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3921,7 +4023,7 @@ CREATE INDEX idx_gateway_ping_gateway_mac ON public.gateway_ping USING btree (ga
 
 
 --
--- TOC entry 3590 (class 1259 OID 17888)
+-- TOC entry 3592 (class 1259 OID 17888)
 -- Name: idx_gateway_ping_rx_gateway_mac; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3929,7 +4031,7 @@ CREATE INDEX idx_gateway_ping_rx_gateway_mac ON public.gateway_ping_rx USING btr
 
 
 --
--- TOC entry 3591 (class 1259 OID 17889)
+-- TOC entry 3593 (class 1259 OID 17889)
 -- Name: idx_gateway_ping_rx_ping_id; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3937,7 +4039,7 @@ CREATE INDEX idx_gateway_ping_rx_ping_id ON public.gateway_ping_rx USING btree (
 
 
 --
--- TOC entry 3594 (class 1259 OID 17890)
+-- TOC entry 3596 (class 1259 OID 17890)
 -- Name: idx_gateway_profile_network_server_id; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3945,7 +4047,7 @@ CREATE INDEX idx_gateway_profile_network_server_id ON public.gateway_profile USI
 
 
 --
--- TOC entry 3583 (class 1259 OID 17891)
+-- TOC entry 3585 (class 1259 OID 17891)
 -- Name: idx_gateway_service_profile_id; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3953,7 +4055,7 @@ CREATE INDEX idx_gateway_service_profile_id ON public.gateway USING btree (servi
 
 
 --
--- TOC entry 3584 (class 1259 OID 17892)
+-- TOC entry 3586 (class 1259 OID 17892)
 -- Name: idx_gateway_tags; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3961,7 +4063,7 @@ CREATE INDEX idx_gateway_tags ON public.gateway USING gin (tags);
 
 
 --
--- TOC entry 3595 (class 1259 OID 17893)
+-- TOC entry 3597 (class 1259 OID 17893)
 -- Name: idx_integration_application_id; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3969,7 +4071,7 @@ CREATE INDEX idx_integration_application_id ON public.integration USING btree (a
 
 
 --
--- TOC entry 3596 (class 1259 OID 17894)
+-- TOC entry 3598 (class 1259 OID 17894)
 -- Name: idx_integration_kind; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3977,7 +4079,7 @@ CREATE INDEX idx_integration_kind ON public.integration USING btree (kind);
 
 
 --
--- TOC entry 3601 (class 1259 OID 17895)
+-- TOC entry 3603 (class 1259 OID 17895)
 -- Name: idx_multicast_group_application_id; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3985,7 +4087,7 @@ CREATE INDEX idx_multicast_group_application_id ON public.multicast_group USING 
 
 
 --
--- TOC entry 3602 (class 1259 OID 17896)
+-- TOC entry 3604 (class 1259 OID 17896)
 -- Name: idx_multicast_group_name_trgm; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -3993,7 +4095,7 @@ CREATE INDEX idx_multicast_group_name_trgm ON public.multicast_group USING gin (
 
 
 --
--- TOC entry 3607 (class 1259 OID 17897)
+-- TOC entry 3609 (class 1259 OID 17897)
 -- Name: idx_organization_name; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -4001,7 +4103,7 @@ CREATE UNIQUE INDEX idx_organization_name ON public.organization USING btree (na
 
 
 --
--- TOC entry 3608 (class 1259 OID 17898)
+-- TOC entry 3610 (class 1259 OID 17898)
 -- Name: idx_organization_name_trgm; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -4009,7 +4111,7 @@ CREATE INDEX idx_organization_name_trgm ON public.organization USING gin (name p
 
 
 --
--- TOC entry 3611 (class 1259 OID 17899)
+-- TOC entry 3613 (class 1259 OID 17899)
 -- Name: idx_organization_user_organization_id; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -4017,7 +4119,7 @@ CREATE INDEX idx_organization_user_organization_id ON public.organization_user U
 
 
 --
--- TOC entry 3612 (class 1259 OID 17900)
+-- TOC entry 3614 (class 1259 OID 17900)
 -- Name: idx_organization_user_user_id; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -4025,7 +4127,7 @@ CREATE INDEX idx_organization_user_user_id ON public.organization_user USING btr
 
 
 --
--- TOC entry 3619 (class 1259 OID 17901)
+-- TOC entry 3621 (class 1259 OID 17901)
 -- Name: idx_service_profile_network_server_id; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -4033,7 +4135,7 @@ CREATE INDEX idx_service_profile_network_server_id ON public.service_profile USI
 
 
 --
--- TOC entry 3620 (class 1259 OID 17902)
+-- TOC entry 3622 (class 1259 OID 17902)
 -- Name: idx_service_profile_organization_id; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -4041,7 +4143,7 @@ CREATE INDEX idx_service_profile_organization_id ON public.service_profile USING
 
 
 --
--- TOC entry 3623 (class 1259 OID 17903)
+-- TOC entry 3625 (class 1259 OID 17903)
 -- Name: idx_user_email; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -4049,7 +4151,7 @@ CREATE UNIQUE INDEX idx_user_email ON public."user" USING btree (email);
 
 
 --
--- TOC entry 3624 (class 1259 OID 17904)
+-- TOC entry 3626 (class 1259 OID 17904)
 -- Name: idx_user_external_id; Type: INDEX; Schema: public; Owner: chirpstack_as
 --
 
@@ -4057,7 +4159,7 @@ CREATE UNIQUE INDEX idx_user_external_id ON public."user" USING btree (external_
 
 
 --
--- TOC entry 3627 (class 2606 OID 17905)
+-- TOC entry 3629 (class 2606 OID 17905)
 -- Name: api_key api_key_application_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4066,7 +4168,7 @@ ALTER TABLE ONLY public.api_key
 
 
 --
--- TOC entry 3628 (class 2606 OID 17910)
+-- TOC entry 3630 (class 2606 OID 17910)
 -- Name: api_key api_key_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4075,7 +4177,7 @@ ALTER TABLE ONLY public.api_key
 
 
 --
--- TOC entry 3629 (class 2606 OID 17915)
+-- TOC entry 3631 (class 2606 OID 17915)
 -- Name: application application_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4084,7 +4186,7 @@ ALTER TABLE ONLY public.application
 
 
 --
--- TOC entry 3630 (class 2606 OID 17920)
+-- TOC entry 3632 (class 2606 OID 17920)
 -- Name: application application_service_profile_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4093,7 +4195,7 @@ ALTER TABLE ONLY public.application
 
 
 --
--- TOC entry 3631 (class 2606 OID 17925)
+-- TOC entry 3633 (class 2606 OID 17925)
 -- Name: device device_application_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4102,7 +4204,7 @@ ALTER TABLE ONLY public.device
 
 
 --
--- TOC entry 3632 (class 2606 OID 17930)
+-- TOC entry 3634 (class 2606 OID 17930)
 -- Name: device device_device_profile_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4111,7 +4213,7 @@ ALTER TABLE ONLY public.device
 
 
 --
--- TOC entry 3633 (class 2606 OID 17935)
+-- TOC entry 3635 (class 2606 OID 17935)
 -- Name: device_keys device_keys_dev_eui_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4120,7 +4222,7 @@ ALTER TABLE ONLY public.device_keys
 
 
 --
--- TOC entry 3634 (class 2606 OID 17940)
+-- TOC entry 3636 (class 2606 OID 17940)
 -- Name: device_multicast_group device_multicast_group_dev_eui_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4129,7 +4231,7 @@ ALTER TABLE ONLY public.device_multicast_group
 
 
 --
--- TOC entry 3635 (class 2606 OID 17945)
+-- TOC entry 3637 (class 2606 OID 17945)
 -- Name: device_multicast_group device_multicast_group_multicast_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4138,7 +4240,7 @@ ALTER TABLE ONLY public.device_multicast_group
 
 
 --
--- TOC entry 3636 (class 2606 OID 17950)
+-- TOC entry 3638 (class 2606 OID 17950)
 -- Name: device_profile device_profile_network_server_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4147,7 +4249,7 @@ ALTER TABLE ONLY public.device_profile
 
 
 --
--- TOC entry 3637 (class 2606 OID 17955)
+-- TOC entry 3639 (class 2606 OID 17955)
 -- Name: device_profile device_profile_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4156,7 +4258,7 @@ ALTER TABLE ONLY public.device_profile
 
 
 --
--- TOC entry 3638 (class 2606 OID 17960)
+-- TOC entry 3640 (class 2606 OID 17960)
 -- Name: gateway gateway_gateway_profile_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4165,7 +4267,7 @@ ALTER TABLE ONLY public.gateway
 
 
 --
--- TOC entry 3639 (class 2606 OID 17965)
+-- TOC entry 3641 (class 2606 OID 17965)
 -- Name: gateway gateway_last_ping_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4174,7 +4276,7 @@ ALTER TABLE ONLY public.gateway
 
 
 --
--- TOC entry 3640 (class 2606 OID 17970)
+-- TOC entry 3642 (class 2606 OID 17970)
 -- Name: gateway gateway_network_server_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4183,7 +4285,7 @@ ALTER TABLE ONLY public.gateway
 
 
 --
--- TOC entry 3641 (class 2606 OID 17975)
+-- TOC entry 3643 (class 2606 OID 17975)
 -- Name: gateway gateway_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4192,7 +4294,7 @@ ALTER TABLE ONLY public.gateway
 
 
 --
--- TOC entry 3643 (class 2606 OID 17980)
+-- TOC entry 3645 (class 2606 OID 17980)
 -- Name: gateway_ping gateway_ping_gateway_mac_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4201,7 +4303,7 @@ ALTER TABLE ONLY public.gateway_ping
 
 
 --
--- TOC entry 3644 (class 2606 OID 17985)
+-- TOC entry 3646 (class 2606 OID 17985)
 -- Name: gateway_ping_rx gateway_ping_rx_gateway_mac_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4210,7 +4312,7 @@ ALTER TABLE ONLY public.gateway_ping_rx
 
 
 --
--- TOC entry 3645 (class 2606 OID 17990)
+-- TOC entry 3647 (class 2606 OID 17990)
 -- Name: gateway_ping_rx gateway_ping_rx_ping_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4219,7 +4321,7 @@ ALTER TABLE ONLY public.gateway_ping_rx
 
 
 --
--- TOC entry 3646 (class 2606 OID 17995)
+-- TOC entry 3648 (class 2606 OID 17995)
 -- Name: gateway_profile gateway_profile_network_server_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4228,7 +4330,7 @@ ALTER TABLE ONLY public.gateway_profile
 
 
 --
--- TOC entry 3642 (class 2606 OID 18000)
+-- TOC entry 3644 (class 2606 OID 18000)
 -- Name: gateway gateway_service_profile_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4237,7 +4339,7 @@ ALTER TABLE ONLY public.gateway
 
 
 --
--- TOC entry 3647 (class 2606 OID 18005)
+-- TOC entry 3649 (class 2606 OID 18005)
 -- Name: integration integration_application_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4246,7 +4348,7 @@ ALTER TABLE ONLY public.integration
 
 
 --
--- TOC entry 3648 (class 2606 OID 18010)
+-- TOC entry 3650 (class 2606 OID 18010)
 -- Name: multicast_group multicast_group_application_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4255,7 +4357,7 @@ ALTER TABLE ONLY public.multicast_group
 
 
 --
--- TOC entry 3649 (class 2606 OID 18015)
+-- TOC entry 3651 (class 2606 OID 18015)
 -- Name: organization_user organization_user_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4264,7 +4366,7 @@ ALTER TABLE ONLY public.organization_user
 
 
 --
--- TOC entry 3650 (class 2606 OID 18020)
+-- TOC entry 3652 (class 2606 OID 18020)
 -- Name: organization_user organization_user_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4273,7 +4375,7 @@ ALTER TABLE ONLY public.organization_user
 
 
 --
--- TOC entry 3651 (class 2606 OID 18025)
+-- TOC entry 3653 (class 2606 OID 18025)
 -- Name: service_profile service_profile_network_server_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4282,7 +4384,7 @@ ALTER TABLE ONLY public.service_profile
 
 
 --
--- TOC entry 3652 (class 2606 OID 18030)
+-- TOC entry 3654 (class 2606 OID 18030)
 -- Name: service_profile service_profile_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chirpstack_as
 --
 
@@ -4291,7 +4393,7 @@ ALTER TABLE ONLY public.service_profile
 
 
 --
--- TOC entry 3825 (class 0 OID 0)
+-- TOC entry 3827 (class 0 OID 0)
 -- Dependencies: 7
 -- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
 --
@@ -4300,11 +4402,11 @@ REVOKE USAGE ON SCHEMA public FROM PUBLIC;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
--- Completed on 2026-11-11 09:16:08 -03
+-- Completed on 2026-11-11 18:29:13 -03
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict bO1AuxcSMe4A5MjQgAJWzCam38zQfLhmDPGM2zI4UVkacGLrFldwatdRjhnmGSZ
+\unrestrict RyPP0sFWYP17hCY7058WdC82Xjo9wedBybKu8hqfwJ6IRpvpiepApEwNWyLmaaY
 
