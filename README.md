@@ -11,7 +11,7 @@
 - [Arquitetura](#arquitetura)
 - [Módulos de Infraestrutura](#módulos-de-infraestrutura)
 - [Aplicações Padrão do Cluster](#aplicações-padrão-do-cluster)
-  - [00. Homepage (nginx)](#00-homepage-nginx)
+  - [00. Homepage (Angular · chirpstack.seudominio.com.br)](#00-homepage-angular--chirpstackseudominiocombr)
   - [01. Metrics Server](#01-metrics-server)
   - [02. UDP Health Check — NLB OCI](#02-udp-health-check--nlb-oci)
 - [Pré-requisitos](#pré-requisitos)
@@ -102,7 +102,7 @@ O foco deste repositório é a implantação e operação do **ChirpStack** — 
 
 Além do ChirpStack, o projeto inclui as três aplicações de infraestrutura base que compõem o ambiente operacional mínimo do cluster:
 
-- **Homepage** — página de apresentação do domínio, servida via NGINX com TLS automático pelo cert-manager e Let's Encrypt
+- **Homepage** — site Angular (Avalon 21 / PrimeNG 21) que apresenta este repositório — ChirpStack v3 e v4 na OCI Always Free — em `chirpstack.seudominio.com.br`, com TLS automático pelo cert-manager e Let's Encrypt e deploy contínuo pelo GitHub Actions
 - **Metrics Server** — coleta de métricas de CPU e memória dos nós e pods, necessário para o Kubernetes Dashboard e para o `kubectl top`
 - **UDP Health Check** — servidor UDP em Java que responde a requisições `PING/PONG`, necessário para liberar as verificações de saúde UDP no Network Load Balancer da OCI e manter o Overall Health `OK`
 
@@ -149,8 +149,10 @@ Internet
 
 Total ARM: 4 OCPUs + 24 GB RAM → exatamente no limite Always Free
 
+Namespace chirpstack-homepage
+└── Homepage (Angular + nginx)          → chirpstack.seudominio.com.br/
+
 Namespace oci-devops
-├── Homepage (nginx-deployment)         → k8s.seudominio.com.br/
 ├── UDP Health Check :1700 (DaemonSet)  → Libera porta UDP 1700 no NLB
 └── UDP Health Check :1710 (DaemonSet)  → Libera porta UDP 1710 no NLB
 
@@ -179,59 +181,58 @@ O código Terraform é organizado em módulos executados sequencialmente:
 
 ## Aplicações Padrão do Cluster
 
-Após a infraestrutura estar de pé, três aplicações são implantadas manualmente no namespace **`oci-devops`** usando os manifests organizados em `00.homepage/`, `01.metrics_server/` e `02.udp_health_check-nlb_oci/`. Cada uma possui scripts de deploy e destroy prontos.
+Após a infraestrutura estar de pé, três aplicações completam o ambiente: a **Homepage** (`00.homepage/`), implantada automaticamente pelo GitHub Actions no namespace `chirpstack-homepage`, e o **Metrics Server** (`01.metrics_server/`) e o **UDP Health Check** (`02.udp_health_check-nlb_oci/`), implantados manualmente com os scripts de deploy e destroy de cada pasta.
 
-### 00. Homepage (nginx)
+### 00. Homepage (Angular · chirpstack.seudominio.com.br)
 
-Serve a página de apresentação do domínio principal do cluster, acessível via HTTPS com certificado TLS emitido automaticamente pelo **cert-manager + Let's Encrypt**.
+Site de apresentação **deste repositório**: arquitetura do ChirpStack v3 e v4 no cluster, comparativo entre as versões, mapa de serviços, plano AU915 e classes de dispositivos, tópicos MQTT, aplicações (Manager e Consumer) e a infraestrutura Always Free. Os textos, versões, portas e hosts do site seguem este README (`src/app/core/site.config.ts`).
+
+> O host `k8s.seudominio.com.br` continua reservado ao **Kubernetes Dashboard** (`/dashboard`) e à homepage pessoal do autor, publicada pelo repositório `k8s-arm-oci-always-free`. Por isso o site deste repositório tem subdomínio próprio.
 
 **Fluxo de acesso:**
 ```
-https://k8s.seudominio.com.br
+https://chirpstack.seudominio.com.br
     → NLB :443
     → NodePort 30443 (workers)
     → Ingress NGINX
-    → Service nginx-service :80 (ClusterIP)
-    → Pod nginx-deployment (imagem ARM64 do OCI Container Registry)
+    → Service app-chirpstack-homepage-frontend-service :80 (ClusterIP)
+    → Pod app-chirpstack-homepage-frontend-deployment (nginx + build Angular, ARM64, OCIR)
 ```
 
-**Tecnologias:** NGINX, cert-manager v1.12.3, Let's Encrypt (produção e staging), Ingress NGINX
+**Tecnologias:** Angular 21, PrimeNG 21 (template Avalon 21), Tailwind 4, nginx (`nginx:alpine`), cert-manager + Let's Encrypt, Ingress NGINX
 
-**Imagem:** `gru.ocir.io/<namespace>/homepage-80_platform_linux-arm64:latest`
+**Páginas:** `/` (início), `/v3`, `/v4` e `/infraestrutura`
 
-**Kubernetes resources (namespace `oci-devops`):**
+**Imagem:** `gru.ocir.io/<namespace>/app-chirpstack-homepage-frontend_platform_linux-arm64:<versão>`
+
+**Kubernetes resources (namespace `chirpstack-homepage`):**
 
 | Kind | Nome | Descrição |
 |---|---|---|
-| `Namespace` | `oci-devops` | Namespace principal das aplicações do projeto |
-| `Deployment` | `nginx-deployment` | 1 réplica do NGINX servindo o `index.html` |
-| `Service` | `nginx-service` | ClusterIP na porta 80 |
-| `Ingress` | `nginx-ingress` | TLS via `letsencrypt-prod`, host `k8s.seudominio.com.br` |
-| `ClusterIssuer` | `letsencrypt-prod` | Emissão de certificados via ACME HTTP-01 |
-| `ClusterIssuer` | `letsencrypt-staging` | Ambiente de testes do Let's Encrypt |
+| `Namespace` | `chirpstack-homepage` | Namespace exclusivo do site |
+| `Deployment` | `app-chirpstack-homepage-frontend-deployment` | 1 réplica do nginx com o build Angular · probes em `/healthz` |
+| `Service` | `app-chirpstack-homepage-frontend-service` | ClusterIP na porta 80 |
+| `Ingress` | `app-chirpstack-homepage-frontend-ingress` | TLS via `letsencrypt-prod`, host `chirpstack.seudominio.com.br` |
+| `Secret` | `oci-registry-secret` | Credenciais do OCIR (criado pelo pipeline) |
 
-**Deploy / Destroy:**
+Os `ClusterIssuer` `letsencrypt-prod` e `letsencrypt-staging` são instalados pelo módulo `k8s_scaffold` do Terraform.
+
+**Deploy:** automático pelo job `app_chirpstack_homepage_frontend` do `.github/workflows/main.yml` a cada push que altere `00.homepage/app_chirpstack_homepage_frontend/**` (detalhes em [CI/CD com GitHub Actions](#cicd-com-github-actions)). Para forçar um novo deploy sem mudar código:
+
 ```bash
-cd 00.homepage/00.UsefulScripts/
-
-chmod +x 01.deploy_homepage-nginx_script.sh
-bash 01.deploy_homepage-nginx_script.sh
-
-# Para remover:
-chmod +x 02.destroy_homepage-nginx_script.sh
-bash 02.destroy_homepage-nginx_script.sh
+./force_deploy.sh homepage
 ```
 
-**Build da imagem (ARM64) para o OCI Container Registry:**
+**Rodar localmente e build manual da imagem (ARM64):**
 ```bash
-# Autenticar no OCI Registry
-docker login -u <namespace>/<seu_email> -p "<auth_token>" gru.ocir.io
+cd 00.homepage/app_chirpstack_homepage_frontend
+npm ci && npm start                      # http://localhost:4411
 
-# Build e push para ARM64
+docker login -u <namespace>/<seu_email> -p "<auth_token>" gru.ocir.io
 docker buildx build \
   --platform linux/arm64 \
-  -t gru.ocir.io/<namespace>/homepage-80_platform_linux-arm64:latest \
-  --no-cache --push .
+  -t gru.ocir.io/<namespace>/app-chirpstack-homepage-frontend_platform_linux-arm64:latest \
+  --push .
 ```
 
 ---
@@ -593,7 +594,7 @@ Adicione `oci_api_key_public.pem` em **Identity → Users → (seu usuário) →
 
 | Aplicação | Namespace | Versão / Imagem | Função |
 |---|---|---|---|
-| **Homepage (NGINX)** | `oci-devops` | `nginx:latest` (ARM64) | Página de apresentação do domínio |
+| **Homepage (Angular + nginx)** | `chirpstack-homepage` | `nginx:alpine` + build Angular 21 (ARM64) | Site do repositório em `chirpstack.seudominio.com.br` |
 | **Metrics Server** | `kube-system` | `metrics-server:v0.7.2` | Métricas de CPU/RAM para Dashboard e `kubectl top` |
 | **UDP Health Check :1700** | `oci-devops` | Java (ARM64, OCI Registry) | Libera porta UDP 1700 no NLB (PING/PONG) |
 | **UDP Health Check :1710** | `oci-devops` | Java (ARM64, OCI Registry) | Libera porta UDP 1710 no NLB (PING/PONG) |
@@ -622,21 +623,22 @@ Adicione `oci_api_key_public.pem` em **Identity → Users → (seu usuário) →
 │   └── apps/                        # YAMLs: Ingress, cert-manager, Dashboard
 ├── oci_artifacts_container_repository/  # Módulo: OCI Container Registry
 │
-├── 00.homepage/                     # App: Página inicial do domínio
-│   ├── Dockerfile                   # FROM nginx:latest + index.html
-│   ├── index.html                   # Página HTML da homepage
-│   ├── ci_cd.yaml                   # GitHub Actions: build ARM64 + deploy
-│   ├── docker/                      # docker-compose para teste local
-│   ├── 00.UsefulScripts/            # Scripts de deploy e destroy
-│   │   ├── 01.deploy_homepage-nginx_script.sh
-│   │   └── 02.destroy_homepage-nginx_script.sh
-│   └── kubernetes/
-│       ├── 01.homepage-nginx__Namespace.yaml          # Namespace oci-devops
-│       ├── 02.homepage-nginx__Deployment.yaml         # Deployment NGINX ARM64
-│       ├── 03.homepage-nginx__Service.yaml            # Service ClusterIP :80
-│       ├── 04.homepage-nginx-cert-manager__...yaml    # cert-manager v1.12.3 completo
-│       ├── 05.homepage-nginx-letsencrypt-issuer__...yaml  # ClusterIssuers prod + staging
-│       └── 06.homepage-nginx__Ingress.yaml            # Ingress TLS letsencrypt-prod
+├── force_deploy.sh                  # Força o deploy (grava .force-deploy nas pastas das apps)
+├── .github/workflows/main.yml       # CI/CD: detect + um job por aplicação
+│
+├── 00.homepage/                     # App: site do repositório (chirpstack.seudominio.com.br)
+│   └── app_chirpstack_homepage_frontend/
+│       ├── Dockerfile               # node:22-alpine (build) → nginx:alpine
+│       ├── nginx.conf               # SPA fallback, /healthz, cache e cabeçalhos
+│       ├── package.json             # Angular 21 · PrimeNG 21 · Avalon 21
+│       ├── src/app/core/site.config.ts   # Todo o conteúdo do site (espelha este README)
+│       ├── src/app/pages/           # home · versao (/v3 e /v4) · infraestrutura
+│       └── kubernetes/
+│           ├── 01.create__Namespace.yaml                          # Namespace chirpstack-homepage
+│           ├── 02.app-chirpstack-homepage-frontend__Deployment.yaml
+│           ├── 03.app-chirpstack-homepage-frontend__Service.yaml  # ClusterIP :80
+│           ├── 04.app-chirpstack-homepage__Ingress.yaml           # TLS letsencrypt-prod
+│           └── kustomization.yaml                                 # Imagem + versão (pipeline)
 │
 ├── 01.metrics_server/               # App: Metrics Server
 │   ├── 00.UsefulScripts/
@@ -823,7 +825,8 @@ Abaixo estão todos os subdomínios que precisam ser cadastrados no seu provedor
 
 | Subdomínio | Serviço | Tipo de registro | TTL sugerido |
 |---|---|---|---|
-| `k8s.seudominio.com.br` | Homepage NGINX + Kubernetes Dashboard | `A` | 300 |
+| `k8s.seudominio.com.br` | Kubernetes Dashboard (`/dashboard`) | `A` | 300 |
+| `chirpstack.seudominio.com.br` | Homepage deste repositório (site Angular) | `A` | 300 |
 | `chirpstack-v3.seudominio.com.br` | ChirpStack v3 — Application Server (UI) | `A` | 300 |
 | `chirpstack-v4.seudominio.com.br` | ChirpStack v4 — Interface Web + API gRPC | `A` | 300 |
 | `chirpstack-v4-rest-api.seudominio.com.br` | ChirpStack v4 — REST API | `A` | 300 |
@@ -946,10 +949,11 @@ Os arquivos Ingress do projeto precisam ser editados com seus subdomínios reais
 
 **Homepage:**
 ```bash
-# Arquivo: 00.homepage/kubernetes/06.homepage-nginx__Ingress.yaml
-# Substituir: k8s.adailsilva.com.br → k8s.seudominio.com.br
-sed -i 's/k8s.adailsilva.com.br/k8s.seudominio.com.br/g' \
-  00.homepage/kubernetes/06.homepage-nginx__Ingress.yaml
+# Arquivo: 00.homepage/app_chirpstack_homepage_frontend/kubernetes/04.app-chirpstack-homepage__Ingress.yaml
+# Substituir: chirpstack.adailsilva.com.br → chirpstack.seudominio.com.br
+sed -i 's/chirpstack.adailsilva.com.br/chirpstack.seudominio.com.br/g' \
+  00.homepage/app_chirpstack_homepage_frontend/kubernetes/04.app-chirpstack-homepage__Ingress.yaml
+# Os links do site ficam em src/app/core/site.config.ts e src/index.html (mesma substituição).
 ```
 
 **ChirpStack v3:**
@@ -1472,16 +1476,14 @@ kubectl get daemonset -n oci-devops
 
 ### 3. Homepage
 
-```bash
-# Garantir que o Secret de Registry exista no namespace oci-devops
-kubectl get secret oci-registry-secret -n oci-devops
+A Homepage não tem script manual: ela sobe pelo GitHub Actions (job `app_chirpstack_homepage_frontend`) a cada alteração em `00.homepage/app_chirpstack_homepage_frontend/**`. Com o DNS de `chirpstack.seudominio.com.br` já apontando para o NLB, dispare o primeiro deploy:
 
-cd 00.homepage/00.UsefulScripts/
-bash 01.deploy_homepage-nginx_script.sh
+```bash
+./force_deploy.sh homepage             # ou Actions → Run workflow → target = app_chirpstack_homepage_frontend
 
 # Verificar:
-kubectl get pods,svc,ingress -n oci-devops
-kubectl get certificate -n oci-devops
+kubectl get pods,svc,ingress -n chirpstack-homepage
+kubectl get certificate -n chirpstack-homepage
 ```
 
 ---
@@ -3023,7 +3025,7 @@ Referência rápida de todos os serviços disponíveis no cluster após o provis
 
 | Serviço | URL | Credenciais padrão | Namespace |
 |---|---|---|---|
-| **Homepage** | `https://k8s.seudominio.com.br` | — (pública) | `oci-devops` |
+| **Homepage** | `https://chirpstack.seudominio.com.br` | — (pública) | `chirpstack-homepage` |
 | **Kubernetes Dashboard** | `https://k8s.seudominio.com.br/dashboard` | Token via `terraform output admin_token` | `kubernetes-dashboard` |
 | **ChirpStack v3 — UI** | `https://chirpstack-v3.seudominio.com.br` | `admin` / `admin` | `chirpstack-v3` |
 | **ChirpStack v3 — API (Swagger)** | `https://chirpstack-v3.seudominio.com.br/api` | JWT via UI → Profile → API Keys | `chirpstack-v3` |
@@ -4108,7 +4110,8 @@ kubectl get nodes -o wide
 kubectl get pods -n kube-system        # Sistema + Metrics Server
 kubectl get pods -n ingress-nginx      # Ingress Controller
 kubectl get pods -n cert-manager       # Gerenciador de certificados TLS
-kubectl get pods -n oci-devops         # Homepage + UDP Health Check
+kubectl get pods -n chirpstack-homepage  # Homepage (site do repositório)
+kubectl get pods -n oci-devops         # UDP Health Check
 kubectl get pods -n chirpstack-v3      # ChirpStack v3 (se implantado)
 kubectl get pods -n chirpstack-v4      # ChirpStack v4 (se implantado)
 
@@ -4144,7 +4147,15 @@ terraform output admin_token
 
 ## CI/CD com GitHub Actions
 
-O projeto inclui um workflow de CI/CD em `00.homepage/ci_cd.yaml` que automatiza o build da imagem Docker ARM64 e o deploy da homepage no cluster Kubernetes a cada push na branch `master` com alterações dentro da pasta `app/`. O pipeline também pode ser disparado manualmente via `workflow_dispatch`.
+O workflow `.github/workflows/main.yml` roda no **runner self-hosted ARM64** do próprio cluster e tem um job por aplicação. O job `detect` usa o `dorny/paths-filter` para descobrir quais pastas mudaram no push e só os jobs correspondentes executam:
+
+| Job | Pasta monitorada | Namespace | Repositório no OCIR |
+|---|---|---|---|
+| `app_chirpstack_homepage_frontend` | `00.homepage/app_chirpstack_homepage_frontend/**` | `chirpstack-homepage` | `app-chirpstack-homepage-frontend_platform_linux-arm64` |
+| `api_chirpstack_consumer_backend` | `05.chirpstack_consumer/api_chirpstack_consumer_backend/**` | `chirpstack-consumer` | `api-chirpstack-consumer-backend_platform_linux-arm64` |
+| `app_chirpstack_consumer_frontend` | `05.chirpstack_consumer/app_chirpstack_consumer_frontend/**` | `chirpstack-consumer` | `app-chirpstack-consumer-frontend_platform_linux-arm64` |
+
+Cada job versiona com **tag Git própria** no formato `<prefixo>-X.Y` (ex.: `app-chirpstack-homepage-frontend-1.4`): o minor sobe a cada execução, e o major quando o disparo manual usa `version_type: major`.
 
 ### Gatilhos do pipeline
 
@@ -4154,28 +4165,42 @@ on:
     branches:
       - master
     paths:
-      - app/**        # Só dispara quando há mudanças na pasta app/
-  workflow_dispatch:  # Permite execução manual pela interface do GitHub
+      - '00.homepage/app_chirpstack_homepage_frontend/**'
+      - '05.chirpstack_consumer/api_chirpstack_consumer_backend/**'
+      - '05.chirpstack_consumer/app_chirpstack_consumer_frontend/**'
+  workflow_dispatch:      # Actions → Run workflow
+    inputs:
+      version_type:       # minor (padrão) ou major
+      target:             # todos | app_chirpstack_homepage_frontend | api_… | app_…
 ```
 
-### Etapas do pipeline
+**Forçar deploy sem alterar código** — o script `force_deploy.sh` da raiz grava um arquivo `.force-deploy` (data/hora e ID único) na pasta de cada projeto, faz o commit só desses arquivos e o push (com `pull --rebase` e até 3 tentativas). Como o arquivo muda, o paths-filter dispara o job:
+
+```bash
+./force_deploy.sh                    # todos os projetos
+./force_deploy.sh homepage           # só a Homepage
+./force_deploy.sh consumer           # só o ChirpStack Consumer (backend + frontend)
+./force_deploy.sh --dry-run          # mostra o que seria feito
+./force_deploy.sh --no-push          # cria o commit sem enviar
+```
+
+### Etapas do job da Homepage
 
 | # | Step | Descrição |
 |---|---|---|
-| 1 | **Checkout** | Clona o repositório no runner (com `fetch-depth: 0` para buscar todas as tags Git) |
-| 2 | **Calcular próxima versão** | Lê a última tag Git no formato `X.Y`, incrementa o minor automaticamente (ou o major se `workflow_dispatch` com `version_type: major`) |
-| 3 | **Criar tag Git** | Cria e faz push da nova tag de versão no repositório usando o `GH_PAT` |
-| 4 | **Set up QEMU** | Habilita emulação ARM64 no runner x86 |
-| 5 | **Set up Docker Buildx** | Configura o builder multi-plataforma |
-| 6 | **Install OCI CLI** | Instala o OCI CLI e escreve as credenciais a partir dos Secrets |
-| 7 | **Install kubectl** | Instala o `kubectl` e configura o kubeconfig do cluster |
-| 8 | **Currently running services** | Exibe os pods em `oci-devops` antes do deploy |
-| 9 | **Login to Docker registry** | Autentica no OCI Container Registry |
-| 10 | **Available platforms** | Lista as plataformas disponíveis no Buildx |
-| 11 | **Build** | Faz build e push da imagem com duas tags: a versão calculada (ex: `0.3`) e `latest` |
-| 12 | **Deploy to K8S** | Aplica o manifesto `02.homepage-nginx__Deployment.yaml` no cluster |
-| 13 | **Restart nginx** | Executa `rollout restart` no Deployment `nginx` em `oci-devops` |
-| 14 | **Limpar imagens unknown** | Remove do OCI Registry os manifestos intermediários sem tag (`unknown`) gerados pelo build multi-plataforma |
+| 1 | **Checkout** | Clona o repositório com `fetch-depth: 0` (todas as tags) |
+| 2 | **Calcular próxima versão** | Lê a última tag `app-chirpstack-homepage-frontend-X.Y` e incrementa |
+| 3 | **Set up Docker Buildx** | Builder `docker-container` |
+| 4 | **Configurar OCI CLI** | Credenciais a partir dos Secrets; instala a CLI e o `jq` se faltarem |
+| 5 | **Configurar kubectl** | Instala a v1.31 (ARM64) se ausente ou antiga e grava o kubeconfig em `$RUNNER_TEMP` |
+| 6 | **Garantir repositório no OCIR** | Cria `app-chirpstack-homepage-frontend_platform_linux-arm64` no compartimento, se não existir |
+| 7 | **Build & Push** | Imagem `linux/arm64` com as tags `X.Y` e `latest` |
+| 8 | **Criar tag Git** | Publica `app-chirpstack-homepage-frontend-X.Y` (só depois do build) |
+| 9 | **Infraestrutura base** | Namespace, `oci-registry-secret`, Service e Ingress |
+| 10 | **Aplicar o Deployment** | Grava imagem e versão no `kustomization.yaml` **só no runner** (sem commit) e roda `kubectl apply -k` |
+| 11 | **Aguardar rollout** | `rollout status` e confere se o Deployment está com a imagem `:X.Y`; falha se não estiver |
+| 12 | **Limpar imagens unknown** | Remove do OCIR os manifestos sem tag gerados pelo Buildx |
+| 13 | **Remover credenciais** | Apaga kubeconfig e chave OCI do runner (sempre executa) |
 
 ### Secrets do repositório GitHub
 
@@ -4279,7 +4304,7 @@ ocid1.compartment.oc1..aaaaaaaaxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 **Opção 2 — Via console OCI (Container Registry):**
 1. Menu (☰) → **Developer Services → Container Registry**
-2. Clique no repositório `homepage-80_platform_linux-arm64`
+2. Clique em um repositório do projeto (ex.: `app-chirpstack-homepage-frontend_platform_linux-arm64`)
 3. Na página de detalhes, o campo **Compartment OCID** exibe o valor diretamente
 
 **Opção 3 — Via OCI CLI:**
@@ -4292,63 +4317,43 @@ Adicione o OCID como Secret no repositório com o nome `OCI_COMPARTMENT_ID`.
 
 ### Como o pipeline constrói e implanta a imagem
 
-O step de **Build** usa o Docker Buildx para criar a imagem simultaneamente para `linux/amd64` e `linux/arm64`, fazendo push direto ao OCI Registry:
+Build e push da Homepage (a partir da raiz do repositório):
 
 ```bash
-# Plataformas disponíveis: linux/amd64, linux/arm64
-docker build --push \
+docker buildx build --push \
   --platform linux/arm64 \
-  -t gru.ocir.io/<OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>/homepage-80_platform_linux-arm64:latest \
-  app/.
+  -f 00.homepage/app_chirpstack_homepage_frontend/Dockerfile \
+  -t gru.ocir.io/<OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>/app-chirpstack-homepage-frontend_platform_linux-arm64:<X.Y> \
+  -t gru.ocir.io/<OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>/app-chirpstack-homepage-frontend_platform_linux-arm64:latest \
+  00.homepage/app_chirpstack_homepage_frontend
 ```
 
-O step de **Deploy** substitui o placeholder `<OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>` no manifesto com o valor real antes de aplicar:
-
-```bash
-sed -i 's/<OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/g' \
-  app/02.homepage-nginx__Deployment.yaml
-
-kubectl apply -f app/02.homepage-nginx__Deployment.yaml -n oci-devops
-```
-
-Por fim, o **Restart** força o rollout para que os pods sejam recriados com a nova imagem:
-
-```bash
-kubectl rollout restart deployment nginx -n oci-devops
-```
-
-### Estrutura esperada da pasta `app/`
-
-O workflow monitora mudanças em `app/**` e espera encontrar:
-
-```
-app/
-├── Dockerfile                          # FROM nginx:latest + index.html
-├── index.html                          # Conteúdo da homepage
-└── 02.homepage-nginx__Deployment.yaml  # Manifesto com placeholder <OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>
-```
-
-O manifesto de Deployment deve conter o placeholder que será substituído pelo pipeline:
+O Deployment não usa `latest` nem `rollout restart`: o pipeline grava a versão no `kustomization.yaml` e aplica com kustomize, então cada deploy troca a imagem por uma tag imutável:
 
 ```yaml
-containers:
-  - name: nginx
-    image: gru.ocir.io/<OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>/homepage-80_platform_linux-arm64:latest
+# 00.homepage/app_chirpstack_homepage_frontend/kubernetes/kustomization.yaml
+images:
+  - name: <OCI_REGISTRY_URL>/<OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>/app-chirpstack-homepage-frontend_platform_linux-arm64
+    newName: gru.ocir.io/<namespace>/app-chirpstack-homepage-frontend_platform_linux-arm64
+    newTag: "X.Y"            # trocado pelo pipeline a cada build
 ```
+
+```bash
+kubectl apply -k 00.homepage/app_chirpstack_homepage_frontend/kubernetes
+```
+
+> Para aplicar à mão, ajuste antes o `newTag` para uma versão existente no OCIR.
 
 ### Verificar a execução do pipeline
 
-Após um push ou execução manual, acompanhe em **Actions → CI/CD** no GitHub. Para verificar no cluster:
+Acompanhe em **Actions → CI/CD with GitHub Actions** no GitHub. No cluster:
 
 ```bash
-# Checar o status do rollout
-kubectl rollout status deployment/nginx -n oci-devops
-
-# Ver os pods atualizados
-kubectl get pods -n oci-devops -o wide
-
-# Ver os eventos recentes
-kubectl describe deployment nginx -n oci-devops
+kubectl -n chirpstack-homepage rollout status deployment/app-chirpstack-homepage-frontend-deployment
+kubectl -n chirpstack-homepage get pods,svc,ingress -o wide
+kubectl -n chirpstack-homepage get deployment app-chirpstack-homepage-frontend-deployment \
+  -o jsonpath='{.spec.template.spec.containers[0].image}{"\n"}'
+git tag --list 'app-chirpstack-homepage-frontend-*' | sort -V | tail -3
 ```
 
 ---
@@ -4958,7 +4963,7 @@ O módulo `oci-infra_ci_cd` cria repositórios privados no **OCI Container Regis
 
 | Repositório | Arquitetura | Aplicação |
 |---|---|---|
-| `homepage-80_platform_linux-arm64` | ARM64 | Homepage NGINX |
+| `app-chirpstack-homepage-frontend_platform_linux-arm64` | ARM64 | Homepage (site do repositório) |
 | `udp-health-check-server-1700_platform_linux-arm64` | ARM64 | UDP Health Check porta 1700 |
 | `udp-health-check-server-1710_platform_linux-arm64` | ARM64 | UDP Health Check porta 1710 |
 
@@ -5313,7 +5318,7 @@ O bloqueio é automático — não há como solicitar remoção. A única saída
 
 O ambiente de staging do Let's Encrypt tem limites muito mais altos (não bloqueia em situações normais de desenvolvimento) e permite validar toda a cadeia cert-manager → Ingress → ACME → HTTPS **sem consumir quota do ambiente de produção**. O certificado emitido não é confiável pelos browsers, mas o serviço responde via HTTPS e os testes funcionam normalmente.
 
-Este cluster já inclui o `ClusterIssuer` de staging por padrão (criado junto com a Homepage). Se ele não existir no seu ambiente, crie-o:
+Este cluster já inclui o `ClusterIssuer` de staging por padrão (criado pelo módulo `k8s_scaffold`). Se ele não existir no seu ambiente, crie-o:
 
 ```bash
 kubectl apply -f - <<EOF

@@ -564,3 +564,23 @@ resource "oci_artifacts_container_repository" "app-cslab-site-frontend_platform_
   }
 
 }
+
+# Namespace: chirpstack-homepage (site https://chirpstack.adailsilva.com.br — 00.homepage/app_chirpstack_homepage_frontend)
+# O job app_chirpstack_homepage_frontend do pipeline cria este repositório se ele ainda não existir.
+# Nesse caso, importe-o em vez de recriar:
+#   terraform import 'module.oci-infra_ci_cd.oci_artifacts_container_repository.app-chirpstack-homepage-frontend_platform_linux-arm64' <OCID-do-repositório>
+resource "oci_artifacts_container_repository" "app-chirpstack-homepage-frontend_platform_linux-arm64" {
+  # Required
+  compartment_id = var.compartment_id
+  display_name   = "app-chirpstack-homepage-frontend_platform_linux-arm64"
+
+  # Optional
+  is_immutable = false
+  is_public    = false
+  readme {
+    # Required
+    content = "Image repository with _**arm64 architecture**_ for k8s-on-arm-oci-always-free Cluster."
+    format  = "text/markdown"
+  }
+
+}

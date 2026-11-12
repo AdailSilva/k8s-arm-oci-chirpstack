@@ -1,5 +1,15 @@
-# Conteúdo para pipeline do GitHub Actions na raíz do projeto.
-## .github/workflows/main.yml
+# ─────────────────────────────────────────────────────────────────────────────
+# .github/workflows/main.yml — AdailSilva/k8s-arm-oci-chirpstack
+#
+# Um job por aplicação; o job `detect` (dorny/paths-filter) decide quais rodam:
+#   app_chirpstack_homepage_frontend  → 00.homepage/app_chirpstack_homepage_frontend/**
+#                                       (site https://chirpstack.adailsilva.com.br)
+#   api_chirpstack_consumer_backend   → 05.chirpstack_consumer/api_chirpstack_consumer_backend/**
+#   app_chirpstack_consumer_frontend  → 05.chirpstack_consumer/app_chirpstack_consumer_frontend/**
+#
+# Forçar deploy sem mudar código: ./force_deploy.sh (grava .force-deploy na pasta).
+# Disparo manual: Actions → Run workflow → target (um job ou "todos").
+# ─────────────────────────────────────────────────────────────────────────────
 
 name: CI/CD with GitHub Actions
 
@@ -8,20 +18,27 @@ on:
     branches:
       - master
     paths:
-      - '00.homepage/02.real_time/api_k8s_dashboard_backend/**'
-      - '00.homepage/02.real_time/app_k8s_dashboard_frontend/**'
+      - '00.homepage/app_chirpstack_homepage_frontend/**'
       - '05.chirpstack_consumer/api_chirpstack_consumer_backend/**'
       - '05.chirpstack_consumer/app_chirpstack_consumer_frontend/**'
   workflow_dispatch:
     inputs:
       version_type:
-        description: 'Tipo de versão: minor (padrão) ou major'
-        required: false
-        default: 'minor'
+        description: 'Tipo de versão'
+        type: choice
+        options:
+          - minor
+          - major
+        default: minor
       target:
-        description: 'O que deployar: api_k8s_dashboard_backend, app_k8s_dashboard_frontend, api_chirpstack_consumer_backend, app_chirpstack_consumer_frontend ou ambos'
-        required: false
-        default: 'ambos'
+        description: 'O que deployar'
+        type: choice
+        options:
+          - todos
+          - app_chirpstack_homepage_frontend
+          - api_chirpstack_consumer_backend
+          - app_chirpstack_consumer_frontend
+        default: todos
 
 # ─────────────────────────────────────────────────────────────────────────────
 # JOB: DETECT – descobre quais paths mudaram e expõe outputs para os jobs
@@ -33,11 +50,11 @@ jobs:
     #runs-on: ubuntu-latest
     runs-on: self-hosted
     timeout-minutes: 10
+    # No workflow_dispatch vale o passo `manual`; no push, o paths-filter.
     outputs:
-      api_k8s_dashboard_backend:        ${{ steps.filter.outputs.api_k8s_dashboard_backend }}
-      app_k8s_dashboard_frontend:       ${{ steps.filter.outputs.app_k8s_dashboard_frontend }}
-      api_chirpstack_consumer_backend:  ${{ steps.filter.outputs.api_chirpstack_consumer_backend }}
-      app_chirpstack_consumer_frontend: ${{ steps.filter.outputs.app_chirpstack_consumer_frontend }}
+      app_chirpstack_homepage_frontend: ${{ steps.manual.outputs.app_chirpstack_homepage_frontend || steps.filter.outputs.app_chirpstack_homepage_frontend }}
+      api_chirpstack_consumer_backend:  ${{ steps.manual.outputs.api_chirpstack_consumer_backend  || steps.filter.outputs.api_chirpstack_consumer_backend }}
+      app_chirpstack_consumer_frontend: ${{ steps.manual.outputs.app_chirpstack_consumer_frontend || steps.filter.outputs.app_chirpstack_consumer_frontend }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -46,421 +63,255 @@ jobs:
           token: ${{ secrets.GH_PAT }}
 
       - name: Filtrar paths alterados
+        if: github.event_name != 'workflow_dispatch'
         uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: |
-            api_k8s_dashboard_backend:
-              - '00.homepage/02.real_time/api_k8s_dashboard_backend/**'
-            app_k8s_dashboard_frontend:
-              - '00.homepage/02.real_time/app_k8s_dashboard_frontend/**'
+            app_chirpstack_homepage_frontend:
+              - '00.homepage/app_chirpstack_homepage_frontend/**'
             api_chirpstack_consumer_backend:
               - '05.chirpstack_consumer/api_chirpstack_consumer_backend/**'
             app_chirpstack_consumer_frontend:
               - '05.chirpstack_consumer/app_chirpstack_consumer_frontend/**'
 
-      # Em workflow_dispatch sobrescreve os outputs conforme o input `target`
-      - name: Sobrescrever outputs (workflow_dispatch)
+      # Antes este passo não tinha `id` e os outputs do job liam só `steps.filter`:
+      # o disparo manual nunca acionava nenhum job.
+      - name: Seleção manual (workflow_dispatch)
+        id: manual
         if: github.event_name == 'workflow_dispatch'
         run: |
           TARGET="${{ github.event.inputs.target }}"
-          if [ "$TARGET" == "api_k8s_dashboard_backend" ]        || [ "$TARGET" == "ambos" ]; then
-            echo "api_k8s_dashboard_backend=true"  >> $GITHUB_OUTPUT
-          fi
-          if [ "$TARGET" == "app_k8s_dashboard_frontend" ]       || [ "$TARGET" == "ambos" ]; then
-            echo "app_k8s_dashboard_frontend=true" >> $GITHUB_OUTPUT
-          fi
-          if [ "$TARGET" == "api_chirpstack_consumer_backend" ]  || [ "$TARGET" == "ambos" ]; then
-            echo "api_chirpstack_consumer_backend=true"  >> $GITHUB_OUTPUT
-          fi
-          if [ "$TARGET" == "app_chirpstack_consumer_frontend" ] || [ "$TARGET" == "ambos" ]; then
-            echo "app_chirpstack_consumer_frontend=true" >> $GITHUB_OUTPUT
-          fi
-
-# ─────────────────────────────────────────────────────────────────────────────
-# JOB: HOMEPAGE – BACKEND (Spring Boot)
-# Disparado quando o job detect sinaliza api_k8s_dashboard_backend=true
-# ─────────────────────────────────────────────────────────────────────────────
-  api_k8s_dashboard_backend:
-    name: HomePage – Backend (Spring Boot)
-    #runs-on: ubuntu-latest
-    runs-on: self-hosted
-    timeout-minutes: 30
-    needs: detect
-    if: needs.detect.outputs.api_k8s_dashboard_backend == 'true'
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GH_PAT }}
-
-      # ─── VERSIONAMENTO ──────────────────────────────────────────────────────
-      - name: Calcular próxima versão (api-k8s-dashboard-backend)
-        id: version
-        run: |
-          PREFIX="api-k8s-dashboard-backend"
-          LATEST=$(git tag --list "${PREFIX}-[0-9]*.[0-9]*" | sort -V | tail -1)
-
-          if [ -z "$LATEST" ]; then
-            LATEST="${PREFIX}-0.0"
-          fi
-
-          # Extrai só a parte numérica
-          NUMS=${LATEST#${PREFIX}-}
-          MAJOR=$(echo "$NUMS" | cut -d. -f1)
-          MINOR=$(echo "$NUMS" | cut -d. -f2)
-
-          if [ "${{ github.event.inputs.version_type }}" == "major" ]; then
-            NEW_VERSION="$((MAJOR + 1)).0"
-          else
-            NEW_VERSION="$MAJOR.$((MINOR + 1))"
-          fi
-
-          FULL_TAG="${PREFIX}-${NEW_VERSION}"
-          echo "Nova versão: $FULL_TAG"
-          echo "VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
-          echo "FULL_TAG=$FULL_TAG"  >> $GITHUB_OUTPUT
-
-      - name: Criar tag Git (api-k8s-dashboard-backend)
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git tag ${{ steps.version.outputs.FULL_TAG }}
-          git push origin ${{ steps.version.outputs.FULL_TAG }}
-      # ────────────────────────────────────────────────────────────────────────
-
-        # - name: Set up QEMU
-        # uses: docker/setup-qemu-action@v4
-
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v4
-        with:
-          driver: docker-container
-
-      - name: Install OCI CLI
-        run: |
-          mkdir -p ~/.oci
-          echo "${{ secrets.OCI_CONFIG }}"   > ~/.oci/config
-          echo "${{ secrets.OCI_KEY_FILE }}" > ~/.oci/key.pem
-
-          # Corrige o path do key_file para o home real do runner
-          sed -i "s|key_file=.*|key_file=$HOME/.oci/key.pem|g" ~/.oci/config
-
-          if [ -f "/home/ubuntu/bin/oci" ]; then
-            echo "OCI CLI já instalado: $(/home/ubuntu/bin/oci --version)"
-          else
-            echo "OCI CLI não encontrado, instalando..."
-            # Remove diretório residual que bloqueia o instalador
-            rm -rf /home/ubuntu/lib/oracle-cli
-            curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
-            chmod +x install.sh
-            ./install.sh --accept-all-defaults
-          fi
-
-          # echo "/home/runner/bin" >> $GITHUB_PATH
-          echo "/home/ubuntu/bin" >> $GITHUB_PATH
-          /home/ubuntu/bin/oci setup repair-file-permissions --file ~/.oci/config
-          /home/ubuntu/bin/oci setup repair-file-permissions --file ~/.oci/key.pem
-
-      - name: Install kubectl
-        run: |
-          mkdir -p /tmp/.kube
-
-          if ! command -v kubectl &> /dev/null; then
-            echo "kubectl não encontrado, instalando..."
-            curl -L "https://dl.k8s.io/release/v1.22.4/bin/linux/amd64/kubectl" -o /tmp/kubectl
-            chmod +x /tmp/kubectl
-            sudo mv /tmp/kubectl /usr/local/bin/kubectl
-          else
-            echo "kubectl já instalado: $(kubectl version --client --short 2>/dev/null)"
-          fi
-
-          echo "${{ secrets.KUBECONFIG }}" > /tmp/.kube/config
-          echo "KUBECONFIG=/tmp/.kube/config" >> $GITHUB_ENV
-
-      - name: Pods em execução (antes do deploy)
-        run: kubectl get pods -n k8s-dashboard || echo "Namespace ainda não existe"
-
-      - name: Login no Docker Registry (OCI)
-        uses: docker/login-action@v4
-        with:
-          registry: ${{ secrets.OCI_REGISTRY_URL }}
-          username: ${{ secrets.OCI_REGISTRY_USERNAME }}
-          password: ${{ secrets.OCI_REGISTRY_PASSWORD }}
-
-      - name: Available platforms
-        run: echo ${{ steps.buildx.outputs.platforms }}
-
-      - name: Build & Push – K8S Dashboard Backend
-        run: |
-          # Plataformas disponíveis: linux/amd64, linux/arm64
-          docker buildx build \
-            --builder ${{ steps.buildx.outputs.name }} \
-            --push \
-            --platform linux/arm64 \
-            -f 00.homepage/02.real_time/api_k8s_dashboard_backend/Dockerfile \
-            -t ${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/api-k8s-dashboard-backend_platform_linux-arm64:${{ steps.version.outputs.VERSION }} \
-            -t ${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/api-k8s-dashboard-backend_platform_linux-arm64:latest \
-            00.homepage/02.real_time/api_k8s_dashboard_backend
-
-      - name: Aplicar infraestrutura base (Namespace, RBAC, Services, Ingress)
-        run: |
-          # Aplica em ordem — Namespace DEVE ser o primeiro
-          kubectl apply --server-side -f 00.homepage/02.real_time/kubernetes/01.create__Namespace.yaml
-          kubectl apply --server-side -f 00.homepage/02.real_time/kubernetes/02.homepage-nginx__RBAC.yaml
-          kubectl apply --server-side -f 00.homepage/02.real_time/kubernetes/04.homepage-nginx__Backend_Service.yaml
-          kubectl apply --server-side -f 00.homepage/02.real_time/kubernetes/09.homepage-nginx__Ingress.yaml
-
-      - name: Criar/atualizar imagePullSecret do OCI Registry
-        run: |
-          kubectl create secret docker-registry oci-registry-secret \
-            --docker-server=${{ secrets.OCI_REGISTRY_URL }} \
-            --docker-username='${{ secrets.OCI_REGISTRY_USERNAME }}' \
-            --docker-password='${{ secrets.OCI_REGISTRY_PASSWORD }}' \
-            --docker-email='${{ secrets.OCI_REGISTRY_EMAIL }}' \
-            --namespace=k8s-dashboard \
-            --dry-run=client -o yaml | kubectl apply -f -
-
-      - name: Deploy Backend no K8S
-        run: |
-          sed -i \
-            -e 's|<OCI_REGISTRY_URL>|${{ secrets.OCI_REGISTRY_URL }}|g' \
-            -e 's|<OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>|${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}|g' \
-            00.homepage/02.real_time/kubernetes/03.homepage-nginx__Backend_Deployment.yaml && \
-          grep "image:" 00.homepage/02.real_time/kubernetes/03.homepage-nginx__Backend_Deployment.yaml && \
-          kubectl apply -f 00.homepage/02.real_time/kubernetes/03.homepage-nginx__Backend_Deployment.yaml -n k8s-dashboard
-
-      - name: Restart Backend Deployment
-        run: kubectl rollout restart deployment api-k8s-dashboard-backend -n k8s-dashboard
-
-      - name: Aguardar rollout do Backend
-        run: kubectl rollout status deployment/api-k8s-dashboard-backend -n k8s-dashboard --timeout=120s
-
-      # ─── LIMPEZA DE IMAGENS SEM TAG (api-k8s-dashboard-backend) ───────────────────────────────
-      - name: Limpar imagens unknown do OCI Registry (api-k8s-dashboard-backend)
-        run: |
-          IMAGE_IDS=$(oci artifacts container image list \
-            --compartment-id ${{ secrets.OCI_COMPARTMENT_ID }} \
-            --repository-name api-k8s-dashboard-backend_platform_linux-arm64 \
-            --lifecycle-state AVAILABLE \
-            --all \
-            --query 'data.items[*].{"id":id,"name":"display-name"}' \
-            --raw-output | \
-            jq -r '.[] | select(.name | test("unknown")) | .id')
-
-          if [ -z "$IMAGE_IDS" ]; then
-            echo "Nenhuma imagem unknown encontrada."
-          else
-            echo "Deletando imagens unknown..."
-            for IMAGE_ID in $IMAGE_IDS; do
-              echo "  → Deletando: $IMAGE_ID"
-              oci artifacts container image delete \
-                --image-id "$IMAGE_ID" \
-                --force
-            done
-            echo "Limpeza concluída."
-          fi
-      # ────────────────────────────────────────────────────────────────────────
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# JOB: HOMEPAGE – FRONTEND (Angular)
-# Disparado quando o job detect sinaliza app_k8s_dashboard_frontend=true
-# ─────────────────────────────────────────────────────────────────────────────
-  app_k8s_dashboard_frontend:
-    name: HomePage – Frontend (Angular)
-    #runs-on: ubuntu-latest
-    runs-on: self-hosted
-    timeout-minutes: 45
-    needs: [detect, api_k8s_dashboard_backend]
-    if: |
-      always() &&
-      needs.detect.outputs.app_k8s_dashboard_frontend == 'true' &&
-      (needs.api_k8s_dashboard_backend.result == 'success' || needs.api_k8s_dashboard_backend.result == 'skipped')
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GH_PAT }}
-
-      # ─── VERSIONAMENTO ──────────────────────────────────────────────────────
-      - name: Calcular próxima versão (app-k8s-dashboard-frontend)
-        id: version
-        run: |
-          PREFIX="app-k8s-dashboard-frontend"
-          LATEST=$(git tag --list "${PREFIX}-[0-9]*.[0-9]*" | sort -V | tail -1)
-
-          if [ -z "$LATEST" ]; then
-            LATEST="${PREFIX}-0.0"
-          fi
-
-          NUMS=${LATEST#${PREFIX}-}
-          MAJOR=$(echo "$NUMS" | cut -d. -f1)
-          MINOR=$(echo "$NUMS" | cut -d. -f2)
-
-          if [ "${{ github.event.inputs.version_type }}" == "major" ]; then
-            NEW_VERSION="$((MAJOR + 1)).0"
-          else
-            NEW_VERSION="$MAJOR.$((MINOR + 1))"
-          fi
-
-          FULL_TAG="${PREFIX}-${NEW_VERSION}"
-          echo "Nova versão: $FULL_TAG"
-          echo "VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
-          echo "FULL_TAG=$FULL_TAG"  >> $GITHUB_OUTPUT
-
-      - name: Criar tag Git (app-k8s-dashboard-frontend)
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git tag ${{ steps.version.outputs.FULL_TAG }}
-          git push origin ${{ steps.version.outputs.FULL_TAG }}
-      # ────────────────────────────────────────────────────────────────────────
-
-        # - name: Set up QEMU
-        # uses: docker/setup-qemu-action@v4
-
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v4
-        with:
-          driver: docker-container
-
-      - name: Install OCI CLI
-        run: |
-          mkdir -p ~/.oci
-          echo "${{ secrets.OCI_CONFIG }}"   > ~/.oci/config
-          echo "${{ secrets.OCI_KEY_FILE }}" > ~/.oci/key.pem
-
-          # Corrige o path do key_file para o home real do runner
-          sed -i "s|key_file=.*|key_file=$HOME/.oci/key.pem|g" ~/.oci/config
-
-          if [ -f "/home/ubuntu/bin/oci" ]; then
-            echo "OCI CLI já instalado: $(/home/ubuntu/bin/oci --version)"
-          else
-            echo "OCI CLI não encontrado, instalando..."
-            # Remove diretório residual que bloqueia o instalador
-            rm -rf /home/ubuntu/lib/oracle-cli
-            curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
-            chmod +x install.sh
-            ./install.sh --accept-all-defaults
-          fi
-
-          # echo "/home/runner/bin" >> $GITHUB_PATH
-          echo "/home/ubuntu/bin" >> $GITHUB_PATH
-          /home/ubuntu/bin/oci setup repair-file-permissions --file ~/.oci/config
-          /home/ubuntu/bin/oci setup repair-file-permissions --file ~/.oci/key.pem
-
-      - name: Install kubectl
-        run: |
-          mkdir -p /tmp/.kube
-
-          if ! command -v kubectl &> /dev/null; then
-            echo "kubectl não encontrado, instalando..."
-            curl -L "https://dl.k8s.io/release/v1.22.4/bin/linux/amd64/kubectl" -o /tmp/kubectl
-            chmod +x /tmp/kubectl
-            sudo mv /tmp/kubectl /usr/local/bin/kubectl
-          else
-            echo "kubectl já instalado: $(kubectl version --client --short 2>/dev/null)"
-          fi
-
-          echo "${{ secrets.KUBECONFIG }}" > /tmp/.kube/config
-          echo "KUBECONFIG=/tmp/.kube/config" >> $GITHUB_ENV
-
-      - name: Pods em execução (antes do deploy)
-        run: kubectl get pods -n k8s-dashboard || echo "Namespace ainda não existe"
-
-      - name: Login no Docker Registry (OCI)
-        uses: docker/login-action@v4
-        with:
-          registry: ${{ secrets.OCI_REGISTRY_URL }}
-          username: ${{ secrets.OCI_REGISTRY_USERNAME }}
-          password: ${{ secrets.OCI_REGISTRY_PASSWORD }}
-
-      - name: Available platforms
-        run: echo ${{ steps.buildx.outputs.platforms }}
-
-      - name: Build & Push – K8S Dashboard Frontend
-        run: |
-          # Plataformas disponíveis: linux/amd64, linux/arm64
-          docker buildx build \
-            --builder ${{ steps.buildx.outputs.name }} \
-            --push \
-            --platform linux/arm64 \
-            -f 00.homepage/02.real_time/app_k8s_dashboard_frontend/Dockerfile \
-            -t ${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/app-k8s-dashboard-frontend_platform_linux-arm64:${{ steps.version.outputs.VERSION }} \
-            -t ${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/app-k8s-dashboard-frontend_platform_linux-arm64:latest \
-            00.homepage/02.real_time/app_k8s_dashboard_frontend
-
-      - name: Aplicar infraestrutura base (Namespace, RBAC, Services, Ingress)
-        run: |
-          # Aplica em ordem — garante Namespace mesmo quando api_k8s_dashboard_backend foi skipped
-          kubectl apply --server-side -f 00.homepage/02.real_time/kubernetes/01.create__Namespace.yaml
-          kubectl apply --server-side -f 00.homepage/02.real_time/kubernetes/02.homepage-nginx__RBAC.yaml
-          kubectl apply --server-side -f 00.homepage/02.real_time/kubernetes/06.homepage-nginx__Frontend_Service.yaml
-          kubectl apply --server-side -f 00.homepage/02.real_time/kubernetes/09.homepage-nginx__Ingress.yaml
-
-      - name: Criar/atualizar imagePullSecret do OCI Registry
-        run: |
-          kubectl create secret docker-registry oci-registry-secret \
-            --docker-server=${{ secrets.OCI_REGISTRY_URL }} \
-            --docker-username='${{ secrets.OCI_REGISTRY_USERNAME }}' \
-            --docker-password='${{ secrets.OCI_REGISTRY_PASSWORD }}' \
-            --docker-email='${{ secrets.OCI_REGISTRY_EMAIL }}' \
-            --namespace=k8s-dashboard \
-            --dry-run=client -o yaml | kubectl apply -f -
-
-      - name: Deploy Frontend no K8S
-        run: |
-          sed -i \
-            -e 's|<OCI_REGISTRY_URL>|${{ secrets.OCI_REGISTRY_URL }}|g' \
-            -e 's|<OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>|${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}|g' \
-            00.homepage/02.real_time/kubernetes/05.homepage-nginx__Frontend_Deployment.yaml && \
-          grep "image:" 00.homepage/02.real_time/kubernetes/05.homepage-nginx__Frontend_Deployment.yaml && \
-          kubectl apply -f 00.homepage/02.real_time/kubernetes/05.homepage-nginx__Frontend_Deployment.yaml -n k8s-dashboard
-
-      - name: Restart Frontend Deployment
-        run: kubectl rollout restart deployment app-k8s-dashboard-frontend -n k8s-dashboard
-
-      - name: Aguardar rollout do Frontend
-        run: kubectl rollout status deployment/app-k8s-dashboard-frontend -n k8s-dashboard --timeout=120s
-
-      # ─── LIMPEZA DE IMAGENS SEM TAG (app-k8s-dashboard-frontend) ──────────────────────────────
-      - name: Limpar imagens unknown do OCI Registry (app-k8s-dashboard-frontend)
-        run: |
-          IMAGE_IDS=$(oci artifacts container image list \
-            --compartment-id ${{ secrets.OCI_COMPARTMENT_ID }} \
-            --repository-name app-k8s-dashboard-frontend_platform_linux-arm64 \
-            --lifecycle-state AVAILABLE \
-            --all \
-            --query 'data.items[*].{"id":id,"name":"display-name"}' \
-            --raw-output | \
-            jq -r '.[] | select(.name | test("unknown")) | .id')
-
-          if [ -z "$IMAGE_IDS" ]; then
-            echo "Nenhuma imagem unknown encontrada."
-          else
-            echo "Deletando imagens unknown..."
-            for IMAGE_ID in $IMAGE_IDS; do
-              echo "  → Deletando: $IMAGE_ID"
-              oci artifacts container image delete \
-                --image-id "$IMAGE_ID" \
-                --force
-            done
-            echo "Limpeza concluída."
-          fi
-      # ────────────────────────────────────────────────────────────────────────
-
+          for JOB in app_chirpstack_homepage_frontend api_chirpstack_consumer_backend app_chirpstack_consumer_frontend; do
+            if [ "$TARGET" = "$JOB" ] || [ "$TARGET" = "todos" ]; then
+              echo "$JOB=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "$JOB=false" >> "$GITHUB_OUTPUT"
+            fi
+          done
+          cat "$GITHUB_OUTPUT"
 
 # ═════════════════════════════════════════════════════════════════════════════
-# NOVOS JOBS: ChirpStack Consumer (Backend Spring Boot + Frontend Angular)
-# Disparados quando alterações ocorrem em 05.chirpstack_consumer/api_k8s_dashboard_backend/**
-# ou 05.chirpstack_consumer/app-k8s-dashboard-frontend/**
+# JOB: HOMEPAGE (site ChirpStack v3/v4 na OCI Always Free — Angular + nginx)
+# https://chirpstack.adailsilva.com.br · namespace chirpstack-homepage
+# Disparado por qualquer alteração em 00.homepage/app_chirpstack_homepage_frontend/**
+# Deploy direto com kubectl (sem ArgoCD): a versão vai para o kustomization.yaml
+# só no workspace do runner, sem commit de volta no master.
+# ═════════════════════════════════════════════════════════════════════════════
+  app_chirpstack_homepage_frontend:
+    name: Homepage – Frontend (Angular)
+    runs-on: [self-hosted, Linux, ARM64]
+    timeout-minutes: 30
+    needs: detect
+    if: needs.detect.outputs.app_chirpstack_homepage_frontend == 'true'
+    concurrency:
+      group: app-chirpstack-homepage-frontend
+      cancel-in-progress: false
+    env:
+      APP_DIR: 00.homepage/app_chirpstack_homepage_frontend
+      K8S_DIR: 00.homepage/app_chirpstack_homepage_frontend/kubernetes
+      IMAGE_REPO: app-chirpstack-homepage-frontend_platform_linux-arm64
+      K8S_NAMESPACE: chirpstack-homepage
+      K8S_DEPLOYMENT: app-chirpstack-homepage-frontend-deployment
+      KUBECTL_VERSION: v1.31.0
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
+
+      # ─── VERSIONAMENTO (a tag só é criada depois do build) ──────────────────
+      - name: Calcular próxima versão (app-chirpstack-homepage-frontend)
+        id: version
+        run: |
+          git fetch --tags --force
+          PREFIX="app-chirpstack-homepage-frontend"
+          LATEST=$(git tag --list "${PREFIX}-[0-9]*.[0-9]*" | sed "s|^${PREFIX}-||" | grep -E '^[0-9]+\.[0-9]+$' | sort -V | tail -1)
+          [ -z "$LATEST" ] && LATEST="0.0"
+
+          MAJOR=${LATEST%%.*}
+          MINOR=${LATEST##*.}
+          if [ "${{ github.event.inputs.version_type }}" = "major" ]; then
+            NEW_VERSION="$((MAJOR + 1)).0"
+          else
+            NEW_VERSION="$MAJOR.$((MINOR + 1))"
+          fi
+
+          echo "Última versão: $LATEST → nova versão: $NEW_VERSION"
+          echo "VERSION=$NEW_VERSION"             >> "$GITHUB_OUTPUT"
+          echo "FULL_TAG=${PREFIX}-${NEW_VERSION}" >> "$GITHUB_OUTPUT"
+          # Via GITHUB_ENV (e não step output): o valor contém secrets.
+          echo "IMAGE=${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/${IMAGE_REPO}" >> "$GITHUB_ENV"
+
+      # ─── FERRAMENTAS ────────────────────────────────────────────────────────
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v4
+        with:
+          driver: docker-container
+
+      - name: Configurar OCI CLI
+        run: |
+          mkdir -p ~/.oci
+          echo "${{ secrets.OCI_CONFIG }}"   > ~/.oci/config
+          echo "${{ secrets.OCI_KEY_FILE }}" > ~/.oci/key.pem
+          sed -i "s|key_file=.*|key_file=$HOME/.oci/key.pem|g" ~/.oci/config
+
+          if [ -x "$HOME/bin/oci" ]; then
+            echo "OCI CLI já instalado: $("$HOME/bin/oci" --version)"
+          else
+            echo "OCI CLI não encontrado, instalando..."
+            rm -rf "$HOME/lib/oracle-cli"   # diretório residual bloqueia o instalador
+            curl -fsSL -o /tmp/oci-install.sh https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+            bash /tmp/oci-install.sh --accept-all-defaults
+          fi
+
+          echo "$HOME/bin" >> "$GITHUB_PATH"
+          "$HOME/bin/oci" setup repair-file-permissions --file ~/.oci/config
+          "$HOME/bin/oci" setup repair-file-permissions --file ~/.oci/key.pem
+
+          command -v jq >/dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq jq; }
+
+      - name: Configurar kubectl
+        run: |
+          # Reinstala se ausente, quebrado (binário de outra arquitetura) ou antigo.
+          CUR_MINOR=$(kubectl version --client -o json 2>/dev/null | jq -r '.clientVersion.minor // "0"' | tr -dc '0-9' || true)
+          if [ "${CUR_MINOR:-0}" -lt 28 ]; then
+            case "$(uname -m)" in
+              aarch64|arm64) ARCH=arm64 ;;
+              *)             ARCH=amd64 ;;
+            esac
+            echo "kubectl ausente ou antigo (minor=${CUR_MINOR:-?}), instalando ${KUBECTL_VERSION} (${ARCH})..."
+            curl -fsSL "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${ARCH}/kubectl" -o /tmp/kubectl
+            sudo install -m 0755 /tmp/kubectl /usr/local/bin/kubectl
+          fi
+          kubectl version --client
+
+          mkdir -p "$RUNNER_TEMP/.kube"
+          echo "${{ secrets.KUBECONFIG }}" > "$RUNNER_TEMP/.kube/config"
+          chmod 600 "$RUNNER_TEMP/.kube/config"
+          echo "KUBECONFIG=$RUNNER_TEMP/.kube/config" >> "$GITHUB_ENV"
+
+      - name: Verificar acesso ao cluster
+        run: kubectl get nodes -o wide
+
+      # O push no OCIR cria o repositório no compartimento raiz quando ele não existe;
+      # criando antes no compartimento do cluster, a limpeza de imagens o encontra.
+      - name: Garantir repositório no OCI Container Registry
+        run: |
+          EXISTE=$(oci artifacts container repository list \
+            --compartment-id "${{ secrets.OCI_COMPARTMENT_ID }}" \
+            --display-name "$IMAGE_REPO" --all \
+            --query 'length(data.items)' --raw-output 2>/dev/null || echo 0)
+          if [ "${EXISTE:-0}" = "0" ]; then
+            echo "Criando o repositório $IMAGE_REPO no OCIR..."
+            oci artifacts container repository create \
+              --compartment-id "${{ secrets.OCI_COMPARTMENT_ID }}" \
+              --display-name "$IMAGE_REPO" --is-public false \
+              || echo "::warning::Não foi possível criar $IMAGE_REPO (o push criará no compartimento raiz)."
+          else
+            echo "Repositório $IMAGE_REPO já existe."
+          fi
+
+      # ─── BUILD & PUSH ───────────────────────────────────────────────────────
+      - name: Login no Docker Registry (OCI)
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ secrets.OCI_REGISTRY_URL }}
+          username: ${{ secrets.OCI_REGISTRY_USERNAME }}
+          password: ${{ secrets.OCI_REGISTRY_PASSWORD }}
+
+      - name: Build & Push – Homepage (linux/arm64)
+        run: |
+          docker buildx build \
+            --builder ${{ steps.buildx.outputs.name }} \
+            --push \
+            --platform linux/arm64 \
+            -f "$APP_DIR/Dockerfile" \
+            -t "${IMAGE}:${{ steps.version.outputs.VERSION }}" \
+            -t "${IMAGE}:latest" \
+            "$APP_DIR"
+
+      - name: Criar tag Git (app-chirpstack-homepage-frontend)
+        run: |
+          git config user.name  "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag "${{ steps.version.outputs.FULL_TAG }}"
+          git push origin "${{ steps.version.outputs.FULL_TAG }}"
+
+      # ─── INFRAESTRUTURA BASE DO APP ─────────────────────────────────────────
+      - name: Namespace, Secret do registry, Service e Ingress
+        run: |
+          kubectl apply -f "$K8S_DIR/01.create__Namespace.yaml"
+
+          kubectl create secret docker-registry oci-registry-secret \
+            --docker-server="${{ secrets.OCI_REGISTRY_URL }}" \
+            --docker-username="${{ secrets.OCI_REGISTRY_USERNAME }}" \
+            --docker-password="${{ secrets.OCI_REGISTRY_PASSWORD }}" \
+            -n "$K8S_NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
+
+          kubectl apply -f "$K8S_DIR/03.app-chirpstack-homepage-frontend__Service.yaml"
+          kubectl apply -f "$K8S_DIR/04.app-chirpstack-homepage__Ingress.yaml"
+
+      # ─── DEPLOY DIRETO ──────────────────────────────────────────────────────
+      - name: Aplicar o Deployment com a nova versão
+        run: |
+          KUST="$K8S_DIR/kustomization.yaml"
+          sed -i -E \
+            -e "s|^(\s*newName:).*|\1 ${IMAGE}|" \
+            -e "s|^(\s*newTag:).*|\1 \"${{ steps.version.outputs.VERSION }}\"|" \
+            "$KUST"
+          kubectl kustomize "$K8S_DIR" | grep -n "image:"
+          kubectl apply -k "$K8S_DIR"
+
+      - name: Aguardar rollout da nova versão
+        run: |
+          EXPECTED="${{ steps.version.outputs.VERSION }}"
+          kubectl -n "$K8S_NAMESPACE" rollout status deployment/"$K8S_DEPLOYMENT" --timeout=240s
+
+          CURRENT=$(kubectl -n "$K8S_NAMESPACE" get deployment "$K8S_DEPLOYMENT" \
+            -o jsonpath='{.spec.template.spec.containers[0].image}')
+          echo "Imagem em execução: $CURRENT"
+          case "$CURRENT" in
+            *":$EXPECTED") echo "Homepage atualizada para a versão $EXPECTED." ;;
+            *) echo "::error::O Deployment está com $CURRENT, esperado :$EXPECTED."; exit 1 ;;
+          esac
+
+          kubectl -n "$K8S_NAMESPACE" get pods,svc,ingress
+          kubectl -n "$K8S_NAMESPACE" get certificate 2>/dev/null || true
+
+      # ─── LIMPEZA DE IMAGENS SEM TAG ─────────────────────────────────────────
+      - name: Limpar imagens "unknown" do OCI Registry (app-chirpstack-homepage-frontend)
+        if: success()
+        continue-on-error: true
+        run: |
+          IMAGE_IDS=$(oci artifacts container image list \
+            --compartment-id "${{ secrets.OCI_COMPARTMENT_ID }}" \
+            --repository-name "$IMAGE_REPO" \
+            --lifecycle-state AVAILABLE \
+            --all \
+            --query 'data.items[*].{"id":id,"name":"display-name"}' \
+            --raw-output | jq -r '.[] | select(.name | test("unknown")) | .id')
+
+          if [ -z "$IMAGE_IDS" ]; then
+            echo "Nenhuma imagem unknown encontrada."
+          else
+            for IMAGE_ID in $IMAGE_IDS; do
+              echo "  → Deletando: $IMAGE_ID"
+              oci artifacts container image delete --image-id "$IMAGE_ID" --force
+            done
+          fi
+
+      - name: Remover credenciais do runner
+        if: always()
+        run: rm -f "$RUNNER_TEMP/.kube/config" ~/.oci/key.pem
+
+# ═════════════════════════════════════════════════════════════════════════════
+# JOBS: ChirpStack Consumer (Backend Spring Boot + Frontend Angular)
+# Disparados quando alterações ocorrem em 05.chirpstack_consumer/api_chirpstack_consumer_backend/**
+# ou 05.chirpstack_consumer/app_chirpstack_consumer_frontend/**
 # ═════════════════════════════════════════════════════════════════════════════
 
 # ─────────────────────────────────────────────────────────────────────────────
