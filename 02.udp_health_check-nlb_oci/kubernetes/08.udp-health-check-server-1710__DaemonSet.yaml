@@ -41,6 +41,9 @@ spec:
           # A JVM sem limite de memoria dimensiona o heap pela RAM do no (7Gi);
           # com o limite abaixo ela passa a enxergar 192Mi e o heap fica em ~64Mi (folga para metaspace e threads).
           env:
+            # Porta que o servidor escuta (28/10/2026). Prevalece sobre o valor gravado na imagem.
+            - name: UDP_PORT
+              value: "1710"
             - name: JAVA_TOOL_OPTIONS
               value: "-XX:MaxRAMPercentage=33 -XX:+UseSerialGC -Xss256k -XX:TieredStopAtLevel=1"
           resources:

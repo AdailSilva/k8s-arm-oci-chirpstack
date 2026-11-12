@@ -1,8 +1,8 @@
 resource "oci_core_subnet" "public" {
   compartment_id    = var.compartment_id
-  vcn_id            = module.vcn.vcn_id
+  vcn_id            = oci_core_vcn.vcn.id
   cidr_block        = "10.0.0.0/24"
-  route_table_id    = module.vcn.ig_route_id
+  route_table_id    = oci_core_route_table.ig.id
   security_list_ids = [oci_core_security_list.public.id]
   display_name      = "public-subnet"
   dns_label         = var.public_subnet_dns_label
@@ -10,7 +10,7 @@ resource "oci_core_subnet" "public" {
 
 resource "oci_core_security_list" "public" {
   compartment_id = var.compartment_id
-  vcn_id         = module.vcn.vcn_id
+  vcn_id         = oci_core_vcn.vcn.id
   display_name   = "Security List for Public subnet"
 
   # Default rules

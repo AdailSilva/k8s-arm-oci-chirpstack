@@ -8,15 +8,25 @@ bash 02.destroy_metrics_server_script.sh
 
 
 
-# Port Forward
+# Alternativa sem caminhos absolutos (a partir da raiz do repositório):
+kubectl apply  -f 01.metrics_server/kubernetes/00.metrics-server__Full.yaml
+kubectl delete -f 01.metrics_server/kubernetes/00.metrics-server__Full.yaml
 
-## Context - Example:
 
-# Port Forward
 
-## Context - Example:
+# Verificação
 
-Pod: metrics-server-deployment-544dcd4c48-7vvtq
-Service: metrics-server-service
+kubectl -n kube-system rollout status deployment/metrics-server
+kubectl -n kube-system get pods -l k8s-app=metrics-server
+kubectl get apiservice v1beta1.metrics.k8s.io
+kubectl top nodes
+kubectl top pods -A
+
+
+
+## Contexto:
+
+Deployment: metrics-server
+Service: metrics-server (ClusterIP :443)
 Namespace: kube-system
 

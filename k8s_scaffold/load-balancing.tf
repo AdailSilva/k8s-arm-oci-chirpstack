@@ -1531,7 +1531,7 @@ resource "oci_network_load_balancer_listener" "worker_tcp_8081" {
 
 # --------------------------------------------------------------
 
-# Load balancing configuration for Spring Boot App arm64 (Namespace: cardscontrol)
+# Load balancing configuration for Spring Boot App arm64 (Namespace: cslab-cardscontrol)
 
 
 # postgresql-cardscontrol-proxied-tcp-5445

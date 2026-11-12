@@ -8,17 +8,24 @@ bash 02.destroy_udp_health_check_server_nlb_oci_script.sh
 
 
 
-# Port Forward
+# Alternativa sem caminhos absolutos (a partir da raiz do repositório).
+# Use SÓ os DaemonSets -- Deployment + DaemonSet no mesmo nó disputam a porta (hostNetwork).
+kubectl apply -f 02.udp_health_check-nlb_oci/kubernetes/01.create__Namespace.yaml
+kubectl apply -f 02.udp_health_check-nlb_oci/kubernetes/04.udp-health-check-server-1700__DaemonSet.yaml
+kubectl apply -f 02.udp_health_check-nlb_oci/kubernetes/08.udp-health-check-server-1710__DaemonSet.yaml
 
-## Context - Example:
 
-# Port Forward
 
-## Context - Example:
+## Contexto:
 
-Pod: udp-app-with-healthcheck-1700-daemon-set-544dcd4c48-7vvtq
-Service: udp-1700-app-service
+DaemonSets: udp-app-with-healthcheck-1700-daemon-set, udp-app-with-healthcheck-1710-daemon-set
+Label dos pods: app=udp-app (as duas portas)
 Namespace: oci-devops
+
+## Teste:
+echo "PING" | nc -u -w2 <IP_DO_WORKER> 1700    # resposta: PONG
+echo "PING" | nc -u -w2 <IP_DO_WORKER> 1710    # resposta: PONG
+kubectl logs daemonset/udp-app-with-healthcheck-1700-daemon-set -n oci-devops --tail=20
 
 
 
@@ -42,31 +49,34 @@ docker images
 ## Build & Push da imagem (Oracle Cloud Infrastructure)
 
 ### Login Oracle Cloud Infrastructure
-docker login -u griszz3l82u1/adail101@hotmail.com -p "[PASSWORD]" gru.ocir.io
-docker login -u griszz3l82u1/adail101@hotmail.com -p "[PASSWORD]" https://gru.ocir.io/
+docker login -u <namespace>/<seu_email> -p "[PASSWORD]" gru.ocir.io
+docker login -u <namespace>/<seu_email> -p "[PASSWORD]" https://gru.ocir.io/
 
 # Ativar QEMU com suporte a arm64
 # Execute o seguinte comando apenas uma vez:
 docker run --privileged --rm tonistiigi/binfmt --install all
 
 
-cd /home/adailsilva/Apps/OracleCloud/k8s-on-arm-oci-always-free/02.udp_health_check-nlb_oci/kubernetes/
+# O Dockerfile fica na raiz do 02 (não em kubernetes/):
+cd 02.udp_health_check-nlb_oci/
 
 docker buildx build \
   --platform linux/arm64 \
-  -t gru.ocir.io/griszz3l82u1/udp-health-check-server-1700_platform_linux-arm64:latest \
+  --build-arg UDP_PORT=1700 \
+  -t gru.ocir.io/<namespace>/udp-health-check-server-1700_platform_linux-arm64:latest \
   --no-cache --push .
 
 docker buildx build \
   --platform linux/arm64 \
-  -t gru.ocir.io/griszz3l82u1/udp-health-check-server-1710_platform_linux-arm64:latest \
+  --build-arg UDP_PORT=1710 \
+  -t gru.ocir.io/<namespace>/udp-health-check-server-1710_platform_linux-arm64:latest \
   --no-cache --push .
 
-docker buildx build --platform 'linux/arm64' --tag gru.ocir.io/griszz3l82u1/udp-health-check-server-1700_platform_linux-arm64:latest --no-cache . 
-docker buildx build --platform 'linux/arm64' --tag gru.ocir.io/griszz3l82u1/udp-health-check-server-1700_platform_linux-arm64:latest --no-cache --push .
+docker buildx build --platform 'linux/arm64' --build-arg UDP_PORT=1700 --tag gru.ocir.io/<namespace>/udp-health-check-server-1700_platform_linux-arm64:latest --no-cache . 
+docker buildx build --platform 'linux/arm64' --build-arg UDP_PORT=1700 --tag gru.ocir.io/<namespace>/udp-health-check-server-1700_platform_linux-arm64:latest --no-cache --push .
 
-docker buildx build --platform 'linux/arm64' --tag gru.ocir.io/griszz3l82u1/udp-health-check-server-1710_platform_linux-arm64:latest --no-cache . 
-docker buildx build --platform 'linux/arm64' --tag gru.ocir.io/griszz3l82u1/udp-health-check-server-1710_platform_linux-arm64:latest --no-cache --push .
+docker buildx build --platform 'linux/arm64' --build-arg UDP_PORT=1710 --tag gru.ocir.io/<namespace>/udp-health-check-server-1710_platform_linux-arm64:latest --no-cache . 
+docker buildx build --platform 'linux/arm64' --build-arg UDP_PORT=1710 --tag gru.ocir.io/<namespace>/udp-health-check-server-1710_platform_linux-arm64:latest --no-cache --push .
 
 docker images
 
@@ -76,18 +86,19 @@ docker images
 kubectl apply -f 01.create__Namespace.yaml
 
 
-kubectl create secret docker-registry oci-registry-secret --docker-server=gru.ocir.io --docker-username='griszz3l82u1/adail101@hotmail.com' --docker-password='[PASSWORD]' --docker-email='adail101@hotmail.com' -n oci-devops
+kubectl create secret docker-registry oci-registry-secret --docker-server=gru.ocir.io --docker-username='<namespace>/<seu_email>' --docker-password='[PASSWORD]' --docker-email='<seu_email>' -n oci-devops
 
-kubectl create secret docker-registry oci-registry-secret --docker-server=gru.ocir.io --docker-username='griszz3l82u1/Default/adail101@hotmail.com' --docker-password='[PASSWORD]' --docker-email='adail101@hotmail.com' -n oci-devops
+kubectl create secret docker-registry oci-registry-secret --docker-server=gru.ocir.io --docker-username='<namespace>/Default/<seu_email>' --docker-password='[PASSWORD]' --docker-email='<seu_email>' -n oci-devops
 
 
-# Change the port that will be sent by parameter in the Dockerfile --> 1700.
-docker buildx build --platform 'linux/arm64' --tag gru.ocir.io/griszz3l82u1/udp-health-check-server-1700_platform_linux-arm64:latest --no-cache . 
-docker buildx build --platform 'linux/arm64' --tag gru.ocir.io/griszz3l82u1/udp-health-check-server-1700_platform_linux-arm64:latest --no-cache --push .
+# Porta da imagem por --build-arg UDP_PORT (28/10/2026) -- nao e mais preciso editar o Dockerfile.
+# Porta 1700:
+docker buildx build --platform 'linux/arm64' --build-arg UDP_PORT=1700 --tag gru.ocir.io/<namespace>/udp-health-check-server-1700_platform_linux-arm64:latest --no-cache . 
+docker buildx build --platform 'linux/arm64' --build-arg UDP_PORT=1700 --tag gru.ocir.io/<namespace>/udp-health-check-server-1700_platform_linux-arm64:latest --no-cache --push .
 
-# Change the port that will be sent by parameter in the Dockerfile --> 1710.
-docker buildx build --platform 'linux/arm64' --tag gru.ocir.io/griszz3l82u1/udp-health-check-server-1710_platform_linux-arm64:latest --no-cache . 
-docker buildx build --platform 'linux/arm64' --tag gru.ocir.io/griszz3l82u1/udp-health-check-server-1710_platform_linux-arm64:latest --no-cache --push .
+# Porta 1710:
+docker buildx build --platform 'linux/arm64' --build-arg UDP_PORT=1710 --tag gru.ocir.io/<namespace>/udp-health-check-server-1710_platform_linux-arm64:latest --no-cache . 
+docker buildx build --platform 'linux/arm64' --build-arg UDP_PORT=1710 --tag gru.ocir.io/<namespace>/udp-health-check-server-1710_platform_linux-arm64:latest --no-cache --push .
 
 
 # Commands:

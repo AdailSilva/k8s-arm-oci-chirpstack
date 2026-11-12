@@ -1,6 +1,17 @@
+# Busca a build mais recente da imagem pelo prefixo (ex.: "Canonical-Ubuntu-24.04-aarch64").
+# A OCI remove builds antigas periodicamente; fixar a data no nome quebra o plan.
 data "oci_core_images" "workers" {
-  compartment_id = var.compartment_id
-  display_name   = var.workers.image
+  compartment_id   = var.compartment_id
+  operating_system = "Canonical Ubuntu"
+  shape            = var.workers.shape
+  sort_by          = "TIMECREATED"
+  sort_order       = "DESC"
+
+  filter {
+    name   = "display_name"
+    values = ["^${var.workers.image}-[0-9]{4}\\.[0-9]{2}\\.[0-9]{2}-[0-9]+$"]
+    regex  = true
+  }
 }
 
 resource "oci_core_instance" "worker" {
@@ -41,5 +52,7 @@ resource "oci_core_instance" "worker" {
 
   lifecycle {
     prevent_destroy = true
+    # Evita recriar a instância quando o data source passar a retornar uma build mais nova da imagem.
+    ignore_changes  = [source_details[0].source_id]
   }
 }

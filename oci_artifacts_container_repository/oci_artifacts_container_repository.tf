@@ -432,6 +432,46 @@ resource "oci_artifacts_container_repository" "app-cslab-web-frontend_platform_l
 
 }
 
+# Namespace: cslab-backoffice applications (CSLab - BackOffice -- autoridade de licenca)
+# Os nomes seguem o mesmo padrao dos repositorios do WEB e do CardsControl e
+# precisam bater com as tags -t do .github/workflows/main.yml e com o newName
+# das kustomizations de 03.cslab_backoffice/*/kubernetes/.
+resource "oci_artifacts_container_repository" "api-cslab-backoffice-backend_platform_linux-arm64" {
+  # Required
+  compartment_id = var.compartment_id
+  display_name   = "api-cslab-backoffice-backend_platform_linux-arm64"
+
+  # Optional
+  # defined_tags  = { "K8S.Apps" = "Free" }
+  # freeform_tags = { "K8S" = "Free Apps" }
+  is_immutable = false
+  is_public    = false
+  readme {
+    # Required
+    content = "Image repository with _**arm64 architecture**_ for k8s-on-arm-oci-always-free Cluster."
+    format  = "text/markdown" #"text/plain" # Supported formats are text/plain and text/markdown.
+  }
+
+}
+
+resource "oci_artifacts_container_repository" "app-cslab-backoffice-frontend_platform_linux-arm64" {
+  # Required
+  compartment_id = var.compartment_id
+  display_name   = "app-cslab-backoffice-frontend_platform_linux-arm64"
+
+  # Optional
+  # defined_tags  = { "K8S.Apps" = "Free" }
+  # freeform_tags = { "K8S" = "Free Apps" }
+  is_immutable = false
+  is_public    = false
+  readme {
+    # Required
+    content = "Image repository with _**arm64 architecture**_ for k8s-on-arm-oci-always-free Cluster."
+    format  = "text/markdown" #"text/plain" # Supported formats are text/plain and text/markdown.
+  }
+
+}
+
 # resource "oci_artifacts_container_repository" "api-stockcontrol-backend_platform_linux-x86_64" {
 #   # Required
 #   compartment_id = var.compartment_id
@@ -500,6 +540,27 @@ resource "oci_artifacts_container_repository" "app-stockcontrol-frontend_platfor
     # Required
     content = "Image repository with _**arm64 architecture**_ for k8s-on-arm-oci-always-free Cluster."
     format  = "text/markdown" #"text/plain" # Supported formats are text/plain and text/markdown.
+  }
+
+}
+
+# Namespace: cslab-site (Site institucional do CS Óptico Laboratório -- cslaboptico.adailsilva.com.br)
+# Substitui o homepage-80_platform_linux-arm64 (homepage pessoal 00.homepage/app_adailsilva_homepage_frontend, que saiu do repositório em 12/11/2026;
+# o recurso acima foi mantido para não apagar as imagens publicadas).
+# Se o pipeline criar este repositório antes do "terraform apply", importe-o em vez de recriar:
+#   terraform import 'module.oci-infra_ci_cd.oci_artifacts_container_repository.app-cslab-site-frontend_platform_linux-arm64' <OCID-do-repositório>
+resource "oci_artifacts_container_repository" "app-cslab-site-frontend_platform_linux-arm64" {
+  # Required
+  compartment_id = var.compartment_id
+  display_name   = "app-cslab-site-frontend_platform_linux-arm64"
+
+  # Optional
+  is_immutable = false
+  is_public    = false
+  readme {
+    # Required
+    content = "Image repository with _**arm64 architecture**_ for k8s-on-arm-oci-always-free Cluster."
+    format  = "text/markdown"
   }
 
 }

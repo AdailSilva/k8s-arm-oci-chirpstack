@@ -1,9 +1,9 @@
 resource "oci_core_subnet" "private" {
   count             = var.provision_private_subnet ? 1 : 0
   compartment_id    = var.compartment_id
-  vcn_id            = module.vcn.vcn_id
+  vcn_id            = oci_core_vcn.vcn.id
   cidr_block        = "10.0.1.0/24"
-  route_table_id    = module.vcn.nat_route_id
+  route_table_id    = oci_core_route_table.nat[0].id
   security_list_ids = [oci_core_security_list.private[0].id]
   display_name      = "private-subnet"
   dns_label         = var.private_subnet_dns_label
@@ -12,7 +12,7 @@ resource "oci_core_subnet" "private" {
 resource "oci_core_security_list" "private" {
   count          = var.provision_private_subnet ? 1 : 0
   compartment_id = var.compartment_id
-  vcn_id         = module.vcn.vcn_id
+  vcn_id         = oci_core_vcn.vcn.id
   display_name   = "Security List for Private subnet"
 
   # Default rules

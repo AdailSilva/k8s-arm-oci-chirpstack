@@ -26,7 +26,7 @@ module "compute" {
   # Link images: https://docs.oracle.com/en-us/iaas/images/ubuntu-2404/index.htm
   leader = {
     shape                             = "VM.Standard.A1.Flex"
-    image                             = "Canonical-Ubuntu-24.04-aarch64-2026.02.28-0"
+    image                             = "Canonical-Ubuntu-24.04-aarch64" # prefixo; a build mais recente é resolvida no data source
     # image                             = "Canonical-Ubuntu-24.04-Minimal-aarch64-2026.02.28-0"
     # shape                             = "VM.Standard.E2.1.Micro"
     # image                             = "Canonical-Ubuntu-24.04-2026.02.28-0"
@@ -40,7 +40,7 @@ module "compute" {
   
   workers = {
     shape                             = "VM.Standard.A1.Flex"
-    image                             = "Canonical-Ubuntu-24.04-aarch64-2026.02.28-0"
+    image                             = "Canonical-Ubuntu-24.04-aarch64" # prefixo; a build mais recente é resolvida no data source
     # image                             = "Canonical-Ubuntu-24.04-Minimal-aarch64-2026.02.28-0"
     # shape                             = "VM.Standard.E2.1.Micro"
     # image                             = "Canonical-Ubuntu-24.04-2026.02.28-0"
