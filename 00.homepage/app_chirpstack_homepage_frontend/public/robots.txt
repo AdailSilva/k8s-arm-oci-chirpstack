@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://chirpstack.adailsilva.com.br/sitemap.xml

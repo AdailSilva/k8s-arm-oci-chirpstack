@@ -1,0 +1,57 @@
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-chirpstack-homepage-frontend-deployment
+  namespace: chirpstack-homepage
+  labels:
+    app: app-chirpstack-homepage-frontend-deployment
+    component: frontend
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: app-chirpstack-homepage-frontend-deployment
+      component: frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: app-chirpstack-homepage-frontend-deployment
+        component: frontend
+    spec:
+      containers:
+        - name: app-chirpstack-homepage-frontend-platform-linux-arm64
+          # A tag real (versão do build) é aplicada pelo pipeline via kustomization.yaml.
+          image: <OCI_REGISTRY_URL>/<OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>/app-chirpstack-homepage-frontend_platform_linux-arm64:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "20m"
+            limits:
+              memory: "96Mi"
+              cpu: "100m"
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 20
+      imagePullSecrets:
+        - name: oci-registry-secret
