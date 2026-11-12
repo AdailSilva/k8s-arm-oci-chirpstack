@@ -1,0 +1,7 @@
+# Arquivo gerado automaticamente por force_deploy.sh
+# Qualquer alteração aqui dispara o pipeline (paths-filter) deste projeto.
+# Não editar manualmente.
+project=05.chirpstack_consumer/api_chirpstack_consumer_backend
+deploy_at=2026-11-12 17:38:15 -0300
+deploy_id=1794515895-10536
+author=Adail dos Santos Silva
