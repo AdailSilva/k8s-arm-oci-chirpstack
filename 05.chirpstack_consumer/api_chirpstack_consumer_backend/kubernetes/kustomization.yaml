@@ -16,7 +16,7 @@ images:
     newName: gru.ocir.io/griszz3l82u1/api-chirpstack-consumer-backend_platform_linux-arm64
     # Atualizado pelo pipeline a cada build (tag imutavel = versao calculada).
     # "latest" so ate o primeiro build; o pipeline troca pela versao (0.1, 0.2...).
-    newTag: "latest"
+    newTag: "0.1"
 
 # --- imagePullPolicy: IfNotPresent (seguro porque a tag e imutavel) ---
 patches:
