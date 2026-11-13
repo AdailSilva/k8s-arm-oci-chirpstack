@@ -9,6 +9,15 @@
 #   app_chirpstack_manager_frontend    → 06.chirpstack_manager/app_chirpstack_manager_frontend/**
 # ChirpStack v3/v4 (03/04) são infraestrutura aplicada pelos scripts de 00.UsefulScripts.
 #
+# Grafo (13/11/2026, igual ao CSLab): cada frontend depende do seu backend.
+#   detect ─┬─ Consumer – Backend ── Consumer – Frontend
+#           ├─ Manager  – Backend ── Manager  – Frontend
+#           └─ Site – Frontend      (independente)
+# Frontend roda depois do backend quando ambos mudaram; sozinho se so ele mudou.
+#
+# GitHub Secret opcional: CHIRPSTACK_MANAGER_API_TOKEN (API key ADMIN do ChirpStack v4),
+# sincronizado no Secret chirpstack-manager-secrets. As demais chaves sao geradas aqui.
+#
 
 name: CI/CD with GitHub Actions
 
@@ -769,8 +778,13 @@ jobs:
     #runs-on: ubuntu-latest
     runs-on: [self-hosted, Linux, ARM64]
     timeout-minutes: 45
-    needs: detect
-    if: needs.detect.outputs.app_chirpstack_consumer_frontend == 'true'
+    # Encadeado ao backend (padrao CSLab): roda DEPOIS dele quando os dois mudaram,
+    # e sozinho quando so o frontend mudou (backend 'skipped'). Backend falhou -> nao roda.
+    needs: [detect, api_chirpstack_consumer_backend]
+    if: |
+      always() &&
+      needs.detect.outputs.app_chirpstack_consumer_frontend == 'true' &&
+      (needs.api_chirpstack_consumer_backend.result == 'success' || needs.api_chirpstack_consumer_backend.result == 'skipped')
 
     steps:
       - name: Checkout
@@ -1282,19 +1296,76 @@ jobs:
       #   09.api-chirpstack-manager-backend__Service.yaml
       # ────────────────────────────────────────────────────────────────────────
       - name: Aplicar infraestrutura base ChirpStack - Manager – Backend (Namespace, Secret, ConfigMap, PostgreSQL, PVC, Service)
+        env:
+          CHIRPSTACK_TOKEN_GH: ${{ secrets.CHIRPSTACK_MANAGER_API_TOKEN }}
         run: |
           set -euo pipefail
 
           K8S=06.chirpstack_manager/api_chirpstack_manager_backend/kubernetes
 
-          # O Secret real (API key do ChirpStack, JWT, senhas) e criado A MAO, uma vez
-          # (modelo: 02.api-chirpstack-manager__Secret_Example.yaml). Sem ele nem o PostgreSQL sobe.
           kubectl apply --server-side -f "$K8S/01.create__Namespace.yaml"
-          if ! kubectl -n chirpstack-manager get secret chirpstack-manager-secrets >/dev/null 2>&1; then
-            echo ">> ERRO: o Secret chirpstack-manager-secrets nao existe no namespace chirpstack-manager."
-            echo ">> Crie-o antes (modelo em $K8S/02.api-chirpstack-manager__Secret_Example.yaml)."
-            exit 1
+
+          # ─── Secret chirpstack-manager-secrets: gerado pela PIPELINE (13/11/2026) ─
+          # Padrao CSLab: o Secret vive fora do Git e a pipeline cria/completa as chaves.
+          # Nada precisa ser rodado a mao. Nenhum valor e impresso no log (::add-mask::).
+          #   DB_PASSWORD          gerada SO se ausente (o PostgreSQL grava a senha no
+          #                        volume na 1a subida; trocar depois quebra o login)
+          #   APP_CHAVE_CIFRAGEM   gerada SO se ausente (trocar invalida os segredos do
+          #                        Google Drive ja cifrados no banco)
+          #   APP_JWT_SECRET       gerada se ausente ou < 32 caracteres (trocar so derruba sessoes)
+          #   APP_ADMIN_PASSWORD   gerada SO se ausente (usada no 1o boot para criar o admin)
+          #   CHIRPSTACK_API_TOKEN vem do GitHub Secret CHIRPSTACK_MANAGER_API_TOKEN (API key
+          #                        ADMIN do ChirpStack v4). Definido -> sempre sincronizado.
+          #                        Sem ele a API sobe, mas recusa as chamadas ao ChirpStack.
+          #   GOOGLE_DRIVE_*       opcionais; nao sao tocados (podem ser cadastrados na tela).
+          NAMESPACE=chirpstack-manager
+          APP_SECRET=chirpstack-manager-secrets
+          if ! kubectl get secret "$APP_SECRET" --namespace "$NAMESPACE" &>/dev/null; then
+            kubectl create secret generic "$APP_SECRET" --namespace "$NAMESPACE"
+            echo ">> Secret $APP_SECRET criado (vazio -- as chaves sao geradas abaixo)."
           fi
+          ler_chave() {
+            kubectl get secret "$APP_SECRET" --namespace "$NAMESPACE" \
+              -o jsonpath="{.data.$1}" 2>/dev/null | base64 -d 2>/dev/null || true
+          }
+          gravar_chave() {
+            [ -n "$2" ] && echo "::add-mask::$2"
+            kubectl patch secret "$APP_SECRET" --namespace "$NAMESPACE" --type merge \
+              -p "{\"stringData\":{\"$1\":\"$2\"}}" >/dev/null
+          }
+          gerar() { head -c 192 /dev/urandom | base64 -w0 | tr -dc 'A-Za-z0-9' | cut -c1-"$1"; }
+
+          # chave:tamanho_minimo (0 = so gera se ausente; nunca troca valor existente)
+          for ITEM in DB_PASSWORD:0 APP_CHAVE_CIFRAGEM:0 APP_ADMIN_PASSWORD:0 APP_JWT_SECRET:32; do
+            CHAVE=${ITEM%%:*}; MINIMO=${ITEM##*:}
+            VALOR=$(ler_chave "$CHAVE")
+            [ -n "$VALOR" ] && echo "::add-mask::$VALOR"
+            if [ -z "$VALOR" ] || { [ "$MINIMO" -gt 0 ] && [ "${#VALOR}" -lt "$MINIMO" ]; }; then
+              case "$CHAVE" in
+                APP_JWT_SECRET) gravar_chave "$CHAVE" "$(gerar 64)" ;;
+                *)              gravar_chave "$CHAVE" "$(gerar 32)" ;;
+              esac
+              echo ">> $CHAVE ausente ou fraca: valor forte gerado no Secret $APP_SECRET."
+            else
+              echo ">> $CHAVE presente (mantida)."
+            fi
+          done
+
+          if [ -n "${CHIRPSTACK_TOKEN_GH:-}" ]; then
+            if [ "$(ler_chave CHIRPSTACK_API_TOKEN)" != "$CHIRPSTACK_TOKEN_GH" ]; then
+              gravar_chave CHIRPSTACK_API_TOKEN "$CHIRPSTACK_TOKEN_GH"
+              echo ">> CHIRPSTACK_API_TOKEN sincronizado a partir do GitHub Secret."
+            else
+              echo ">> CHIRPSTACK_API_TOKEN ja sincronizado."
+            fi
+          elif [ -z "$(ler_chave CHIRPSTACK_API_TOKEN)" ]; then
+            gravar_chave CHIRPSTACK_API_TOKEN ""
+            echo "::warning title=CHIRPSTACK_API_TOKEN vazio::Cadastre o GitHub Secret CHIRPSTACK_MANAGER_API_TOKEN (API key ADMIN do ChirpStack v4) e rode de novo. A API sobe, mas recusa as chamadas ao ChirpStack."
+          else
+            echo ">> CHIRPSTACK_API_TOKEN presente no cluster (mantido; GitHub Secret nao definido)."
+          fi
+          unset VALOR
+          echo ">> Senha inicial do admin: kubectl -n $NAMESPACE get secret $APP_SECRET -o jsonpath='{.data.APP_ADMIN_PASSWORD}' | base64 -d"
 
           kubectl apply --server-side -f "$K8S/03.api-chirpstack-manager__ConfigMap.yaml"
 
@@ -1393,8 +1464,13 @@ jobs:
     #runs-on: ubuntu-latest
     runs-on: [self-hosted, Linux, ARM64]
     timeout-minutes: 45
-    needs: detect
-    if: needs.detect.outputs.app_chirpstack_manager_frontend == 'true'
+    # Encadeado ao backend (padrao CSLab): roda DEPOIS dele quando os dois mudaram,
+    # e sozinho quando so o frontend mudou (backend 'skipped'). Backend falhou -> nao roda.
+    needs: [detect, api_chirpstack_manager_backend]
+    if: |
+      always() &&
+      needs.detect.outputs.app_chirpstack_manager_frontend == 'true' &&
+      (needs.api_chirpstack_manager_backend.result == 'success' || needs.api_chirpstack_manager_backend.result == 'skipped')
 
     steps:
       - name: Checkout
