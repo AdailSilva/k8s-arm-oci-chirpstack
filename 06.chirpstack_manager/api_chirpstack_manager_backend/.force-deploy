@@ -2,6 +2,6 @@
 # Qualquer alteração aqui dispara o pipeline (paths-filter) deste projeto.
 # Não editar manualmente.
 project=06.chirpstack_manager/api_chirpstack_manager_backend
-deploy_at=2026-11-13 16:44:46 -0300
-deploy_id=1794599086-19590
+deploy_at=2026-11-13 17:41:42 -0300
+deploy_id=1794602502-26659
 author=Adail dos Santos Silva
