@@ -1,0 +1,29 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# ==========================================================================
+#  ATENCAO / SEGURANCA (mesma regra do CSLab)
+#  O ArgoCD (Application chirpstack-consumer-frontend) renderiza SOMENTE o que estiver
+#  em resources: abaixo. Mantemos APENAS o Deployment. Namespace, Service e
+#  Ingress sao aplicados pelo pipeline (.github/workflows/main.yml).
+# ==========================================================================
+resources:
+  - 02.app-chirpstack-consumer-frontend__Deployment.yaml
+
+# --- Pin de versao (UNICO lugar para trocar a versao / fazer rollback) ---
+images:
+  - name: <OCI_REGISTRY_URL>/<OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>/app-chirpstack-consumer-frontend_platform_linux-arm64
+    newName: gru.ocir.io/griszz3l82u1/app-chirpstack-consumer-frontend_platform_linux-arm64
+    # Atualizado pelo pipeline a cada build (tag imutavel = versao calculada).
+    # "latest" so ate o primeiro build; o pipeline troca pela versao (0.1, 0.2...).
+    newTag: "latest"
+
+# --- imagePullPolicy: IfNotPresent (seguro porque a tag e imutavel) ---
+patches:
+  - target:
+      kind: Deployment
+      name: app-chirpstack-consumer-frontend-deployment
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: IfNotPresent

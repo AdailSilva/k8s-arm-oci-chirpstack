@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="utf-8" />
+        <title>ChirpStack v3 e v4 em Kubernetes na OCI Always Free</title>
+        <base href="/" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="Servidor de rede LoRaWAN ChirpStack v3 e v4 em um cluster Kubernetes ARM64 na Oracle Cloud usando somente recursos Always Free: Terraform/OpenTofu, kubeadm, NGINX Ingress, cert-manager, MQTT com TLS, PostgreSQL e Redis no OCI File Storage, plano AU915 e CI/CD com GitHub Actions." />
+        <meta name="author" content="Adail dos Santos Silva" />
+        <meta name="theme-color" content="#0d9488" />
+        <link rel="canonical" href="https://chirpstack.adailsilva.com.br/" />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content="pt_BR" />
+        <meta property="og:site_name" content="ChirpStack na OCI Always Free" />
+        <meta property="og:title" content="ChirpStack v3 e v4 em Kubernetes na OCI Always Free" />
+        <meta property="og:description" content="Rede LoRaWAN completa num cluster ARM64 gratuito da Oracle Cloud — infraestrutura como código e documentação passo a passo." />
+        <meta property="og:url" content="https://chirpstack.adailsilva.com.br/" />
+        <meta name="twitter:card" content="summary" />
+
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
+
+        <!-- Aplica o tema antes do Angular subir (evita "piscar" claro/escuro). Segue o SO quando o visitante não escolheu. -->
+        <script>
+            (function () {
+                try {
+                    var t = localStorage.getItem('site-tema');
+                    var dark = t ? t === 'escuro' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    if (dark) document.documentElement.classList.add('app-dark');
+                } catch (e) {}
+            })();
+        </script>
+
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "TechArticle",
+                "headline": "ChirpStack v3 e v4 em Kubernetes na OCI Always Free",
+                "url": "https://chirpstack.adailsilva.com.br/",
+                "inLanguage": "pt-BR",
+                "about": ["LoRaWAN", "ChirpStack", "Kubernetes", "Oracle Cloud Infrastructure"],
+                "author": { "@type": "Person", "name": "Adail dos Santos Silva", "url": "https://k8s.adailsilva.com.br/" },
+                "isBasedOn": "https://github.com/AdailSilva/k8s-arm-oci-chirpstack"
+            }
+        </script>
+    </head>
+
+    <body>
+        <app-root>
+            <div class="site-loader" aria-label="Carregando">
+                <span></span>
+            </div>
+        </app-root>
+        <noscript>Este site precisa de JavaScript habilitado.</noscript>
+    </body>
+</html>

@@ -1,0 +1,31 @@
+# Useful Commands:
+
+kubectl apply -f ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/05.chirpstack_consumer/app_chirpstack_consumer_frontend/kubernetes/01.create__Namespace.yaml
+
+# (A pipeline cria/atualiza o oci-registry-secret a cada deploy; manual só se necessário.)
+kubectl create secret docker-registry oci-registry-secret --docker-server=gru.ocir.io --docker-username='<OCI_NAMESPACE>/<USUARIO_OCI>' --docker-password='<AUTH_TOKEN>' --docker-email='<EMAIL_OCI>' -n chirpstack-consumer
+
+
+cd ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/05.chirpstack_consumer/app_chirpstack_consumer_frontend
+
+docker buildx build --platform 'linux/arm64' --tag gru.ocir.io/<OCI_NAMESPACE>/app-chirpstack-consumer-frontend_platform_linux-arm64:latest --no-cache .
+docker buildx build --platform 'linux/arm64' --tag gru.ocir.io/<OCI_NAMESPACE>/app-chirpstack-consumer-frontend_platform_linux-arm64:latest --no-cache --push .
+
+
+
+# Grant permissions:
+
+cd ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/05.chirpstack_consumer/app_chirpstack_consumer_frontend/kubernetes/00.UsefulScripts
+
+chmod +x 01.deploy_full_app-chirpstack-consumer-frontend_script.sh
+bash 01.deploy_full_app-chirpstack-consumer-frontend_script.sh
+
+chmod +x 02.destroy_full_app-chirpstack-consumer-frontend_script.sh
+bash 02.destroy_full_app-chirpstack-consumer-frontend_script.sh
+
+
+# Pods e logs:
+
+kubectl get pods,svc,ingress,certificate -n chirpstack-consumer
+kubectl logs -f deploy/app-chirpstack-consumer-frontend-deployment -n chirpstack-consumer
+kubectl rollout restart deployment/app-chirpstack-consumer-frontend-deployment -n chirpstack-consumer

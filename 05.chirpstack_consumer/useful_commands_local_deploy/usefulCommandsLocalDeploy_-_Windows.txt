@@ -1,0 +1,2 @@
+01_start_chirpstack_consumer_backend.bat  -> sobe a API local (porta 8080)
+02_start_chirpstack_consumer_frontend.bat -> sobe o Angular (ng serve, porta 4200)

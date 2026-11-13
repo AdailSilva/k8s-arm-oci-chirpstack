@@ -10,8 +10,8 @@ K8S_DIR=~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/06.chirpstac
 
 echo "Start destroying ChirpStack-Manager frontend pod/service."
 
-kubectl delete --ignore-not-found -f $K8S_DIR/05.app-chirpstack-manager-restauracao__Ingress.yaml
-kubectl delete --ignore-not-found -f $K8S_DIR/04.app-chirpstack-manager__Ingress.yaml
+kubectl delete --ignore-not-found -f $K8S_DIR/07.app-chirpstack-manager-restauracao__Ingress.yaml
+kubectl delete --ignore-not-found -f $K8S_DIR/06.app-chirpstack-manager__Ingress.yaml
 kubectl delete --ignore-not-found -f $K8S_DIR/03.app-chirpstack-manager-frontend__Service.yaml
 kubectl delete --ignore-not-found -f $K8S_DIR/02.app-chirpstack-manager-frontend__Deployment.yaml
 

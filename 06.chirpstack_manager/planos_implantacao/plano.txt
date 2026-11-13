@@ -1,0 +1,7 @@
+# Plano de implantação:
+
+## Scripts SQL
+  - (migrações Flyway rodam no boot da API: src/main/resources/db/migration)
+
+## Artefatos e builds
+  - 

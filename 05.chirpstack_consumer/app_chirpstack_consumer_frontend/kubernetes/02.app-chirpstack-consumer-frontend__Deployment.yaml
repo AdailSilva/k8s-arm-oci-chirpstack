@@ -1,0 +1,58 @@
+---
+
+# ChirpStack Consumer — Frontend (Angular/Avalon + Nginx). O nginx.conf da imagem
+# encaminha /api/ e /ws/ para o Service api-chirpstack-consumer-backend-service:8080.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-chirpstack-consumer-frontend-deployment
+  namespace: chirpstack-consumer
+  labels:
+    app: app-chirpstack-consumer-frontend-deployment
+    component: frontend
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: app-chirpstack-consumer-frontend-deployment
+      component: frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: app-chirpstack-consumer-frontend-deployment
+        component: frontend
+    spec:
+      containers:
+        - name: app-chirpstack-consumer-frontend-platform-linux-arm64
+          image: <OCI_REGISTRY_URL>/<OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>/app-chirpstack-consumer-frontend_platform_linux-arm64:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              name: http
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 20
+      imagePullSecrets:
+        - name: oci-registry-secret

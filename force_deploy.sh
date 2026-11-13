@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# force_deploy.sh — Force Deploy dos projetos ChirpStack + Homepage
+# force_deploy.sh — Force Deploy dos projetos ChirpStack (site + Consumer + Manager)
 #                  Repositório: AdailSilva/k8s-arm-oci-chirpstack
 # -----------------------------------------------------------------------------
 # Em vez de alterar os Dockerfiles, grava/atualiza o arquivo ".force-deploy"
@@ -10,16 +10,18 @@
 #
 # Uso:
 #   ./force_deploy.sh                    # todos os projetos
-#   ./force_deploy.sh homepage consumer  # apenas os que contêm "homepage" ou "consumer"
+#   ./force_deploy.sh site consumer       # apenas os que contêm "site" ou "consumer"
 #   ./force_deploy.sh --no-push          # gera commit, mas não faz push
 #   ./force_deploy.sh --dry-run          # só mostra o que seria feito
 # =============================================================================
 set -euo pipefail
 
 PROJECTS=(
-  "00.homepage/app_chirpstack_homepage_frontend"
+  "00.homepage/app_chirpstack_site_frontend"
   "05.chirpstack_consumer/api_chirpstack_consumer_backend"
   "05.chirpstack_consumer/app_chirpstack_consumer_frontend"
+  "06.chirpstack_manager/api_chirpstack_manager_backend"
+  "06.chirpstack_manager/app_chirpstack_manager_frontend"
 )
 
 TRIGGER_FILE=".force-deploy"
@@ -32,7 +34,7 @@ for arg in "$@"; do
   case "$arg" in
     --no-push) PUSH=false ;;
     --dry-run) DRY_RUN=true ;;
-    -h|--help) sed -n '2,16p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,17p' "$0"; exit 0 ;;
     *) FILTERS+=("$arg") ;;
   esac
 done
@@ -97,10 +99,13 @@ git add -- "${FILES[@]}"
 git commit -m "Force Deploy" -m "deploy_id: $DEPLOY_ID | $TIMESTAMP" -- "${FILES[@]}"
 
 # --- Push ---------------------------------------------------------------------
-# O pipeline deste repositório não faz commit de volta no master (só cria as
-# tags Git de versão, uma por projeto), mas outra pessoa/máquina pode ter
-# enviado commits. Por isso: pull --rebase antes do push, com até 3
-# tentativas. --autostash protege alterações locais não commitadas.
+# O pipeline faz commit de volta no master a cada deploy (passo "Fixar versão no
+# GitOps" atualiza o newTag dos kustomization.yaml). Depois de qualquer execução
+# do pipeline, o master local fica ATRÁS do remoto e um `git push` direto é
+# rejeitado (non-fast-forward) -- com `set -e`, o script morria ali e o push
+# tinha de ser feito à mão. Agora: pull --rebase antes do push, com até 3
+# tentativas (o pipeline pode empurrar outro commit entre o pull e o push).
+# --autostash protege alterações locais não commitadas durante o rebase.
 if $PUSH; then
   for tentativa in 1 2 3; do
     echo "🔄 Sincronizando com origin/$CURRENT_BRANCH (tentativa $tentativa/3)..."

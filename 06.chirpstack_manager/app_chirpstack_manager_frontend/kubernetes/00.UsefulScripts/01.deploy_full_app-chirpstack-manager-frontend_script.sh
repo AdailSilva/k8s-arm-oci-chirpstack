@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Build Project
-# docker buildx build --platform 'linux/arm64' --tag gru.ocir.io/griszz3l82u1/chirpstack-manager-web:0.1.0 --no-cache --push .
+# docker buildx build --platform 'linux/arm64' --tag gru.ocir.io/griszz3l82u1/app-chirpstack-manager-frontend_platform_linux-arm64:latest --no-cache --push .
 
 
 # ChirpStack-Manager (frontend) deployment on K8S.
@@ -20,8 +20,8 @@ kubectl apply -f $K8S_DIR/02.app-chirpstack-manager-frontend__Deployment.yaml
 kubectl apply -f $K8S_DIR/03.app-chirpstack-manager-frontend__Service.yaml
 
 # Ingress principal (2 MB) e o da restauracao de backup (512 MB, so nessa rota).
-kubectl apply -f $K8S_DIR/04.app-chirpstack-manager__Ingress.yaml
-kubectl apply -f $K8S_DIR/05.app-chirpstack-manager-restauracao__Ingress.yaml
+kubectl apply -f $K8S_DIR/06.app-chirpstack-manager__Ingress.yaml
+kubectl apply -f $K8S_DIR/07.app-chirpstack-manager-restauracao__Ingress.yaml
 
 echo "Waiting for the ChirpStack-Manager frontend..."
 kubectl -n $NS rollout status deployment/chirpstack-manager-web --timeout=300s

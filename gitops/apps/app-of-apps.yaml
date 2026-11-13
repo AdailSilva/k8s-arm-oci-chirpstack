@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: chirpstack-app-of-apps
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/AdailSilva/k8s-arm-oci-chirpstack.git
+    targetRevision: master
+    path: gitops/apps
+    directory:
+      recurse: false
+      include: '{chirpstack-site-frontend.yaml,chirpstack-consumer-backend.yaml,chirpstack-consumer-frontend.yaml,chirpstack-manager-backend.yaml,chirpstack-manager-frontend.yaml}'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated: { prune: true, selfHeal: true }

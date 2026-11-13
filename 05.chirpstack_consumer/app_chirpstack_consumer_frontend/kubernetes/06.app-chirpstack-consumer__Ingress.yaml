@@ -1,0 +1,35 @@
+---
+
+# ChirpStack Consumer. Todo o tráfego entra pelo frontend; o nginx da imagem faz o
+# proxy de /api/ e /ws/ (WebSocket/STOMP) para a API. Sem rewrite-target: o Angular
+# precisa do path original para o roteamento da SPA.
+# DNS: app-chirpstack-consumer.adailsilva.com.br -> IP público do cluster.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-chirpstack-consumer-frontend-ingress
+  namespace: chirpstack-consumer
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - app-chirpstack-consumer.adailsilva.com.br
+      secretName: app-chirpstack-consumer-frontend-tls
+  rules:
+    - host: app-chirpstack-consumer.adailsilva.com.br
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: app-chirpstack-consumer-frontend-service
+                port:
+                  number: 80

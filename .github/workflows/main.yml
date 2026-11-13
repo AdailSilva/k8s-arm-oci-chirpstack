@@ -1,15 +1,14 @@
-# ─────────────────────────────────────────────────────────────────────────────
-# .github/workflows/main.yml — AdailSilva/k8s-arm-oci-chirpstack
+# Conteúdo para pipeline do GitHub Actions na raíz do projeto.
+## .github/workflows/main.yml
 #
-# Um job por aplicação; o job `detect` (dorny/paths-filter) decide quais rodam:
-#   app_chirpstack_homepage_frontend  → 00.homepage/app_chirpstack_homepage_frontend/**
-#                                       (site https://chirpstack.adailsilva.com.br)
-#   api_chirpstack_consumer_backend   → 05.chirpstack_consumer/api_chirpstack_consumer_backend/**
-#   app_chirpstack_consumer_frontend  → 05.chirpstack_consumer/app_chirpstack_consumer_frontend/**
+# Repositório: AdailSilva/k8s-arm-oci-chirpstack — padrão dos 5 repositórios (base: CSLab).
+#   app_chirpstack_site_frontend       → 00.homepage/app_chirpstack_site_frontend/**
+#   api_chirpstack_consumer_backend    → 05.chirpstack_consumer/api_chirpstack_consumer_backend/**
+#   app_chirpstack_consumer_frontend   → 05.chirpstack_consumer/app_chirpstack_consumer_frontend/**
+#   api_chirpstack_manager_backend     → 06.chirpstack_manager/api_chirpstack_manager_backend/**
+#   app_chirpstack_manager_frontend    → 06.chirpstack_manager/app_chirpstack_manager_frontend/**
+# ChirpStack v3/v4 (03/04) são infraestrutura aplicada pelos scripts de 00.UsefulScripts.
 #
-# Forçar deploy sem mudar código: ./force_deploy.sh (grava .force-deploy na pasta).
-# Disparo manual: Actions → Run workflow → target (um job ou "todos").
-# ─────────────────────────────────────────────────────────────────────────────
 
 name: CI/CD with GitHub Actions
 
@@ -18,102 +17,159 @@ on:
     branches:
       - master
     paths:
-      - '00.homepage/app_chirpstack_homepage_frontend/**'
+      - '00.homepage/app_chirpstack_site_frontend/**'
       - '05.chirpstack_consumer/api_chirpstack_consumer_backend/**'
       - '05.chirpstack_consumer/app_chirpstack_consumer_frontend/**'
+      - '06.chirpstack_manager/api_chirpstack_manager_backend/**'
+      - '06.chirpstack_manager/app_chirpstack_manager_frontend/**'
   workflow_dispatch:
     inputs:
       version_type:
-        description: 'Tipo de versão'
-        type: choice
-        options:
-          - minor
-          - major
-        default: minor
+        description: 'Tipo de versão: minor (padrão) ou major'
+        required: false
+        default: 'minor'
       target:
-        description: 'O que deployar'
-        type: choice
-        options:
-          - todos
-          - app_chirpstack_homepage_frontend
-          - api_chirpstack_consumer_backend
-          - app_chirpstack_consumer_frontend
-        default: todos
+        description: 'O que deployar: app-chirpstack-site-frontend, api-chirpstack-consumer-backend, app-chirpstack-consumer-frontend, api-chirpstack-manager-backend, app-chirpstack-manager-frontend ou ambos'
+        required: false
+        default: 'ambos'
 
 # ─────────────────────────────────────────────────────────────────────────────
 # JOB: DETECT – descobre quais paths mudaram e expõe outputs para os jobs
 # seguintes. Em workflow_dispatch usa o input `target` para simular a decisão.
 # ─────────────────────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────────────────────
+# CONCORRENCIA
+# Todos os jobs de deploy empurram commit para o MESMO repositorio (o passo "Fixar versão
+# no GitOps"). Duas execucoes simultaneas do workflow disputam o push e uma
+# perde a corrida. Serializar aqui evita a disputa na origem; o retry de cada
+# passo continua existindo como rede de seguranca.
+# cancel-in-progress: false e essencial -- a execucao anterior precisa TERMINAR,
+# nao morrer no meio de um push, o que deixaria o GitOps sem o newTag novo.
+# ─────────────────────────────────────────────────────────────────────────────
+concurrency:
+  group: gitops-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   detect:
     name: Detectar alterações
     #runs-on: ubuntu-latest
-    runs-on: self-hosted
+    # ─── RUNNER ARM64 EXPLICITO (13/10/2026) ───────────────────────────────
+    # Com o runner do notebook (x64, label "flutter") registrado neste repo,
+    # `runs-on: self-hosted` sozinho deixaria o GitHub mandar QUALQUER job para
+    # o notebook -- que nao tem kubectl/kubeconfig, OCI CLI em /home/ubuntu nem
+    # build nativo ARM64. Todos os jobs deste arquivo exigem ARM64 (worker-0).
+    # Os builds mobile ficam em .github/workflows/mobile.yml.
+    runs-on: [self-hosted, Linux, ARM64]
     timeout-minutes: 10
-    # No workflow_dispatch vale o passo `manual`; no push, o paths-filter.
     outputs:
-      app_chirpstack_homepage_frontend: ${{ steps.manual.outputs.app_chirpstack_homepage_frontend || steps.filter.outputs.app_chirpstack_homepage_frontend }}
-      api_chirpstack_consumer_backend:  ${{ steps.manual.outputs.api_chirpstack_consumer_backend  || steps.filter.outputs.api_chirpstack_consumer_backend }}
-      app_chirpstack_consumer_frontend: ${{ steps.manual.outputs.app_chirpstack_consumer_frontend || steps.filter.outputs.app_chirpstack_consumer_frontend }}
+      app_chirpstack_site_frontend:     ${{ steps.filter.outputs.app_chirpstack_site_frontend }}
+      api_chirpstack_consumer_backend:  ${{ steps.filter.outputs.api_chirpstack_consumer_backend }}
+      app_chirpstack_consumer_frontend: ${{ steps.filter.outputs.app_chirpstack_consumer_frontend }}
+      api_chirpstack_manager_backend:   ${{ steps.filter.outputs.api_chirpstack_manager_backend }}
+      app_chirpstack_manager_frontend:  ${{ steps.filter.outputs.app_chirpstack_manager_frontend }}
     steps:
+      # ─── LIMPEZA DE DISCO DO RUNNER (07/10/2026) ───────────────────────────
+      # O runner self-hosted mora no worker-0, que TAMBEM e no do Kubernetes. O
+      # Docker do runner (/var/lib/docker) divide o boot volume de 50GB com o
+      # containerd do kubelet, mas o garbage collector do kubelet so enxerga o
+      # containerd: imagens, cache de build e builders buildx orfaos (execucoes
+      # canceladas nao passam pelo post-step de cleanup) acumulam ate o kubelet
+      # marcar o no com node.kubernetes.io/disk-pressure e despejar os pods --
+      # que entao nao cabem nos outros workers ("Insufficient cpu").
+      # Roda antes de qualquer build; nunca derruba o workflow (continue-on-error).
+      # So remove o que tem mais de 24h/72h, para nao tocar em build de outro repo
+      # (chirpstack etc.) que esteja rodando no mesmo host.
+      - name: Limpeza de disco do runner
+        continue-on-error: true
+        run: |
+          set +e
+          echo "== Disco ANTES"; df -h / ; docker system df
+
+          # 1) Builders buildx orfaos (containers buildx_buildkit_*) com mais de 24h
+          LIMITE=$(date -d '24 hours ago' +%s)
+          for ID in $(docker ps -aq --filter "name=buildx_buildkit_"); do
+            CRIADO=$(date -d "$(docker inspect -f '{{.Created}}' "$ID")" +%s 2>/dev/null || echo 0)
+            if [ "$CRIADO" -gt 0 ] && [ "$CRIADO" -lt "$LIMITE" ]; then
+              echo "Removendo builder orfao: $(docker inspect -f '{{.Name}}' "$ID")"
+              docker rm -f "$ID"
+            fi
+          done
+          # Volumes de estado desses builders que ficaram sem dono
+          docker volume ls -q --filter dangling=true | grep '^buildx_buildkit_' | xargs -r docker volume rm
+
+          # 2) Docker do runner: containers parados, imagens e cache com mais de 72h
+          docker container prune -f --filter "until=24h"
+          docker image prune -af --filter "until=72h"
+          docker builder prune -af --filter "until=72h"
+
+          # 3) containerd do kubelet: imagens sem nenhum container usando
+          #    (tags :latest antigas que o imagePullPolicy: Always deixa para tras)
+          sudo -n crictl rmi --prune 2>/dev/null || echo "crictl indisponivel sem senha -- pulando"
+
+          # 4) Logs do systemd
+          sudo -n journalctl --vacuum-size=500M 2>/dev/null || true
+
+          echo "== Disco DEPOIS"; df -h / ; docker system df
+
       - name: Checkout
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
           token: ${{ secrets.GH_PAT }}
 
+
       - name: Filtrar paths alterados
-        if: github.event_name != 'workflow_dispatch'
         uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: |
-            app_chirpstack_homepage_frontend:
-              - '00.homepage/app_chirpstack_homepage_frontend/**'
+            app_chirpstack_site_frontend:
+              - '00.homepage/app_chirpstack_site_frontend/**'
             api_chirpstack_consumer_backend:
               - '05.chirpstack_consumer/api_chirpstack_consumer_backend/**'
             app_chirpstack_consumer_frontend:
               - '05.chirpstack_consumer/app_chirpstack_consumer_frontend/**'
+            api_chirpstack_manager_backend:
+              - '06.chirpstack_manager/api_chirpstack_manager_backend/**'
+            app_chirpstack_manager_frontend:
+              - '06.chirpstack_manager/app_chirpstack_manager_frontend/**'
 
-      # Antes este passo não tinha `id` e os outputs do job liam só `steps.filter`:
-      # o disparo manual nunca acionava nenhum job.
-      - name: Seleção manual (workflow_dispatch)
-        id: manual
+      # Em workflow_dispatch sobrescreve os outputs conforme o input `target`
+      - name: Sobrescrever outputs (workflow_dispatch)
         if: github.event_name == 'workflow_dispatch'
         run: |
           TARGET="${{ github.event.inputs.target }}"
-          for JOB in app_chirpstack_homepage_frontend api_chirpstack_consumer_backend app_chirpstack_consumer_frontend; do
-            if [ "$TARGET" = "$JOB" ] || [ "$TARGET" = "todos" ]; then
-              echo "$JOB=true" >> "$GITHUB_OUTPUT"
-            else
-              echo "$JOB=false" >> "$GITHUB_OUTPUT"
-            fi
-          done
-          cat "$GITHUB_OUTPUT"
+          if [ "$TARGET" == "app-chirpstack-site-frontend" ] || [ "$TARGET" == "ambos" ]; then
+            echo "app_chirpstack_site_frontend=true" >> $GITHUB_OUTPUT
+          fi
+          if [ "$TARGET" == "api-chirpstack-consumer-backend" ] || [ "$TARGET" == "ambos" ]; then
+            echo "api_chirpstack_consumer_backend=true" >> $GITHUB_OUTPUT
+          fi
+          if [ "$TARGET" == "app-chirpstack-consumer-frontend" ] || [ "$TARGET" == "ambos" ]; then
+            echo "app_chirpstack_consumer_frontend=true" >> $GITHUB_OUTPUT
+          fi
+          if [ "$TARGET" == "api-chirpstack-manager-backend" ] || [ "$TARGET" == "ambos" ]; then
+            echo "api_chirpstack_manager_backend=true" >> $GITHUB_OUTPUT
+          fi
+          if [ "$TARGET" == "app-chirpstack-manager-frontend" ] || [ "$TARGET" == "ambos" ]; then
+            echo "app_chirpstack_manager_frontend=true" >> $GITHUB_OUTPUT
+          fi
 
-# ═════════════════════════════════════════════════════════════════════════════
-# JOB: HOMEPAGE (site ChirpStack v3/v4 na OCI Always Free — Angular + nginx)
-# https://chirpstack.adailsilva.com.br · namespace chirpstack-homepage
-# Disparado por qualquer alteração em 00.homepage/app_chirpstack_homepage_frontend/**
-# Deploy direto com kubectl (sem ArgoCD): a versão vai para o kustomization.yaml
-# só no workspace do runner, sem commit de volta no master.
-# ═════════════════════════════════════════════════════════════════════════════
-  app_chirpstack_homepage_frontend:
-    name: Homepage – Frontend (Angular)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# JOB: CHIRPSTACK - SITE – FRONTEND (Angular / Avalon 21 + Nginx) – chirpstack.adailsilva.com.br
+# Site institucional do ChirpStack LoRaWAN (rede IoT).
+# Disparado quando o job detect sinaliza app_chirpstack_site_frontend=true
+# Padrao CSLab: build -> OCIR -> infra base -> newTag no GitOps (ArgoCD sincroniza o Deployment).
+# ─────────────────────────────────────────────────────────────────────────────
+  app_chirpstack_site_frontend:
+    name: ChirpStack - Site – Frontend (Angular)
+    #runs-on: ubuntu-latest
     runs-on: [self-hosted, Linux, ARM64]
-    timeout-minutes: 30
+    timeout-minutes: 45
     needs: detect
-    if: needs.detect.outputs.app_chirpstack_homepage_frontend == 'true'
-    concurrency:
-      group: app-chirpstack-homepage-frontend
-      cancel-in-progress: false
-    env:
-      APP_DIR: 00.homepage/app_chirpstack_homepage_frontend
-      K8S_DIR: 00.homepage/app_chirpstack_homepage_frontend/kubernetes
-      IMAGE_REPO: app-chirpstack-homepage-frontend_platform_linux-arm64
-      K8S_NAMESPACE: chirpstack-homepage
-      K8S_DEPLOYMENT: app-chirpstack-homepage-frontend-deployment
-      KUBECTL_VERSION: v1.31.0
+    if: needs.detect.outputs.app_chirpstack_site_frontend == 'true'
 
     steps:
       - name: Checkout
@@ -122,100 +178,170 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GH_PAT }}
 
-      # ─── VERSIONAMENTO (a tag só é criada depois do build) ──────────────────
-      - name: Calcular próxima versão (app-chirpstack-homepage-frontend)
+      # ─── VERSIONAMENTO ──────────────────────────────────────────────────────
+      - name: Calcular próxima versão (app-chirpstack-site-frontend)
         id: version
         run: |
-          git fetch --tags --force
-          PREFIX="app-chirpstack-homepage-frontend"
-          LATEST=$(git tag --list "${PREFIX}-[0-9]*.[0-9]*" | sed "s|^${PREFIX}-||" | grep -E '^[0-9]+\.[0-9]+$' | sort -V | tail -1)
-          [ -z "$LATEST" ] && LATEST="0.0"
+          PREFIX="app-chirpstack-site-frontend"
+          LATEST=$(git tag --list "${PREFIX}-[0-9]*.[0-9]*" | sort -V | tail -1)
 
-          MAJOR=${LATEST%%.*}
-          MINOR=${LATEST##*.}
-          if [ "${{ github.event.inputs.version_type }}" = "major" ]; then
+          if [ -z "$LATEST" ]; then
+            LATEST="${PREFIX}-0.0"
+          fi
+
+          NUMS=${LATEST#${PREFIX}-}
+          MAJOR=$(echo "$NUMS" | cut -d. -f1)
+          MINOR=$(echo "$NUMS" | cut -d. -f2)
+
+          if [ "${{ github.event.inputs.version_type }}" == "major" ]; then
             NEW_VERSION="$((MAJOR + 1)).0"
           else
             NEW_VERSION="$MAJOR.$((MINOR + 1))"
           fi
 
-          echo "Última versão: $LATEST → nova versão: $NEW_VERSION"
-          echo "VERSION=$NEW_VERSION"             >> "$GITHUB_OUTPUT"
-          echo "FULL_TAG=${PREFIX}-${NEW_VERSION}" >> "$GITHUB_OUTPUT"
-          # Via GITHUB_ENV (e não step output): o valor contém secrets.
-          echo "IMAGE=${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/${IMAGE_REPO}" >> "$GITHUB_ENV"
+          FULL_TAG="${PREFIX}-${NEW_VERSION}"
+          echo "Nova versão: $FULL_TAG"
+          echo "VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "FULL_TAG=$FULL_TAG"  >> $GITHUB_OUTPUT
 
-      # ─── FERRAMENTAS ────────────────────────────────────────────────────────
+      - name: Criar tag Git (app-chirpstack-site-frontend)
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag ${{ steps.version.outputs.FULL_TAG }}
+          git push origin ${{ steps.version.outputs.FULL_TAG }}
+      # ────────────────────────────────────────────────────────────────────────
+
+        # - name: Set up QEMU
+        # uses: docker/setup-qemu-action@v4
+
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v4
         with:
           driver: docker-container
 
-      - name: Configurar OCI CLI
+      - name: Install OCI CLI
         run: |
           mkdir -p ~/.oci
           echo "${{ secrets.OCI_CONFIG }}"   > ~/.oci/config
           echo "${{ secrets.OCI_KEY_FILE }}" > ~/.oci/key.pem
+
+          # Corrige o path do key_file para o home real do runner
           sed -i "s|key_file=.*|key_file=$HOME/.oci/key.pem|g" ~/.oci/config
 
-          if [ -x "$HOME/bin/oci" ]; then
-            echo "OCI CLI já instalado: $("$HOME/bin/oci" --version)"
+          if [ -f "/home/ubuntu/bin/oci" ]; then
+            echo "OCI CLI já instalado: $(/home/ubuntu/bin/oci --version)"
           else
             echo "OCI CLI não encontrado, instalando..."
-            rm -rf "$HOME/lib/oracle-cli"   # diretório residual bloqueia o instalador
-            curl -fsSL -o /tmp/oci-install.sh https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
-            bash /tmp/oci-install.sh --accept-all-defaults
+            # Remove diretório residual que bloqueia o instalador
+            rm -rf /home/ubuntu/lib/oracle-cli
+            curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+            chmod +x install.sh
+            ./install.sh --accept-all-defaults
           fi
 
-          echo "$HOME/bin" >> "$GITHUB_PATH"
-          "$HOME/bin/oci" setup repair-file-permissions --file ~/.oci/config
-          "$HOME/bin/oci" setup repair-file-permissions --file ~/.oci/key.pem
+          # echo "/home/runner/bin" >> $GITHUB_PATH
+          echo "/home/ubuntu/bin" >> $GITHUB_PATH
+          /home/ubuntu/bin/oci setup repair-file-permissions --file ~/.oci/config
+          /home/ubuntu/bin/oci setup repair-file-permissions --file ~/.oci/key.pem
 
-          command -v jq >/dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq jq; }
-
-      - name: Configurar kubectl
+      - name: Install kubectl
         run: |
-          # Reinstala se ausente, quebrado (binário de outra arquitetura) ou antigo.
-          CUR_MINOR=$(kubectl version --client -o json 2>/dev/null | jq -r '.clientVersion.minor // "0"' | tr -dc '0-9' || true)
-          if [ "${CUR_MINOR:-0}" -lt 28 ]; then
-            case "$(uname -m)" in
-              aarch64|arm64) ARCH=arm64 ;;
-              *)             ARCH=amd64 ;;
-            esac
-            echo "kubectl ausente ou antigo (minor=${CUR_MINOR:-?}), instalando ${KUBECTL_VERSION} (${ARCH})..."
-            curl -fsSL "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${ARCH}/kubectl" -o /tmp/kubectl
-            sudo install -m 0755 /tmp/kubectl /usr/local/bin/kubectl
-          fi
-          kubectl version --client
+          mkdir -p /tmp/.kube
 
-          mkdir -p "$RUNNER_TEMP/.kube"
-          echo "${{ secrets.KUBECONFIG }}" > "$RUNNER_TEMP/.kube/config"
-          chmod 600 "$RUNNER_TEMP/.kube/config"
-          echo "KUBECONFIG=$RUNNER_TEMP/.kube/config" >> "$GITHUB_ENV"
-
-      - name: Verificar acesso ao cluster
-        run: kubectl get nodes -o wide
-
-      # O push no OCIR cria o repositório no compartimento raiz quando ele não existe;
-      # criando antes no compartimento do cluster, a limpeza de imagens o encontra.
-      - name: Garantir repositório no OCI Container Registry
-        run: |
-          EXISTE=$(oci artifacts container repository list \
-            --compartment-id "${{ secrets.OCI_COMPARTMENT_ID }}" \
-            --display-name "$IMAGE_REPO" --all \
-            --query 'length(data.items)' --raw-output 2>/dev/null || echo 0)
-          if [ "${EXISTE:-0}" = "0" ]; then
-            echo "Criando o repositório $IMAGE_REPO no OCIR..."
-            oci artifacts container repository create \
-              --compartment-id "${{ secrets.OCI_COMPARTMENT_ID }}" \
-              --display-name "$IMAGE_REPO" --is-public false \
-              || echo "::warning::Não foi possível criar $IMAGE_REPO (o push criará no compartimento raiz)."
+          if ! command -v kubectl &> /dev/null; then
+            echo "kubectl não encontrado, instalando..."
+            curl -L "https://dl.k8s.io/release/v1.31.4/bin/linux/arm64/kubectl" -o /tmp/kubectl
+            chmod +x /tmp/kubectl
+            sudo mv /tmp/kubectl /usr/local/bin/kubectl
           else
-            echo "Repositório $IMAGE_REPO já existe."
+            echo "kubectl já instalado: $(kubectl version --client 2>/dev/null | head -1)"
           fi
 
-      # ─── BUILD & PUSH ───────────────────────────────────────────────────────
+          echo "${{ secrets.KUBECONFIG }}" > /tmp/.kube/config
+          echo "KUBECONFIG=/tmp/.kube/config" >> $GITHUB_ENV
+
+      # ─── NAMESPACE (22/10/2026) ─────────────────────────────────────────────
+      # Garante o namespace ANTES de qualquer comando que dependa dele. Se nao
+      # existir (ex.: excluido manualmente), aplica o 01.create__Namespace.yaml;
+      # se estiver em Terminating, espera a exclusao terminar e recria. Os
+      # applies do 01 mais abaixo continuam (sao idempotentes).
+      - name: Garantir namespace (cria se não existir)
+        env:
+          NS_YAML: 00.homepage/app_chirpstack_site_frontend/kubernetes/01.create__Namespace.yaml
+        run: |
+          set -euo pipefail
+          NS=$(kubectl create --dry-run=client -f "$NS_YAML" -o jsonpath='{.metadata.name}')
+          fase() { kubectl get namespace "$NS" -o jsonpath='{.status.phase}' 2>/dev/null || true; }
+          F=$(fase); echo ">> Namespace '$NS': ${F:-inexistente}"
+
+          # Terminating (exclusao anterior ainda em andamento): espera ate 300s.
+          for _ in $(seq 1 60); do
+            [ "$(fase)" = "Terminating" ] || break
+            echo ">> '$NS' em Terminating -- aguardando a exclusao terminar..."
+            sleep 5
+          done
+          if [ "$(fase)" = "Terminating" ]; then
+            echo ">> ERRO: '$NS' preso em Terminating ha mais de 300s. Condicoes:"
+            kubectl get namespace "$NS" -o jsonpath='{range .status.conditions[*]}  {.type}: {.message}{"\n"}{end}' || true
+            echo ">> Para liberar: kubectl get namespace $NS -o json | jq '.spec.finalizers = []' | kubectl replace --raw \"/api/v1/namespaces/$NS/finalize\" -f -"
+            exit 1
+          fi
+
+          # Inexistente -> cria; Active -> reaplica (idempotente).
+          [ -z "$(fase)" ] && echo ">> Criando namespace '$NS' a partir de $NS_YAML"
+          kubectl apply --server-side -f "$NS_YAML"
+
+          # So segue com o namespace Active e a ServiceAccount default criada.
+          for _ in $(seq 1 30); do
+            if [ "$(fase)" = "Active" ] && kubectl get serviceaccount default -n "$NS" &>/dev/null; then
+              echo ">> Namespace '$NS' pronto."
+              exit 0
+            fi
+            sleep 2
+          done
+          echo ">> ERRO: namespace '$NS' nao ficou pronto em 60s."
+          exit 1
+
+      - name: Pods em execução (antes do deploy)
+        run: kubectl get pods -n chirpstack-site || echo "Namespace ainda não existe"
+
+      # ─── REPOSITORIO OCIR (12/11/2026) ──────────────────────────────────────
+      # O Terraform (oci_artifacts_container_repository) e a fonte oficial; este passo so
+      # cobre o primeiro deploy antes do "terraform apply": se o repositorio nao existir,
+      # cria no MESMO compartment do udp-health-check-server-1700 (presente nos 5
+      # repositorios), privado. Depois rode oci_artifacts_container_repository/
+      # import_existing_repositories.sh para trazer o repositorio para o state.
+      - name: Garantir repositório OCIR (app-chirpstack-site-frontend)
+        env:
+          REPO: app-chirpstack-site-frontend_platform_linux-arm64
+          REF:  udp-health-check-server-1700_platform_linux-arm64
+        run: |
+          set -euo pipefail
+          TENANCY=$(sed -n 's/^tenancy[[:space:]]*=[[:space:]]*//p' ~/.oci/config | head -1)
+
+          EXISTE=$(oci artifacts container repository list --compartment-id "$TENANCY" \
+            --compartment-id-in-subtree true --display-name "$REPO" --all \
+            --query 'length(data.items)' --raw-output 2>/dev/null || echo 0)
+          if [ "${EXISTE:-0}" != "0" ]; then
+            echo ">> Repositorio OCIR '$REPO' ja existe."
+            exit 0
+          fi
+
+          COMP=$(oci artifacts container repository list --compartment-id "$TENANCY" \
+            --compartment-id-in-subtree true --display-name "$REF" --all \
+            --query 'data.items[0]."compartment-id"' --raw-output)
+          if [ -z "$COMP" ] || [ "$COMP" = "null" ]; then
+            echo ">> ERRO: nao achei o repositorio de referencia '$REF' para descobrir o compartment."
+            exit 1
+          fi
+
+          echo ">> Criando repositorio OCIR '$REPO' (privado) no compartment do '$REF'..."
+          oci artifacts container repository create --compartment-id "$COMP" \
+            --display-name "$REPO" --is-public false --is-immutable false >/dev/null
+          echo ">> Criado. Lembrete: rode oci_artifacts_container_repository/import_existing_repositories.sh."
+
       - name: Login no Docker Registry (OCI)
         uses: docker/login-action@v4
         with:
@@ -223,106 +349,127 @@ jobs:
           username: ${{ secrets.OCI_REGISTRY_USERNAME }}
           password: ${{ secrets.OCI_REGISTRY_PASSWORD }}
 
-      - name: Build & Push – Homepage (linux/arm64)
+      - name: Available platforms
+        run: echo ${{ steps.buildx.outputs.platforms }}
+
+      # Dockerfile multi-stage, sem build-args. Repositorio OCIR app-chirpstack-site-frontend_platform_linux-arm64
+      # (Terraform; o passo "Garantir repositório OCIR" cria se ainda nao existir).
+      - name: Build & Push – ChirpStack - Site – Frontend
         run: |
+          # Plataformas disponíveis: linux/amd64, linux/arm64
           docker buildx build \
             --builder ${{ steps.buildx.outputs.name }} \
             --push \
+            --provenance=false --sbom=false \
             --platform linux/arm64 \
-            -f "$APP_DIR/Dockerfile" \
-            -t "${IMAGE}:${{ steps.version.outputs.VERSION }}" \
-            -t "${IMAGE}:latest" \
-            "$APP_DIR"
+            --cache-from type=registry,ref=${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/app-chirpstack-site-frontend_platform_linux-arm64:buildcache \
+            --cache-to   type=registry,ref=${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/app-chirpstack-site-frontend_platform_linux-arm64:buildcache,mode=max \
+            -f 00.homepage/app_chirpstack_site_frontend/Dockerfile \
+            -t ${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/app-chirpstack-site-frontend_platform_linux-arm64:${{ steps.version.outputs.VERSION }} \
+            -t ${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/app-chirpstack-site-frontend_platform_linux-arm64:latest \
+            00.homepage/app_chirpstack_site_frontend
 
-      - name: Criar tag Git (app-chirpstack-homepage-frontend)
+      # ─── MANIFESTOS ─────────────────────────────────────────────────────────
+      #   02  Deployment     (NAO entra aqui: quem aplica e o ArgoCD)
+      #   01.create__Namespace.yaml
+      #   03.app-chirpstack-site-frontend__Service.yaml
+      #   06.app-chirpstack-site__Ingress.yaml
+      # ────────────────────────────────────────────────────────────────────────
+      - name: Aplicar infraestrutura base ChirpStack - Site – Frontend (Namespace, Service, Ingress)
         run: |
-          git config user.name  "github-actions"
-          git config user.email "github-actions@github.com"
-          git tag "${{ steps.version.outputs.FULL_TAG }}"
-          git push origin "${{ steps.version.outputs.FULL_TAG }}"
+          set -euo pipefail
 
-      # ─── INFRAESTRUTURA BASE DO APP ─────────────────────────────────────────
-      - name: Namespace, Secret do registry, Service e Ingress
+          K8S=00.homepage/app_chirpstack_site_frontend/kubernetes
+
+          kubectl apply --server-side -f "$K8S/01.create__Namespace.yaml"
+
+          kubectl apply --server-side -f "$K8S/03.app-chirpstack-site-frontend__Service.yaml"
+
+          kubectl apply --server-side -f "$K8S/06.app-chirpstack-site__Ingress.yaml"
+      - name: Criar/atualizar imagePullSecret do OCI Registry (chirpstack-site)
         run: |
-          kubectl apply -f "$K8S_DIR/01.create__Namespace.yaml"
-
           kubectl create secret docker-registry oci-registry-secret \
-            --docker-server="${{ secrets.OCI_REGISTRY_URL }}" \
-            --docker-username="${{ secrets.OCI_REGISTRY_USERNAME }}" \
-            --docker-password="${{ secrets.OCI_REGISTRY_PASSWORD }}" \
-            -n "$K8S_NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
+            --docker-server=${{ secrets.OCI_REGISTRY_URL }} \
+            --docker-username='${{ secrets.OCI_REGISTRY_USERNAME }}' \
+            --docker-password='${{ secrets.OCI_REGISTRY_PASSWORD }}' \
+            --docker-email='${{ secrets.OCI_REGISTRY_EMAIL }}' \
+            --namespace=chirpstack-site \
+            --dry-run=client -o yaml | kubectl apply -f -
 
-          kubectl apply -f "$K8S_DIR/03.app-chirpstack-homepage-frontend__Service.yaml"
-          kubectl apply -f "$K8S_DIR/04.app-chirpstack-homepage__Ingress.yaml"
-
-      # ─── DEPLOY DIRETO ──────────────────────────────────────────────────────
-      - name: Aplicar o Deployment com a nova versão
+      # O newTag e alterado num WORKTREE separado, criado a partir de origin/master.
+      # Assim o working tree do build fica intocado e cada tentativa parte sempre do
+      # estado remoto mais novo -- nao ha rebase, portanto nao ha conflito possivel.
+      - name: Fixar versão no GitOps (ArgoCD sincroniza)
+        env:
+          KUST: 00.homepage/app_chirpstack_site_frontend/kubernetes/kustomization.yaml
+          COMP: app-chirpstack-site-frontend
+          VER:  ${{ steps.version.outputs.VERSION }}
         run: |
-          KUST="$K8S_DIR/kustomization.yaml"
-          sed -i -E \
-            -e "s|^(\s*newName:).*|\1 ${IMAGE}|" \
-            -e "s|^(\s*newTag:).*|\1 \"${{ steps.version.outputs.VERSION }}\"|" \
-            "$KUST"
-          kubectl kustomize "$K8S_DIR" | grep -n "image:"
-          kubectl apply -k "$K8S_DIR"
+          set -euo pipefail
 
-      - name: Aguardar rollout da nova versão
-        run: |
-          EXPECTED="${{ steps.version.outputs.VERSION }}"
-          kubectl -n "$K8S_NAMESPACE" rollout status deployment/"$K8S_DEPLOYMENT" --timeout=240s
+          git config user.email "github-actions@github.com"
+          git config user.name  "github-actions[bot]"
 
-          CURRENT=$(kubectl -n "$K8S_NAMESPACE" get deployment "$K8S_DEPLOYMENT" \
-            -o jsonpath='{.spec.template.spec.containers[0].image}')
-          echo "Imagem em execução: $CURRENT"
-          case "$CURRENT" in
-            *":$EXPECTED") echo "Homepage atualizada para a versão $EXPECTED." ;;
-            *) echo "::error::O Deployment está com $CURRENT, esperado :$EXPECTED."; exit 1 ;;
-          esac
+          WT="$(mktemp -d)"
+          trap 'git worktree remove --force "$WT" 2>/dev/null || true; git worktree prune || true' EXIT
 
-          kubectl -n "$K8S_NAMESPACE" get pods,svc,ingress
-          kubectl -n "$K8S_NAMESPACE" get certificate 2>/dev/null || true
+          for i in $(seq 1 5); do
+            git fetch origin master
 
-      # ─── LIMPEZA DE IMAGENS SEM TAG ─────────────────────────────────────────
-      - name: Limpar imagens "unknown" do OCI Registry (app-chirpstack-homepage-frontend)
-        if: success()
-        continue-on-error: true
-        run: |
-          IMAGE_IDS=$(oci artifacts container image list \
-            --compartment-id "${{ secrets.OCI_COMPARTMENT_ID }}" \
-            --repository-name "$IMAGE_REPO" \
-            --lifecycle-state AVAILABLE \
-            --all \
-            --query 'data.items[*].{"id":id,"name":"display-name"}' \
-            --raw-output | jq -r '.[] | select(.name | test("unknown")) | .id')
+            git worktree remove --force "$WT" 2>/dev/null || true
+            git worktree prune
+            git worktree add --detach "$WT" FETCH_HEAD
 
-          if [ -z "$IMAGE_IDS" ]; then
-            echo "Nenhuma imagem unknown encontrada."
-          else
-            for IMAGE_ID in $IMAGE_IDS; do
-              echo "  → Deletando: $IMAGE_ID"
-              oci artifacts container image delete --image-id "$IMAGE_ID" --force
-            done
-          fi
+            # Modulo CONGELADO (linha "# chirpstack-release-congelado: <motivo>" na kustomization):
+            # a imagem desta versao ja foi publicada no OCIR e a tag Git criada, mas o newTag
+            # NAO e trocado. Remova a linha para voltar ao deploy automatico a cada build.
+            if grep -q '^# chirpstack-release-congelado:' "$WT/$KUST"; then
+              echo ">> ${COMP} esta CONGELADO -- versao ${VER} publicada, mas NAO implantada."
+              grep '^# chirpstack-release-congelado:' "$WT/$KUST" | sed 's/^# chirpstack-release-congelado:/>>   congelado por:/'
+              exit 0
+            fi
 
-      - name: Remover credenciais do runner
-        if: always()
-        run: rm -f "$RUNNER_TEMP/.kube/config" ~/.oci/key.pem
+            sed -i -E "s|^([[:space:]]*newTag:).*|\1 \"${VER}\"|" "$WT/$KUST"
+            git -C "$WT" add "$KUST"
 
-# ═════════════════════════════════════════════════════════════════════════════
-# JOBS: ChirpStack Consumer (Backend Spring Boot + Frontend Angular)
-# Disparados quando alterações ocorrem em 05.chirpstack_consumer/api_chirpstack_consumer_backend/**
-# ou 05.chirpstack_consumer/app_chirpstack_consumer_frontend/**
-# ═════════════════════════════════════════════════════════════════════════════
+            # Pergunta feita ao index: so "nada a commitar" sai com sucesso.
+            if git -C "$WT" diff --cached --quiet; then
+              echo ">> newTag de ${COMP} ja esta em ${VER} -- nada a commitar."
+              exit 0
+            fi
+
+            git -C "$WT" commit -m "deploy: ${COMP} ${VER} [skip ci]"
+
+            # HEAD:master nao depende do nome do branch local.
+            if git -C "$WT" push origin HEAD:master; then
+              echo ">> GitOps atualizado: ${COMP} -> ${VER} (tentativa ${i})."
+              exit 0
+            fi
+
+            # Espera ALEATORIA: com sleep fixo, duas execucoes concorrentes voltam a
+            # colidir no mesmo instante, tentativa apos tentativa.
+            ESPERA=$(( RANDOM % 5 + 2 ))
+            echo ">> push perdeu a corrida (tentativa ${i}); refazendo sobre o remoto em ${ESPERA}s..."
+            sleep "${ESPERA}"
+          done
+
+          echo ">> falha ao dar push no GitOps apos 5 tentativas"
+          exit 1
+
+      # ────────────────────────────────────────────────────────────────────────
+
 
 # ─────────────────────────────────────────────────────────────────────────────
-# JOB: CHIRPSTACK-CONSUMER-BACKEND (Spring Boot)
+# JOB: CHIRPSTACK - CONSUMER – BACKEND (Spring Boot) – interno (proxy /api e /ws do frontend)
+# API do ChirpStack Consumer (sem banco de dados).
 # Disparado quando o job detect sinaliza api_chirpstack_consumer_backend=true
+# Padrao CSLab: build -> OCIR -> infra base -> newTag no GitOps (ArgoCD sincroniza o Deployment).
 # ─────────────────────────────────────────────────────────────────────────────
   api_chirpstack_consumer_backend:
-    name: ChirpStack Consumer – Backend (Spring Boot)
+    name: ChirpStack - Consumer – Backend (Spring Boot)
     #runs-on: ubuntu-latest
-    runs-on: self-hosted
-    timeout-minutes: 30
+    runs-on: [self-hosted, Linux, ARM64]
+    timeout-minutes: 45
     needs: detect
     if: needs.detect.outputs.api_chirpstack_consumer_backend == 'true'
 
@@ -407,18 +554,95 @@ jobs:
 
           if ! command -v kubectl &> /dev/null; then
             echo "kubectl não encontrado, instalando..."
-            curl -L "https://dl.k8s.io/release/v1.22.4/bin/linux/amd64/kubectl" -o /tmp/kubectl
+            curl -L "https://dl.k8s.io/release/v1.31.4/bin/linux/arm64/kubectl" -o /tmp/kubectl
             chmod +x /tmp/kubectl
             sudo mv /tmp/kubectl /usr/local/bin/kubectl
           else
-            echo "kubectl já instalado: $(kubectl version --client --short 2>/dev/null)"
+            echo "kubectl já instalado: $(kubectl version --client 2>/dev/null | head -1)"
           fi
 
           echo "${{ secrets.KUBECONFIG }}" > /tmp/.kube/config
           echo "KUBECONFIG=/tmp/.kube/config" >> $GITHUB_ENV
 
+      # ─── NAMESPACE (22/10/2026) ─────────────────────────────────────────────
+      # Garante o namespace ANTES de qualquer comando que dependa dele. Se nao
+      # existir (ex.: excluido manualmente), aplica o 01.create__Namespace.yaml;
+      # se estiver em Terminating, espera a exclusao terminar e recria. Os
+      # applies do 01 mais abaixo continuam (sao idempotentes).
+      - name: Garantir namespace (cria se não existir)
+        env:
+          NS_YAML: 05.chirpstack_consumer/api_chirpstack_consumer_backend/kubernetes/01.create__Namespace.yaml
+        run: |
+          set -euo pipefail
+          NS=$(kubectl create --dry-run=client -f "$NS_YAML" -o jsonpath='{.metadata.name}')
+          fase() { kubectl get namespace "$NS" -o jsonpath='{.status.phase}' 2>/dev/null || true; }
+          F=$(fase); echo ">> Namespace '$NS': ${F:-inexistente}"
+
+          # Terminating (exclusao anterior ainda em andamento): espera ate 300s.
+          for _ in $(seq 1 60); do
+            [ "$(fase)" = "Terminating" ] || break
+            echo ">> '$NS' em Terminating -- aguardando a exclusao terminar..."
+            sleep 5
+          done
+          if [ "$(fase)" = "Terminating" ]; then
+            echo ">> ERRO: '$NS' preso em Terminating ha mais de 300s. Condicoes:"
+            kubectl get namespace "$NS" -o jsonpath='{range .status.conditions[*]}  {.type}: {.message}{"\n"}{end}' || true
+            echo ">> Para liberar: kubectl get namespace $NS -o json | jq '.spec.finalizers = []' | kubectl replace --raw \"/api/v1/namespaces/$NS/finalize\" -f -"
+            exit 1
+          fi
+
+          # Inexistente -> cria; Active -> reaplica (idempotente).
+          [ -z "$(fase)" ] && echo ">> Criando namespace '$NS' a partir de $NS_YAML"
+          kubectl apply --server-side -f "$NS_YAML"
+
+          # So segue com o namespace Active e a ServiceAccount default criada.
+          for _ in $(seq 1 30); do
+            if [ "$(fase)" = "Active" ] && kubectl get serviceaccount default -n "$NS" &>/dev/null; then
+              echo ">> Namespace '$NS' pronto."
+              exit 0
+            fi
+            sleep 2
+          done
+          echo ">> ERRO: namespace '$NS' nao ficou pronto em 60s."
+          exit 1
+
       - name: Pods em execução (antes do deploy)
         run: kubectl get pods -n chirpstack-consumer || echo "Namespace ainda não existe"
+
+      # ─── REPOSITORIO OCIR (12/11/2026) ──────────────────────────────────────
+      # O Terraform (oci_artifacts_container_repository) e a fonte oficial; este passo so
+      # cobre o primeiro deploy antes do "terraform apply": se o repositorio nao existir,
+      # cria no MESMO compartment do udp-health-check-server-1700 (presente nos 5
+      # repositorios), privado. Depois rode oci_artifacts_container_repository/
+      # import_existing_repositories.sh para trazer o repositorio para o state.
+      - name: Garantir repositório OCIR (api-chirpstack-consumer-backend)
+        env:
+          REPO: api-chirpstack-consumer-backend_platform_linux-arm64
+          REF:  udp-health-check-server-1700_platform_linux-arm64
+        run: |
+          set -euo pipefail
+          TENANCY=$(sed -n 's/^tenancy[[:space:]]*=[[:space:]]*//p' ~/.oci/config | head -1)
+
+          EXISTE=$(oci artifacts container repository list --compartment-id "$TENANCY" \
+            --compartment-id-in-subtree true --display-name "$REPO" --all \
+            --query 'length(data.items)' --raw-output 2>/dev/null || echo 0)
+          if [ "${EXISTE:-0}" != "0" ]; then
+            echo ">> Repositorio OCIR '$REPO' ja existe."
+            exit 0
+          fi
+
+          COMP=$(oci artifacts container repository list --compartment-id "$TENANCY" \
+            --compartment-id-in-subtree true --display-name "$REF" --all \
+            --query 'data.items[0]."compartment-id"' --raw-output)
+          if [ -z "$COMP" ] || [ "$COMP" = "null" ]; then
+            echo ">> ERRO: nao achei o repositorio de referencia '$REF' para descobrir o compartment."
+            exit 1
+          fi
+
+          echo ">> Criando repositorio OCIR '$REPO' (privado) no compartment do '$REF'..."
+          oci artifacts container repository create --compartment-id "$COMP" \
+            --display-name "$REPO" --is-public false --is-immutable false >/dev/null
+          echo ">> Criado. Lembrete: rode oci_artifacts_container_repository/import_existing_repositories.sh."
 
       - name: Login no Docker Registry (OCI)
         uses: docker/login-action@v4
@@ -430,25 +654,37 @@ jobs:
       - name: Available platforms
         run: echo ${{ steps.buildx.outputs.platforms }}
 
-      - name: Build & Push – ChirpStack Consumer Backend
+      # Dockerfile multi-stage, sem build-args. Repositorio OCIR api-chirpstack-consumer-backend_platform_linux-arm64
+      # (Terraform; o passo "Garantir repositório OCIR" cria se ainda nao existir).
+      - name: Build & Push – ChirpStack - Consumer – Backend
         run: |
           # Plataformas disponíveis: linux/amd64, linux/arm64
           docker buildx build \
             --builder ${{ steps.buildx.outputs.name }} \
             --push \
+            --provenance=false --sbom=false \
             --platform linux/arm64 \
+            --cache-from type=registry,ref=${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/api-chirpstack-consumer-backend_platform_linux-arm64:buildcache \
+            --cache-to   type=registry,ref=${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/api-chirpstack-consumer-backend_platform_linux-arm64:buildcache,mode=max \
             -f 05.chirpstack_consumer/api_chirpstack_consumer_backend/Dockerfile \
             -t ${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/api-chirpstack-consumer-backend_platform_linux-arm64:${{ steps.version.outputs.VERSION }} \
             -t ${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/api-chirpstack-consumer-backend_platform_linux-arm64:latest \
             05.chirpstack_consumer/api_chirpstack_consumer_backend
 
-      - name: Aplicar infraestrutura base ChirpStack Consumer (Namespace, Services, Ingress)
+      # ─── MANIFESTOS ─────────────────────────────────────────────────────────
+      #   02  Deployment     (NAO entra aqui: quem aplica e o ArgoCD)
+      #   01.create__Namespace.yaml
+      #   03.api-chirpstack-consumer-backend__Service.yaml
+      # ────────────────────────────────────────────────────────────────────────
+      - name: Aplicar infraestrutura base ChirpStack - Consumer – Backend (Namespace, Service)
         run: |
-          # Aplica em ordem — Namespace DEVE ser o primeiro
-          kubectl apply --server-side -f 05.chirpstack_consumer/kubernetes/01.create__Namespace.yaml
-          kubectl apply --server-side -f 05.chirpstack_consumer/kubernetes/03.chirpstack-consumer__Backend_Service.yaml
-          kubectl apply --server-side -f 05.chirpstack_consumer/kubernetes/06.chirpstack-consumer__Ingress.yaml
+          set -euo pipefail
 
+          K8S=05.chirpstack_consumer/api_chirpstack_consumer_backend/kubernetes
+
+          kubectl apply --server-side -f "$K8S/01.create__Namespace.yaml"
+
+          kubectl apply --server-side -f "$K8S/03.api-chirpstack-consumer-backend__Service.yaml"
       - name: Criar/atualizar imagePullSecret do OCI Registry (chirpstack-consumer)
         run: |
           kubectl create secret docker-registry oci-registry-secret \
@@ -459,63 +695,82 @@ jobs:
             --namespace=chirpstack-consumer \
             --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Deploy ChirpStack Consumer Backend no K8S
+      # O newTag e alterado num WORKTREE separado, criado a partir de origin/master.
+      # Assim o working tree do build fica intocado e cada tentativa parte sempre do
+      # estado remoto mais novo -- nao ha rebase, portanto nao ha conflito possivel.
+      - name: Fixar versão no GitOps (ArgoCD sincroniza)
+        env:
+          KUST: 05.chirpstack_consumer/api_chirpstack_consumer_backend/kubernetes/kustomization.yaml
+          COMP: api-chirpstack-consumer-backend
+          VER:  ${{ steps.version.outputs.VERSION }}
         run: |
-          sed -i \
-            -e 's|<OCI_REGISTRY_URL>|${{ secrets.OCI_REGISTRY_URL }}|g' \
-            -e 's|<OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>|${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}|g' \
-            05.chirpstack_consumer/kubernetes/02.chirpstack-consumer__Backend_Deployment.yaml && \
-          grep "image:" 05.chirpstack_consumer/kubernetes/02.chirpstack-consumer__Backend_Deployment.yaml && \
-          kubectl apply -f 05.chirpstack_consumer/kubernetes/02.chirpstack-consumer__Backend_Deployment.yaml -n chirpstack-consumer
+          set -euo pipefail
 
-      - name: Restart ChirpStack Consumer Backend Deployment
-        run: kubectl rollout restart deployment api-chirpstack-consumer-backend -n chirpstack-consumer
+          git config user.email "github-actions@github.com"
+          git config user.name  "github-actions[bot]"
 
-      - name: Aguardar rollout do ChirpStack Consumer Backend
-        run: kubectl rollout status deployment/api-chirpstack-consumer-backend -n chirpstack-consumer --timeout=120s
+          WT="$(mktemp -d)"
+          trap 'git worktree remove --force "$WT" 2>/dev/null || true; git worktree prune || true' EXIT
 
-      # ─── LIMPEZA DE IMAGENS SEM TAG (api-chirpstack-consumer-backend) ───────────
-      - name: Limpar imagens unknown do OCI Registry (api-chirpstack-consumer-backend)
-        run: |
-          IMAGE_IDS=$(oci artifacts container image list \
-            --compartment-id ${{ secrets.OCI_COMPARTMENT_ID }} \
-            --repository-name api-chirpstack-consumer-backend_platform_linux-arm64 \
-            --lifecycle-state AVAILABLE \
-            --all \
-            --query 'data.items[*].{"id":id,"name":"display-name"}' \
-            --raw-output | \
-            jq -r '.[] | select(.name | test("unknown")) | .id')
+          for i in $(seq 1 5); do
+            git fetch origin master
 
-          if [ -z "$IMAGE_IDS" ]; then
-            echo "Nenhuma imagem unknown encontrada."
-          else
-            echo "Deletando imagens unknown..."
-            for IMAGE_ID in $IMAGE_IDS; do
-              echo "  → Deletando: $IMAGE_ID"
-              oci artifacts container image delete \
-                --image-id "$IMAGE_ID" \
-                --force
-            done
-            echo "Limpeza concluída."
-          fi
+            git worktree remove --force "$WT" 2>/dev/null || true
+            git worktree prune
+            git worktree add --detach "$WT" FETCH_HEAD
+
+            # Modulo CONGELADO (linha "# chirpstack-release-congelado: <motivo>" na kustomization):
+            # a imagem desta versao ja foi publicada no OCIR e a tag Git criada, mas o newTag
+            # NAO e trocado. Remova a linha para voltar ao deploy automatico a cada build.
+            if grep -q '^# chirpstack-release-congelado:' "$WT/$KUST"; then
+              echo ">> ${COMP} esta CONGELADO -- versao ${VER} publicada, mas NAO implantada."
+              grep '^# chirpstack-release-congelado:' "$WT/$KUST" | sed 's/^# chirpstack-release-congelado:/>>   congelado por:/'
+              exit 0
+            fi
+
+            sed -i -E "s|^([[:space:]]*newTag:).*|\1 \"${VER}\"|" "$WT/$KUST"
+            git -C "$WT" add "$KUST"
+
+            # Pergunta feita ao index: so "nada a commitar" sai com sucesso.
+            if git -C "$WT" diff --cached --quiet; then
+              echo ">> newTag de ${COMP} ja esta em ${VER} -- nada a commitar."
+              exit 0
+            fi
+
+            git -C "$WT" commit -m "deploy: ${COMP} ${VER} [skip ci]"
+
+            # HEAD:master nao depende do nome do branch local.
+            if git -C "$WT" push origin HEAD:master; then
+              echo ">> GitOps atualizado: ${COMP} -> ${VER} (tentativa ${i})."
+              exit 0
+            fi
+
+            # Espera ALEATORIA: com sleep fixo, duas execucoes concorrentes voltam a
+            # colidir no mesmo instante, tentativa apos tentativa.
+            ESPERA=$(( RANDOM % 5 + 2 ))
+            echo ">> push perdeu a corrida (tentativa ${i}); refazendo sobre o remoto em ${ESPERA}s..."
+            sleep "${ESPERA}"
+          done
+
+          echo ">> falha ao dar push no GitOps apos 5 tentativas"
+          exit 1
+
       # ────────────────────────────────────────────────────────────────────────
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# JOB: CHIRPSTACK-CONSUMER-FRONTEND (Angular)
+# JOB: CHIRPSTACK - CONSUMER – FRONTEND (Angular / Avalon 21 + Nginx) – app-chirpstack-consumer.adailsilva.com.br
+# Frontend do ChirpStack Consumer (proxy /api e /ws para a API).
 # Disparado quando o job detect sinaliza app_chirpstack_consumer_frontend=true
-# Aguarda api_chirpstack_consumer_backend terminar (ou ser skipped) antes de rodar
+# Padrao CSLab: build -> OCIR -> infra base -> newTag no GitOps (ArgoCD sincroniza o Deployment).
 # ─────────────────────────────────────────────────────────────────────────────
   app_chirpstack_consumer_frontend:
-    name: ChirpStack Consumer – Frontend (Angular)
+    name: ChirpStack - Consumer – Frontend (Angular)
     #runs-on: ubuntu-latest
-    runs-on: self-hosted
+    runs-on: [self-hosted, Linux, ARM64]
     timeout-minutes: 45
-    needs: [detect, api_chirpstack_consumer_backend]
-    if: |
-      always() &&
-      needs.detect.outputs.app_chirpstack_consumer_frontend == 'true' &&
-      (needs.api_chirpstack_consumer_backend.result == 'success' || needs.api_chirpstack_consumer_backend.result == 'skipped')
+    needs: detect
+    if: needs.detect.outputs.app_chirpstack_consumer_frontend == 'true'
 
     steps:
       - name: Checkout
@@ -598,18 +853,95 @@ jobs:
 
           if ! command -v kubectl &> /dev/null; then
             echo "kubectl não encontrado, instalando..."
-            curl -L "https://dl.k8s.io/release/v1.22.4/bin/linux/amd64/kubectl" -o /tmp/kubectl
+            curl -L "https://dl.k8s.io/release/v1.31.4/bin/linux/arm64/kubectl" -o /tmp/kubectl
             chmod +x /tmp/kubectl
             sudo mv /tmp/kubectl /usr/local/bin/kubectl
           else
-            echo "kubectl já instalado: $(kubectl version --client --short 2>/dev/null)"
+            echo "kubectl já instalado: $(kubectl version --client 2>/dev/null | head -1)"
           fi
 
           echo "${{ secrets.KUBECONFIG }}" > /tmp/.kube/config
           echo "KUBECONFIG=/tmp/.kube/config" >> $GITHUB_ENV
 
+      # ─── NAMESPACE (22/10/2026) ─────────────────────────────────────────────
+      # Garante o namespace ANTES de qualquer comando que dependa dele. Se nao
+      # existir (ex.: excluido manualmente), aplica o 01.create__Namespace.yaml;
+      # se estiver em Terminating, espera a exclusao terminar e recria. Os
+      # applies do 01 mais abaixo continuam (sao idempotentes).
+      - name: Garantir namespace (cria se não existir)
+        env:
+          NS_YAML: 05.chirpstack_consumer/app_chirpstack_consumer_frontend/kubernetes/01.create__Namespace.yaml
+        run: |
+          set -euo pipefail
+          NS=$(kubectl create --dry-run=client -f "$NS_YAML" -o jsonpath='{.metadata.name}')
+          fase() { kubectl get namespace "$NS" -o jsonpath='{.status.phase}' 2>/dev/null || true; }
+          F=$(fase); echo ">> Namespace '$NS': ${F:-inexistente}"
+
+          # Terminating (exclusao anterior ainda em andamento): espera ate 300s.
+          for _ in $(seq 1 60); do
+            [ "$(fase)" = "Terminating" ] || break
+            echo ">> '$NS' em Terminating -- aguardando a exclusao terminar..."
+            sleep 5
+          done
+          if [ "$(fase)" = "Terminating" ]; then
+            echo ">> ERRO: '$NS' preso em Terminating ha mais de 300s. Condicoes:"
+            kubectl get namespace "$NS" -o jsonpath='{range .status.conditions[*]}  {.type}: {.message}{"\n"}{end}' || true
+            echo ">> Para liberar: kubectl get namespace $NS -o json | jq '.spec.finalizers = []' | kubectl replace --raw \"/api/v1/namespaces/$NS/finalize\" -f -"
+            exit 1
+          fi
+
+          # Inexistente -> cria; Active -> reaplica (idempotente).
+          [ -z "$(fase)" ] && echo ">> Criando namespace '$NS' a partir de $NS_YAML"
+          kubectl apply --server-side -f "$NS_YAML"
+
+          # So segue com o namespace Active e a ServiceAccount default criada.
+          for _ in $(seq 1 30); do
+            if [ "$(fase)" = "Active" ] && kubectl get serviceaccount default -n "$NS" &>/dev/null; then
+              echo ">> Namespace '$NS' pronto."
+              exit 0
+            fi
+            sleep 2
+          done
+          echo ">> ERRO: namespace '$NS' nao ficou pronto em 60s."
+          exit 1
+
       - name: Pods em execução (antes do deploy)
         run: kubectl get pods -n chirpstack-consumer || echo "Namespace ainda não existe"
+
+      # ─── REPOSITORIO OCIR (12/11/2026) ──────────────────────────────────────
+      # O Terraform (oci_artifacts_container_repository) e a fonte oficial; este passo so
+      # cobre o primeiro deploy antes do "terraform apply": se o repositorio nao existir,
+      # cria no MESMO compartment do udp-health-check-server-1700 (presente nos 5
+      # repositorios), privado. Depois rode oci_artifacts_container_repository/
+      # import_existing_repositories.sh para trazer o repositorio para o state.
+      - name: Garantir repositório OCIR (app-chirpstack-consumer-frontend)
+        env:
+          REPO: app-chirpstack-consumer-frontend_platform_linux-arm64
+          REF:  udp-health-check-server-1700_platform_linux-arm64
+        run: |
+          set -euo pipefail
+          TENANCY=$(sed -n 's/^tenancy[[:space:]]*=[[:space:]]*//p' ~/.oci/config | head -1)
+
+          EXISTE=$(oci artifacts container repository list --compartment-id "$TENANCY" \
+            --compartment-id-in-subtree true --display-name "$REPO" --all \
+            --query 'length(data.items)' --raw-output 2>/dev/null || echo 0)
+          if [ "${EXISTE:-0}" != "0" ]; then
+            echo ">> Repositorio OCIR '$REPO' ja existe."
+            exit 0
+          fi
+
+          COMP=$(oci artifacts container repository list --compartment-id "$TENANCY" \
+            --compartment-id-in-subtree true --display-name "$REF" --all \
+            --query 'data.items[0]."compartment-id"' --raw-output)
+          if [ -z "$COMP" ] || [ "$COMP" = "null" ]; then
+            echo ">> ERRO: nao achei o repositorio de referencia '$REF' para descobrir o compartment."
+            exit 1
+          fi
+
+          echo ">> Criando repositorio OCIR '$REPO' (privado) no compartment do '$REF'..."
+          oci artifacts container repository create --compartment-id "$COMP" \
+            --display-name "$REPO" --is-public false --is-immutable false >/dev/null
+          echo ">> Criado. Lembrete: rode oci_artifacts_container_repository/import_existing_repositories.sh."
 
       - name: Login no Docker Registry (OCI)
         uses: docker/login-action@v4
@@ -621,25 +953,40 @@ jobs:
       - name: Available platforms
         run: echo ${{ steps.buildx.outputs.platforms }}
 
-      - name: Build & Push – ChirpStack Consumer Frontend
+      # Dockerfile multi-stage, sem build-args. Repositorio OCIR app-chirpstack-consumer-frontend_platform_linux-arm64
+      # (Terraform; o passo "Garantir repositório OCIR" cria se ainda nao existir).
+      - name: Build & Push – ChirpStack - Consumer – Frontend
         run: |
           # Plataformas disponíveis: linux/amd64, linux/arm64
           docker buildx build \
             --builder ${{ steps.buildx.outputs.name }} \
             --push \
+            --provenance=false --sbom=false \
             --platform linux/arm64 \
+            --cache-from type=registry,ref=${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/app-chirpstack-consumer-frontend_platform_linux-arm64:buildcache \
+            --cache-to   type=registry,ref=${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/app-chirpstack-consumer-frontend_platform_linux-arm64:buildcache,mode=max \
             -f 05.chirpstack_consumer/app_chirpstack_consumer_frontend/Dockerfile \
             -t ${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/app-chirpstack-consumer-frontend_platform_linux-arm64:${{ steps.version.outputs.VERSION }} \
             -t ${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/app-chirpstack-consumer-frontend_platform_linux-arm64:latest \
             05.chirpstack_consumer/app_chirpstack_consumer_frontend
 
-      - name: Aplicar infraestrutura base ChirpStack Consumer (Namespace, Services, Ingress)
+      # ─── MANIFESTOS ─────────────────────────────────────────────────────────
+      #   02  Deployment     (NAO entra aqui: quem aplica e o ArgoCD)
+      #   01.create__Namespace.yaml
+      #   03.app-chirpstack-consumer-frontend__Service.yaml
+      #   06.app-chirpstack-consumer__Ingress.yaml
+      # ────────────────────────────────────────────────────────────────────────
+      - name: Aplicar infraestrutura base ChirpStack - Consumer – Frontend (Namespace, Service, Ingress)
         run: |
-          # Garante Namespace mesmo quando api-chirpstack-consumer-backend foi skipped
-          kubectl apply --server-side -f 05.chirpstack_consumer/kubernetes/01.create__Namespace.yaml
-          kubectl apply --server-side -f 05.chirpstack_consumer/kubernetes/05.chirpstack-consumer__Frontend_Service.yaml
-          kubectl apply --server-side -f 05.chirpstack_consumer/kubernetes/06.chirpstack-consumer__Ingress.yaml
+          set -euo pipefail
 
+          K8S=05.chirpstack_consumer/app_chirpstack_consumer_frontend/kubernetes
+
+          kubectl apply --server-side -f "$K8S/01.create__Namespace.yaml"
+
+          kubectl apply --server-side -f "$K8S/03.app-chirpstack-consumer-frontend__Service.yaml"
+
+          kubectl apply --server-side -f "$K8S/06.app-chirpstack-consumer__Ingress.yaml"
       - name: Criar/atualizar imagePullSecret do OCI Registry (chirpstack-consumer)
         run: |
           kubectl create secret docker-registry oci-registry-secret \
@@ -650,43 +997,692 @@ jobs:
             --namespace=chirpstack-consumer \
             --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Deploy ChirpStack Consumer Frontend no K8S
+      # O newTag e alterado num WORKTREE separado, criado a partir de origin/master.
+      # Assim o working tree do build fica intocado e cada tentativa parte sempre do
+      # estado remoto mais novo -- nao ha rebase, portanto nao ha conflito possivel.
+      - name: Fixar versão no GitOps (ArgoCD sincroniza)
+        env:
+          KUST: 05.chirpstack_consumer/app_chirpstack_consumer_frontend/kubernetes/kustomization.yaml
+          COMP: app-chirpstack-consumer-frontend
+          VER:  ${{ steps.version.outputs.VERSION }}
         run: |
-          sed -i \
-            -e 's|<OCI_REGISTRY_URL>|${{ secrets.OCI_REGISTRY_URL }}|g' \
-            -e 's|<OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>|${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}|g' \
-            05.chirpstack_consumer/kubernetes/04.chirpstack-consumer__Frontend_Deployment.yaml && \
-          grep "image:" 05.chirpstack_consumer/kubernetes/04.chirpstack-consumer__Frontend_Deployment.yaml && \
-          kubectl apply -f 05.chirpstack_consumer/kubernetes/04.chirpstack-consumer__Frontend_Deployment.yaml -n chirpstack-consumer
+          set -euo pipefail
 
-      - name: Restart ChirpStack Consumer Frontend Deployment
-        run: kubectl rollout restart deployment app-chirpstack-consumer-frontend -n chirpstack-consumer
+          git config user.email "github-actions@github.com"
+          git config user.name  "github-actions[bot]"
 
-      - name: Aguardar rollout do ChirpStack Consumer Frontend
-        run: kubectl rollout status deployment/app-chirpstack-consumer-frontend -n chirpstack-consumer --timeout=120s
+          WT="$(mktemp -d)"
+          trap 'git worktree remove --force "$WT" 2>/dev/null || true; git worktree prune || true' EXIT
 
-      # ─── LIMPEZA DE IMAGENS SEM TAG (app-chirpstack-consumer-frontend) ──────────
-      - name: Limpar imagens unknown do OCI Registry (app-chirpstack-consumer-frontend)
-        run: |
-          IMAGE_IDS=$(oci artifacts container image list \
-            --compartment-id ${{ secrets.OCI_COMPARTMENT_ID }} \
-            --repository-name app-chirpstack-consumer-frontend_platform_linux-arm64 \
-            --lifecycle-state AVAILABLE \
-            --all \
-            --query 'data.items[*].{"id":id,"name":"display-name"}' \
-            --raw-output | \
-            jq -r '.[] | select(.name | test("unknown")) | .id')
+          for i in $(seq 1 5); do
+            git fetch origin master
 
-          if [ -z "$IMAGE_IDS" ]; then
-            echo "Nenhuma imagem unknown encontrada."
-          else
-            echo "Deletando imagens unknown..."
-            for IMAGE_ID in $IMAGE_IDS; do
-              echo "  → Deletando: $IMAGE_ID"
-              oci artifacts container image delete \
-                --image-id "$IMAGE_ID" \
-                --force
-            done
-            echo "Limpeza concluída."
-          fi
+            git worktree remove --force "$WT" 2>/dev/null || true
+            git worktree prune
+            git worktree add --detach "$WT" FETCH_HEAD
+
+            # Modulo CONGELADO (linha "# chirpstack-release-congelado: <motivo>" na kustomization):
+            # a imagem desta versao ja foi publicada no OCIR e a tag Git criada, mas o newTag
+            # NAO e trocado. Remova a linha para voltar ao deploy automatico a cada build.
+            if grep -q '^# chirpstack-release-congelado:' "$WT/$KUST"; then
+              echo ">> ${COMP} esta CONGELADO -- versao ${VER} publicada, mas NAO implantada."
+              grep '^# chirpstack-release-congelado:' "$WT/$KUST" | sed 's/^# chirpstack-release-congelado:/>>   congelado por:/'
+              exit 0
+            fi
+
+            sed -i -E "s|^([[:space:]]*newTag:).*|\1 \"${VER}\"|" "$WT/$KUST"
+            git -C "$WT" add "$KUST"
+
+            # Pergunta feita ao index: so "nada a commitar" sai com sucesso.
+            if git -C "$WT" diff --cached --quiet; then
+              echo ">> newTag de ${COMP} ja esta em ${VER} -- nada a commitar."
+              exit 0
+            fi
+
+            git -C "$WT" commit -m "deploy: ${COMP} ${VER} [skip ci]"
+
+            # HEAD:master nao depende do nome do branch local.
+            if git -C "$WT" push origin HEAD:master; then
+              echo ">> GitOps atualizado: ${COMP} -> ${VER} (tentativa ${i})."
+              exit 0
+            fi
+
+            # Espera ALEATORIA: com sleep fixo, duas execucoes concorrentes voltam a
+            # colidir no mesmo instante, tentativa apos tentativa.
+            ESPERA=$(( RANDOM % 5 + 2 ))
+            echo ">> push perdeu a corrida (tentativa ${i}); refazendo sobre o remoto em ${ESPERA}s..."
+            sleep "${ESPERA}"
+          done
+
+          echo ">> falha ao dar push no GitOps apos 5 tentativas"
+          exit 1
+
       # ────────────────────────────────────────────────────────────────────────
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# JOB: CHIRPSTACK - MANAGER – BACKEND (Spring Boot 4 + PostgreSQL) – interno (proxy /api do frontend)
+# API (BFF) do ChirpStack Manager. Flyway roda no boot.
+# Disparado quando o job detect sinaliza api_chirpstack_manager_backend=true
+# Padrao CSLab: build -> OCIR -> infra base -> newTag no GitOps (ArgoCD sincroniza o Deployment).
+# ─────────────────────────────────────────────────────────────────────────────
+  api_chirpstack_manager_backend:
+    name: ChirpStack - Manager – Backend (Spring Boot)
+    #runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, ARM64]
+    timeout-minutes: 60
+    needs: detect
+    if: needs.detect.outputs.api_chirpstack_manager_backend == 'true'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
+
+      # ─── VERSIONAMENTO ──────────────────────────────────────────────────────
+      - name: Calcular próxima versão (api-chirpstack-manager-backend)
+        id: version
+        run: |
+          PREFIX="api-chirpstack-manager-backend"
+          LATEST=$(git tag --list "${PREFIX}-[0-9]*.[0-9]*" | sort -V | tail -1)
+
+          if [ -z "$LATEST" ]; then
+            LATEST="${PREFIX}-0.0"
+          fi
+
+          NUMS=${LATEST#${PREFIX}-}
+          MAJOR=$(echo "$NUMS" | cut -d. -f1)
+          MINOR=$(echo "$NUMS" | cut -d. -f2)
+
+          if [ "${{ github.event.inputs.version_type }}" == "major" ]; then
+            NEW_VERSION="$((MAJOR + 1)).0"
+          else
+            NEW_VERSION="$MAJOR.$((MINOR + 1))"
+          fi
+
+          FULL_TAG="${PREFIX}-${NEW_VERSION}"
+          echo "Nova versão: $FULL_TAG"
+          echo "VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "FULL_TAG=$FULL_TAG"  >> $GITHUB_OUTPUT
+
+      - name: Criar tag Git (api-chirpstack-manager-backend)
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag ${{ steps.version.outputs.FULL_TAG }}
+          git push origin ${{ steps.version.outputs.FULL_TAG }}
+      # ────────────────────────────────────────────────────────────────────────
+
+        # - name: Set up QEMU
+        # uses: docker/setup-qemu-action@v4
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v4
+        with:
+          driver: docker-container
+
+      - name: Install OCI CLI
+        run: |
+          mkdir -p ~/.oci
+          echo "${{ secrets.OCI_CONFIG }}"   > ~/.oci/config
+          echo "${{ secrets.OCI_KEY_FILE }}" > ~/.oci/key.pem
+
+          # Corrige o path do key_file para o home real do runner
+          sed -i "s|key_file=.*|key_file=$HOME/.oci/key.pem|g" ~/.oci/config
+
+          if [ -f "/home/ubuntu/bin/oci" ]; then
+            echo "OCI CLI já instalado: $(/home/ubuntu/bin/oci --version)"
+          else
+            echo "OCI CLI não encontrado, instalando..."
+            # Remove diretório residual que bloqueia o instalador
+            rm -rf /home/ubuntu/lib/oracle-cli
+            curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+            chmod +x install.sh
+            ./install.sh --accept-all-defaults
+          fi
+
+          # echo "/home/runner/bin" >> $GITHUB_PATH
+          echo "/home/ubuntu/bin" >> $GITHUB_PATH
+          /home/ubuntu/bin/oci setup repair-file-permissions --file ~/.oci/config
+          /home/ubuntu/bin/oci setup repair-file-permissions --file ~/.oci/key.pem
+
+      - name: Install kubectl
+        run: |
+          mkdir -p /tmp/.kube
+
+          if ! command -v kubectl &> /dev/null; then
+            echo "kubectl não encontrado, instalando..."
+            curl -L "https://dl.k8s.io/release/v1.31.4/bin/linux/arm64/kubectl" -o /tmp/kubectl
+            chmod +x /tmp/kubectl
+            sudo mv /tmp/kubectl /usr/local/bin/kubectl
+          else
+            echo "kubectl já instalado: $(kubectl version --client 2>/dev/null | head -1)"
+          fi
+
+          echo "${{ secrets.KUBECONFIG }}" > /tmp/.kube/config
+          echo "KUBECONFIG=/tmp/.kube/config" >> $GITHUB_ENV
+
+      # ─── NAMESPACE (22/10/2026) ─────────────────────────────────────────────
+      # Garante o namespace ANTES de qualquer comando que dependa dele. Se nao
+      # existir (ex.: excluido manualmente), aplica o 01.create__Namespace.yaml;
+      # se estiver em Terminating, espera a exclusao terminar e recria. Os
+      # applies do 01 mais abaixo continuam (sao idempotentes).
+      - name: Garantir namespace (cria se não existir)
+        env:
+          NS_YAML: 06.chirpstack_manager/api_chirpstack_manager_backend/kubernetes/01.create__Namespace.yaml
+        run: |
+          set -euo pipefail
+          NS=$(kubectl create --dry-run=client -f "$NS_YAML" -o jsonpath='{.metadata.name}')
+          fase() { kubectl get namespace "$NS" -o jsonpath='{.status.phase}' 2>/dev/null || true; }
+          F=$(fase); echo ">> Namespace '$NS': ${F:-inexistente}"
+
+          # Terminating (exclusao anterior ainda em andamento): espera ate 300s.
+          for _ in $(seq 1 60); do
+            [ "$(fase)" = "Terminating" ] || break
+            echo ">> '$NS' em Terminating -- aguardando a exclusao terminar..."
+            sleep 5
+          done
+          if [ "$(fase)" = "Terminating" ]; then
+            echo ">> ERRO: '$NS' preso em Terminating ha mais de 300s. Condicoes:"
+            kubectl get namespace "$NS" -o jsonpath='{range .status.conditions[*]}  {.type}: {.message}{"\n"}{end}' || true
+            echo ">> Para liberar: kubectl get namespace $NS -o json | jq '.spec.finalizers = []' | kubectl replace --raw \"/api/v1/namespaces/$NS/finalize\" -f -"
+            exit 1
+          fi
+
+          # Inexistente -> cria; Active -> reaplica (idempotente).
+          [ -z "$(fase)" ] && echo ">> Criando namespace '$NS' a partir de $NS_YAML"
+          kubectl apply --server-side -f "$NS_YAML"
+
+          # So segue com o namespace Active e a ServiceAccount default criada.
+          for _ in $(seq 1 30); do
+            if [ "$(fase)" = "Active" ] && kubectl get serviceaccount default -n "$NS" &>/dev/null; then
+              echo ">> Namespace '$NS' pronto."
+              exit 0
+            fi
+            sleep 2
+          done
+          echo ">> ERRO: namespace '$NS' nao ficou pronto em 60s."
+          exit 1
+
+      - name: Pods em execução (antes do deploy)
+        run: kubectl get pods -n chirpstack-manager || echo "Namespace ainda não existe"
+
+      # ─── REPOSITORIO OCIR (12/11/2026) ──────────────────────────────────────
+      # O Terraform (oci_artifacts_container_repository) e a fonte oficial; este passo so
+      # cobre o primeiro deploy antes do "terraform apply": se o repositorio nao existir,
+      # cria no MESMO compartment do udp-health-check-server-1700 (presente nos 5
+      # repositorios), privado. Depois rode oci_artifacts_container_repository/
+      # import_existing_repositories.sh para trazer o repositorio para o state.
+      - name: Garantir repositório OCIR (api-chirpstack-manager-backend)
+        env:
+          REPO: api-chirpstack-manager-backend_platform_linux-arm64
+          REF:  udp-health-check-server-1700_platform_linux-arm64
+        run: |
+          set -euo pipefail
+          TENANCY=$(sed -n 's/^tenancy[[:space:]]*=[[:space:]]*//p' ~/.oci/config | head -1)
+
+          EXISTE=$(oci artifacts container repository list --compartment-id "$TENANCY" \
+            --compartment-id-in-subtree true --display-name "$REPO" --all \
+            --query 'length(data.items)' --raw-output 2>/dev/null || echo 0)
+          if [ "${EXISTE:-0}" != "0" ]; then
+            echo ">> Repositorio OCIR '$REPO' ja existe."
+            exit 0
+          fi
+
+          COMP=$(oci artifacts container repository list --compartment-id "$TENANCY" \
+            --compartment-id-in-subtree true --display-name "$REF" --all \
+            --query 'data.items[0]."compartment-id"' --raw-output)
+          if [ -z "$COMP" ] || [ "$COMP" = "null" ]; then
+            echo ">> ERRO: nao achei o repositorio de referencia '$REF' para descobrir o compartment."
+            exit 1
+          fi
+
+          echo ">> Criando repositorio OCIR '$REPO' (privado) no compartment do '$REF'..."
+          oci artifacts container repository create --compartment-id "$COMP" \
+            --display-name "$REPO" --is-public false --is-immutable false >/dev/null
+          echo ">> Criado. Lembrete: rode oci_artifacts_container_repository/import_existing_repositories.sh."
+
+      - name: Login no Docker Registry (OCI)
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ secrets.OCI_REGISTRY_URL }}
+          username: ${{ secrets.OCI_REGISTRY_USERNAME }}
+          password: ${{ secrets.OCI_REGISTRY_PASSWORD }}
+
+      - name: Available platforms
+        run: echo ${{ steps.buildx.outputs.platforms }}
+
+      # Dockerfile multi-stage, sem build-args. Repositorio OCIR api-chirpstack-manager-backend_platform_linux-arm64
+      # (Terraform; o passo "Garantir repositório OCIR" cria se ainda nao existir).
+      - name: Build & Push – ChirpStack - Manager – Backend
+        run: |
+          # Plataformas disponíveis: linux/amd64, linux/arm64
+          docker buildx build \
+            --builder ${{ steps.buildx.outputs.name }} \
+            --push \
+            --provenance=false --sbom=false \
+            --platform linux/arm64 \
+            --cache-from type=registry,ref=${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/api-chirpstack-manager-backend_platform_linux-arm64:buildcache \
+            --cache-to   type=registry,ref=${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/api-chirpstack-manager-backend_platform_linux-arm64:buildcache,mode=max \
+            -f 06.chirpstack_manager/api_chirpstack_manager_backend/Dockerfile \
+            -t ${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/api-chirpstack-manager-backend_platform_linux-arm64:${{ steps.version.outputs.VERSION }} \
+            -t ${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/api-chirpstack-manager-backend_platform_linux-arm64:latest \
+            06.chirpstack_manager/api_chirpstack_manager_backend
+
+      # ─── MANIFESTOS ─────────────────────────────────────────────────────────
+      #   02  Deployment     (NAO entra aqui: quem aplica e o ArgoCD)
+      #   03.api-chirpstack-manager__ConfigMap.yaml
+      #   04.api-chirpstack-manager-postgresql__PersistentVolumeClaim.yaml
+      #   05.api-chirpstack-manager-postgresql__StatefulSet.yaml
+      #   06.api-chirpstack-manager-postgresql__Service.yaml
+      #   07.api-chirpstack-manager-backend__PersistentVolumeClaim.yaml
+      #   09.api-chirpstack-manager-backend__Service.yaml
+      # ────────────────────────────────────────────────────────────────────────
+      - name: Aplicar infraestrutura base ChirpStack - Manager – Backend (Namespace, Secret, ConfigMap, PostgreSQL, PVC, Service)
+        run: |
+          set -euo pipefail
+
+          K8S=06.chirpstack_manager/api_chirpstack_manager_backend/kubernetes
+
+          # O Secret real (API key do ChirpStack, JWT, senhas) e criado A MAO, uma vez
+          # (modelo: 02.api-chirpstack-manager__Secret_Example.yaml). Sem ele nem o PostgreSQL sobe.
+          kubectl apply --server-side -f "$K8S/01.create__Namespace.yaml"
+          if ! kubectl -n chirpstack-manager get secret chirpstack-manager-secrets >/dev/null 2>&1; then
+            echo ">> ERRO: o Secret chirpstack-manager-secrets nao existe no namespace chirpstack-manager."
+            echo ">> Crie-o antes (modelo em $K8S/02.api-chirpstack-manager__Secret_Example.yaml)."
+            exit 1
+          fi
+
+          kubectl apply --server-side -f "$K8S/03.api-chirpstack-manager__ConfigMap.yaml"
+
+          kubectl apply --server-side -f "$K8S/04.api-chirpstack-manager-postgresql__PersistentVolumeClaim.yaml"
+
+          kubectl apply --server-side -f "$K8S/05.api-chirpstack-manager-postgresql__StatefulSet.yaml"
+
+          kubectl apply --server-side -f "$K8S/06.api-chirpstack-manager-postgresql__Service.yaml"
+
+          kubectl -n chirpstack-manager rollout status statefulset/chirpstack-manager-postgres --timeout=180s
+
+          kubectl apply --server-side -f "$K8S/07.api-chirpstack-manager-backend__PersistentVolumeClaim.yaml"
+
+          kubectl apply --server-side -f "$K8S/09.api-chirpstack-manager-backend__Service.yaml"
+      - name: Criar/atualizar imagePullSecret do OCI Registry (chirpstack-manager)
+        run: |
+          kubectl create secret docker-registry oci-registry-secret \
+            --docker-server=${{ secrets.OCI_REGISTRY_URL }} \
+            --docker-username='${{ secrets.OCI_REGISTRY_USERNAME }}' \
+            --docker-password='${{ secrets.OCI_REGISTRY_PASSWORD }}' \
+            --docker-email='${{ secrets.OCI_REGISTRY_EMAIL }}' \
+            --namespace=chirpstack-manager \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      # O newTag e alterado num WORKTREE separado, criado a partir de origin/master.
+      # Assim o working tree do build fica intocado e cada tentativa parte sempre do
+      # estado remoto mais novo -- nao ha rebase, portanto nao ha conflito possivel.
+      - name: Fixar versão no GitOps (ArgoCD sincroniza)
+        env:
+          KUST: 06.chirpstack_manager/api_chirpstack_manager_backend/kubernetes/kustomization.yaml
+          COMP: api-chirpstack-manager-backend
+          VER:  ${{ steps.version.outputs.VERSION }}
+        run: |
+          set -euo pipefail
+
+          git config user.email "github-actions@github.com"
+          git config user.name  "github-actions[bot]"
+
+          WT="$(mktemp -d)"
+          trap 'git worktree remove --force "$WT" 2>/dev/null || true; git worktree prune || true' EXIT
+
+          for i in $(seq 1 5); do
+            git fetch origin master
+
+            git worktree remove --force "$WT" 2>/dev/null || true
+            git worktree prune
+            git worktree add --detach "$WT" FETCH_HEAD
+
+            # Modulo CONGELADO (linha "# chirpstack-release-congelado: <motivo>" na kustomization):
+            # a imagem desta versao ja foi publicada no OCIR e a tag Git criada, mas o newTag
+            # NAO e trocado. Remova a linha para voltar ao deploy automatico a cada build.
+            if grep -q '^# chirpstack-release-congelado:' "$WT/$KUST"; then
+              echo ">> ${COMP} esta CONGELADO -- versao ${VER} publicada, mas NAO implantada."
+              grep '^# chirpstack-release-congelado:' "$WT/$KUST" | sed 's/^# chirpstack-release-congelado:/>>   congelado por:/'
+              exit 0
+            fi
+
+            sed -i -E "s|^([[:space:]]*newTag:).*|\1 \"${VER}\"|" "$WT/$KUST"
+            git -C "$WT" add "$KUST"
+
+            # Pergunta feita ao index: so "nada a commitar" sai com sucesso.
+            if git -C "$WT" diff --cached --quiet; then
+              echo ">> newTag de ${COMP} ja esta em ${VER} -- nada a commitar."
+              exit 0
+            fi
+
+            git -C "$WT" commit -m "deploy: ${COMP} ${VER} [skip ci]"
+
+            # HEAD:master nao depende do nome do branch local.
+            if git -C "$WT" push origin HEAD:master; then
+              echo ">> GitOps atualizado: ${COMP} -> ${VER} (tentativa ${i})."
+              exit 0
+            fi
+
+            # Espera ALEATORIA: com sleep fixo, duas execucoes concorrentes voltam a
+            # colidir no mesmo instante, tentativa apos tentativa.
+            ESPERA=$(( RANDOM % 5 + 2 ))
+            echo ">> push perdeu a corrida (tentativa ${i}); refazendo sobre o remoto em ${ESPERA}s..."
+            sleep "${ESPERA}"
+          done
+
+          echo ">> falha ao dar push no GitOps apos 5 tentativas"
+          exit 1
+
+      # ────────────────────────────────────────────────────────────────────────
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# JOB: CHIRPSTACK - MANAGER – FRONTEND (Angular / Avalon 21 + Nginx) – chirpstack-manager.adailsilva.com.br
+# Frontend do ChirpStack Manager (NGINX encaminha /api para chirpstack-manager-api:8083).
+# Disparado quando o job detect sinaliza app_chirpstack_manager_frontend=true
+# Padrao CSLab: build -> OCIR -> infra base -> newTag no GitOps (ArgoCD sincroniza o Deployment).
+# ─────────────────────────────────────────────────────────────────────────────
+  app_chirpstack_manager_frontend:
+    name: ChirpStack - Manager – Frontend (Angular)
+    #runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, ARM64]
+    timeout-minutes: 45
+    needs: detect
+    if: needs.detect.outputs.app_chirpstack_manager_frontend == 'true'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
+
+      # ─── VERSIONAMENTO ──────────────────────────────────────────────────────
+      - name: Calcular próxima versão (app-chirpstack-manager-frontend)
+        id: version
+        run: |
+          PREFIX="app-chirpstack-manager-frontend"
+          LATEST=$(git tag --list "${PREFIX}-[0-9]*.[0-9]*" | sort -V | tail -1)
+
+          if [ -z "$LATEST" ]; then
+            LATEST="${PREFIX}-0.0"
+          fi
+
+          NUMS=${LATEST#${PREFIX}-}
+          MAJOR=$(echo "$NUMS" | cut -d. -f1)
+          MINOR=$(echo "$NUMS" | cut -d. -f2)
+
+          if [ "${{ github.event.inputs.version_type }}" == "major" ]; then
+            NEW_VERSION="$((MAJOR + 1)).0"
+          else
+            NEW_VERSION="$MAJOR.$((MINOR + 1))"
+          fi
+
+          FULL_TAG="${PREFIX}-${NEW_VERSION}"
+          echo "Nova versão: $FULL_TAG"
+          echo "VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "FULL_TAG=$FULL_TAG"  >> $GITHUB_OUTPUT
+
+      - name: Criar tag Git (app-chirpstack-manager-frontend)
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag ${{ steps.version.outputs.FULL_TAG }}
+          git push origin ${{ steps.version.outputs.FULL_TAG }}
+      # ────────────────────────────────────────────────────────────────────────
+
+        # - name: Set up QEMU
+        # uses: docker/setup-qemu-action@v4
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v4
+        with:
+          driver: docker-container
+
+      - name: Install OCI CLI
+        run: |
+          mkdir -p ~/.oci
+          echo "${{ secrets.OCI_CONFIG }}"   > ~/.oci/config
+          echo "${{ secrets.OCI_KEY_FILE }}" > ~/.oci/key.pem
+
+          # Corrige o path do key_file para o home real do runner
+          sed -i "s|key_file=.*|key_file=$HOME/.oci/key.pem|g" ~/.oci/config
+
+          if [ -f "/home/ubuntu/bin/oci" ]; then
+            echo "OCI CLI já instalado: $(/home/ubuntu/bin/oci --version)"
+          else
+            echo "OCI CLI não encontrado, instalando..."
+            # Remove diretório residual que bloqueia o instalador
+            rm -rf /home/ubuntu/lib/oracle-cli
+            curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+            chmod +x install.sh
+            ./install.sh --accept-all-defaults
+          fi
+
+          # echo "/home/runner/bin" >> $GITHUB_PATH
+          echo "/home/ubuntu/bin" >> $GITHUB_PATH
+          /home/ubuntu/bin/oci setup repair-file-permissions --file ~/.oci/config
+          /home/ubuntu/bin/oci setup repair-file-permissions --file ~/.oci/key.pem
+
+      - name: Install kubectl
+        run: |
+          mkdir -p /tmp/.kube
+
+          if ! command -v kubectl &> /dev/null; then
+            echo "kubectl não encontrado, instalando..."
+            curl -L "https://dl.k8s.io/release/v1.31.4/bin/linux/arm64/kubectl" -o /tmp/kubectl
+            chmod +x /tmp/kubectl
+            sudo mv /tmp/kubectl /usr/local/bin/kubectl
+          else
+            echo "kubectl já instalado: $(kubectl version --client 2>/dev/null | head -1)"
+          fi
+
+          echo "${{ secrets.KUBECONFIG }}" > /tmp/.kube/config
+          echo "KUBECONFIG=/tmp/.kube/config" >> $GITHUB_ENV
+
+      # ─── NAMESPACE (22/10/2026) ─────────────────────────────────────────────
+      # Garante o namespace ANTES de qualquer comando que dependa dele. Se nao
+      # existir (ex.: excluido manualmente), aplica o 01.create__Namespace.yaml;
+      # se estiver em Terminating, espera a exclusao terminar e recria. Os
+      # applies do 01 mais abaixo continuam (sao idempotentes).
+      - name: Garantir namespace (cria se não existir)
+        env:
+          NS_YAML: 06.chirpstack_manager/app_chirpstack_manager_frontend/kubernetes/01.create__Namespace.yaml
+        run: |
+          set -euo pipefail
+          NS=$(kubectl create --dry-run=client -f "$NS_YAML" -o jsonpath='{.metadata.name}')
+          fase() { kubectl get namespace "$NS" -o jsonpath='{.status.phase}' 2>/dev/null || true; }
+          F=$(fase); echo ">> Namespace '$NS': ${F:-inexistente}"
+
+          # Terminating (exclusao anterior ainda em andamento): espera ate 300s.
+          for _ in $(seq 1 60); do
+            [ "$(fase)" = "Terminating" ] || break
+            echo ">> '$NS' em Terminating -- aguardando a exclusao terminar..."
+            sleep 5
+          done
+          if [ "$(fase)" = "Terminating" ]; then
+            echo ">> ERRO: '$NS' preso em Terminating ha mais de 300s. Condicoes:"
+            kubectl get namespace "$NS" -o jsonpath='{range .status.conditions[*]}  {.type}: {.message}{"\n"}{end}' || true
+            echo ">> Para liberar: kubectl get namespace $NS -o json | jq '.spec.finalizers = []' | kubectl replace --raw \"/api/v1/namespaces/$NS/finalize\" -f -"
+            exit 1
+          fi
+
+          # Inexistente -> cria; Active -> reaplica (idempotente).
+          [ -z "$(fase)" ] && echo ">> Criando namespace '$NS' a partir de $NS_YAML"
+          kubectl apply --server-side -f "$NS_YAML"
+
+          # So segue com o namespace Active e a ServiceAccount default criada.
+          for _ in $(seq 1 30); do
+            if [ "$(fase)" = "Active" ] && kubectl get serviceaccount default -n "$NS" &>/dev/null; then
+              echo ">> Namespace '$NS' pronto."
+              exit 0
+            fi
+            sleep 2
+          done
+          echo ">> ERRO: namespace '$NS' nao ficou pronto em 60s."
+          exit 1
+
+      - name: Pods em execução (antes do deploy)
+        run: kubectl get pods -n chirpstack-manager || echo "Namespace ainda não existe"
+
+      # ─── REPOSITORIO OCIR (12/11/2026) ──────────────────────────────────────
+      # O Terraform (oci_artifacts_container_repository) e a fonte oficial; este passo so
+      # cobre o primeiro deploy antes do "terraform apply": se o repositorio nao existir,
+      # cria no MESMO compartment do udp-health-check-server-1700 (presente nos 5
+      # repositorios), privado. Depois rode oci_artifacts_container_repository/
+      # import_existing_repositories.sh para trazer o repositorio para o state.
+      - name: Garantir repositório OCIR (app-chirpstack-manager-frontend)
+        env:
+          REPO: app-chirpstack-manager-frontend_platform_linux-arm64
+          REF:  udp-health-check-server-1700_platform_linux-arm64
+        run: |
+          set -euo pipefail
+          TENANCY=$(sed -n 's/^tenancy[[:space:]]*=[[:space:]]*//p' ~/.oci/config | head -1)
+
+          EXISTE=$(oci artifacts container repository list --compartment-id "$TENANCY" \
+            --compartment-id-in-subtree true --display-name "$REPO" --all \
+            --query 'length(data.items)' --raw-output 2>/dev/null || echo 0)
+          if [ "${EXISTE:-0}" != "0" ]; then
+            echo ">> Repositorio OCIR '$REPO' ja existe."
+            exit 0
+          fi
+
+          COMP=$(oci artifacts container repository list --compartment-id "$TENANCY" \
+            --compartment-id-in-subtree true --display-name "$REF" --all \
+            --query 'data.items[0]."compartment-id"' --raw-output)
+          if [ -z "$COMP" ] || [ "$COMP" = "null" ]; then
+            echo ">> ERRO: nao achei o repositorio de referencia '$REF' para descobrir o compartment."
+            exit 1
+          fi
+
+          echo ">> Criando repositorio OCIR '$REPO' (privado) no compartment do '$REF'..."
+          oci artifacts container repository create --compartment-id "$COMP" \
+            --display-name "$REPO" --is-public false --is-immutable false >/dev/null
+          echo ">> Criado. Lembrete: rode oci_artifacts_container_repository/import_existing_repositories.sh."
+
+      - name: Login no Docker Registry (OCI)
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ secrets.OCI_REGISTRY_URL }}
+          username: ${{ secrets.OCI_REGISTRY_USERNAME }}
+          password: ${{ secrets.OCI_REGISTRY_PASSWORD }}
+
+      - name: Available platforms
+        run: echo ${{ steps.buildx.outputs.platforms }}
+
+      # Dockerfile multi-stage, sem build-args. Repositorio OCIR app-chirpstack-manager-frontend_platform_linux-arm64
+      # (Terraform; o passo "Garantir repositório OCIR" cria se ainda nao existir).
+      - name: Build & Push – ChirpStack - Manager – Frontend
+        run: |
+          # Plataformas disponíveis: linux/amd64, linux/arm64
+          docker buildx build \
+            --builder ${{ steps.buildx.outputs.name }} \
+            --push \
+            --provenance=false --sbom=false \
+            --platform linux/arm64 \
+            --cache-from type=registry,ref=${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/app-chirpstack-manager-frontend_platform_linux-arm64:buildcache \
+            --cache-to   type=registry,ref=${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/app-chirpstack-manager-frontend_platform_linux-arm64:buildcache,mode=max \
+            -f 06.chirpstack_manager/app_chirpstack_manager_frontend/Dockerfile \
+            -t ${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/app-chirpstack-manager-frontend_platform_linux-arm64:${{ steps.version.outputs.VERSION }} \
+            -t ${{ secrets.OCI_REGISTRY_URL }}/${{ secrets.OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE }}/app-chirpstack-manager-frontend_platform_linux-arm64:latest \
+            06.chirpstack_manager/app_chirpstack_manager_frontend
+
+      # ─── MANIFESTOS ─────────────────────────────────────────────────────────
+      #   02  Deployment     (NAO entra aqui: quem aplica e o ArgoCD)
+      #   01.create__Namespace.yaml
+      #   03.app-chirpstack-manager-frontend__Service.yaml
+      #   06.app-chirpstack-manager__Ingress.yaml
+      #   07.app-chirpstack-manager-restauracao__Ingress.yaml
+      # ────────────────────────────────────────────────────────────────────────
+      - name: Aplicar infraestrutura base ChirpStack - Manager – Frontend (Namespace, Service, Ingress)
+        run: |
+          set -euo pipefail
+
+          K8S=06.chirpstack_manager/app_chirpstack_manager_frontend/kubernetes
+
+          kubectl apply --server-side -f "$K8S/01.create__Namespace.yaml"
+
+          kubectl apply --server-side -f "$K8S/03.app-chirpstack-manager-frontend__Service.yaml"
+
+          kubectl apply --server-side -f "$K8S/06.app-chirpstack-manager__Ingress.yaml"
+
+          kubectl apply --server-side -f "$K8S/07.app-chirpstack-manager-restauracao__Ingress.yaml"
+      - name: Criar/atualizar imagePullSecret do OCI Registry (chirpstack-manager)
+        run: |
+          kubectl create secret docker-registry oci-registry-secret \
+            --docker-server=${{ secrets.OCI_REGISTRY_URL }} \
+            --docker-username='${{ secrets.OCI_REGISTRY_USERNAME }}' \
+            --docker-password='${{ secrets.OCI_REGISTRY_PASSWORD }}' \
+            --docker-email='${{ secrets.OCI_REGISTRY_EMAIL }}' \
+            --namespace=chirpstack-manager \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      # O newTag e alterado num WORKTREE separado, criado a partir de origin/master.
+      # Assim o working tree do build fica intocado e cada tentativa parte sempre do
+      # estado remoto mais novo -- nao ha rebase, portanto nao ha conflito possivel.
+      - name: Fixar versão no GitOps (ArgoCD sincroniza)
+        env:
+          KUST: 06.chirpstack_manager/app_chirpstack_manager_frontend/kubernetes/kustomization.yaml
+          COMP: app-chirpstack-manager-frontend
+          VER:  ${{ steps.version.outputs.VERSION }}
+        run: |
+          set -euo pipefail
+
+          git config user.email "github-actions@github.com"
+          git config user.name  "github-actions[bot]"
+
+          WT="$(mktemp -d)"
+          trap 'git worktree remove --force "$WT" 2>/dev/null || true; git worktree prune || true' EXIT
+
+          for i in $(seq 1 5); do
+            git fetch origin master
+
+            git worktree remove --force "$WT" 2>/dev/null || true
+            git worktree prune
+            git worktree add --detach "$WT" FETCH_HEAD
+
+            # Modulo CONGELADO (linha "# chirpstack-release-congelado: <motivo>" na kustomization):
+            # a imagem desta versao ja foi publicada no OCIR e a tag Git criada, mas o newTag
+            # NAO e trocado. Remova a linha para voltar ao deploy automatico a cada build.
+            if grep -q '^# chirpstack-release-congelado:' "$WT/$KUST"; then
+              echo ">> ${COMP} esta CONGELADO -- versao ${VER} publicada, mas NAO implantada."
+              grep '^# chirpstack-release-congelado:' "$WT/$KUST" | sed 's/^# chirpstack-release-congelado:/>>   congelado por:/'
+              exit 0
+            fi
+
+            sed -i -E "s|^([[:space:]]*newTag:).*|\1 \"${VER}\"|" "$WT/$KUST"
+            git -C "$WT" add "$KUST"
+
+            # Pergunta feita ao index: so "nada a commitar" sai com sucesso.
+            if git -C "$WT" diff --cached --quiet; then
+              echo ">> newTag de ${COMP} ja esta em ${VER} -- nada a commitar."
+              exit 0
+            fi
+
+            git -C "$WT" commit -m "deploy: ${COMP} ${VER} [skip ci]"
+
+            # HEAD:master nao depende do nome do branch local.
+            if git -C "$WT" push origin HEAD:master; then
+              echo ">> GitOps atualizado: ${COMP} -> ${VER} (tentativa ${i})."
+              exit 0
+            fi
+
+            # Espera ALEATORIA: com sleep fixo, duas execucoes concorrentes voltam a
+            # colidir no mesmo instante, tentativa apos tentativa.
+            ESPERA=$(( RANDOM % 5 + 2 ))
+            echo ">> push perdeu a corrida (tentativa ${i}); refazendo sobre o remoto em ${ESPERA}s..."
+            sleep "${ESPERA}"
+          done
+
+          echo ">> falha ao dar push no GitOps apos 5 tentativas"
+          exit 1
+
+      # ────────────────────────────────────────────────────────────────────────
+

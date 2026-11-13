@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# O ArgoCD renderiza SOMENTE o Deployment; Namespace, Service e Ingress são aplicados pelo pipeline.
+resources:
+  - 02.app-chirpstack-site-frontend__Deployment.yaml
+
+images:
+  # Repositório OCIR app-chirpstack-site-frontend_platform_linux-arm64 (Terraform; o pipeline cria se faltar).
+  - name: <OCI_REGISTRY_URL>/<OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>/app-chirpstack-site-frontend_platform_linux-arm64
+    newName: gru.ocir.io/griszz3l82u1/app-chirpstack-site-frontend_platform_linux-arm64
+    # Atualizado pelo pipeline a cada build (tag imutável = versão calculada).
+    # "latest" só até o primeiro build; o pipeline troca pela versão (0.1, 0.2...).
+    newTag: "latest"
+
+patches:
+  - target:
+      kind: Deployment
+      name: app-chirpstack-site-frontend-deployment
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: IfNotPresent

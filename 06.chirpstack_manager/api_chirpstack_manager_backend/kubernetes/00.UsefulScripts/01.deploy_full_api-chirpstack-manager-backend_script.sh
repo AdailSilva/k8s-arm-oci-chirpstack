@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Build Project
-# docker buildx build --platform 'linux/arm64' --tag gru.ocir.io/griszz3l82u1/chirpstack-manager-api:0.1.0 --no-cache --push .
+# docker buildx build --platform 'linux/arm64' --tag gru.ocir.io/griszz3l82u1/api-chirpstack-manager-backend_platform_linux-arm64:latest --no-cache --push .
 
 
 # ChirpStack-Manager (backend) deployment on K8S.

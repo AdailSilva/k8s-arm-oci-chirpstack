@@ -2,6 +2,7 @@
 
 > Implantação **totalmente automatizada** de um cluster Kubernetes em arquitetura **ARM (AArch64)** na Oracle Cloud Infrastructure, utilizando exclusivamente os recursos **Always Free** — sem nenhum custo. Este repositório documenta a implantação do stack LoRaWAN **ChirpStack** em suas versões **v3** e **v4** sobre o cluster, detalhando ricamente cada componente, configuração, diferença de arquitetura e procedimento de operação.
 > A infraestrutura é provisionada como código via **Terraform** / **OpenTofu**, e todas as aplicações são gerenciadas com manifests Kubernetes organizados por módulo.
+> Repositório **`AdailSilva/k8s-arm-oci-chirpstack`** (pasta local `03.k8s-on-arm-oci-always-free_chirpstack`), no cluster compartilhado pelos 5 repositórios (ver [Padrão dos Repositórios](#padrão-dos-repositórios)): site `chirpstack.adailsilva.com.br`, ChirpStack v3/v4, **ChirpStack Consumer** e **ChirpStack Manager**. Identidade visual em [`brand/BRAND.md`](brand/BRAND.md).
 
 ---
 
@@ -11,19 +12,30 @@
 - [Arquitetura](#arquitetura)
 - [Módulos de Infraestrutura](#módulos-de-infraestrutura)
 - [Aplicações Padrão do Cluster](#aplicações-padrão-do-cluster)
-  - [00. Homepage (Angular · chirpstack.seudominio.com.br)](#00-homepage-angular--chirpstackseudominiocombr)
+  - [00. Site ChirpStack (Angular + nginx)](#00-site-chirpstack-angular--nginx)
   - [01. Metrics Server](#01-metrics-server)
   - [02. UDP Health Check — NLB OCI](#02-udp-health-check--nlb-oci)
+- [Sistemas ChirpStack](#sistemas-chirpstack)
+  - [05. ChirpStack Consumer](#05-chirpstack-consumer)
+  - [06. ChirpStack Manager](#06-chirpstack-manager)
 - [Pré-requisitos](#pré-requisitos)
 - [Recursos Always Free Utilizados](#recursos-always-free-utilizados)
 - [Tecnologias e Componentes](#tecnologias-e-componentes)
 - [Estrutura do Repositório](#estrutura-do-repositório)
+- [Padrão dos Repositórios](#padrão-dos-repositórios)
+  - [Estrutura comum](#estrutura-comum)
+  - [Convenções de nomes](#convenções-de-nomes)
+  - [Terraform compartilhado entre repositórios](#terraform-compartilhado-entre-repositórios)
+  - [Checklist para um sistema novo](#checklist-para-um-sistema-novo)
 - [Configuração de DNS — Subdomínios Obrigatórios](#configuração-de-dns--subdomínios-obrigatórios)
+  - [Por que o registro DNS é obrigatório](#por-que-o-registro-dns-é-obrigatório)
   - [Quando cadastrar os subdomínios](#quando-cadastrar-os-subdomínios)
   - [Subdomínios necessários neste projeto](#subdomínios-necessários-neste-projeto)
-  - [Exemplo prático — Registro .com.br (Registro.br)](#exemplo-prático--registro-combr-registrobr)
+  - [Como obter o IP do Load Balancer](#como-obter-o-ip-do-load-balancer)
+  - [Exemplo prático — Registro `.com.br` (Registro.br)](#exemplo-prático--registro-combr-registrobr)
   - [Verificar a propagação do DNS](#verificar-a-propagação-do-dns)
-  - [Atualizar os subdomínios nos manifestos](#atualizar-os-subdomínios-nos-manifestos-antes-do-deploy)
+  - [Outros provedores de DNS](#outros-provedores-de-dns)
+  - [Atualizar os subdomínios nos manifestos antes do deploy](#atualizar-os-subdomínios-nos-manifestos-antes-do-deploy)
 - [Configuração Inicial](#configuração-inicial)
 - [Implantação da Infraestrutura](#implantação-da-infraestrutura)
 - [Implantando as Aplicações Padrão](#implantando-as-aplicações-padrão)
@@ -33,60 +45,58 @@
   - [Script de montagem e preparação dos diretórios](#script-de-montagem-e-preparação-dos-diretórios)
   - [Como executar em todos os nós](#como-executar-em-todos-os-nós)
   - [Tornar a montagem permanente (fstab)](#tornar-a-montagem-permanente-fstab)
+  - [Verificar montagem em todos os nós](#verificar-montagem-em-todos-os-nós)
+- [Serviços LoRaWAN — ChirpStack](#serviços-lorawan--chirpstack)
+  - [O que é o ChirpStack?](#o-que-é-o-chirpstack)
 - [03. ChirpStack v3](#03-chirpstack-v3)
 - [04. ChirpStack v4](#04-chirpstack-v4)
-  - [MQTT com TLS — Passo a Passo Completo](#mqtt-com-tls--diferencial-em-relação-ao-v3)
-  - [Expor o MQTT TLS externamente via Ingress NGINX](#expor-o-mqtt-tls-externamente-via-ingress-nginx-tcp-passthrough)
-  - [Distribuir a CA para gateways externos](#distribuir-a-ca-interna-para-os-gateways-lorawan-externos)
-  - [Diagnóstico de problemas de TLS](#diagnóstico-de-problemas-comuns-de-tls)
 - [Comparativo v3 vs v4](#comparativo-v3-vs-v4)
+- [GitOps com ArgoCD](#gitops-com-argocd)
 - [Mapa de Serviços e Links de Acesso](#mapa-de-serviços-e-links-de-acesso)
   - [Serviços HTTP/HTTPS — acesso pelo navegador](#serviços-httphttps--acesso-pelo-navegador)
   - [Serviços de rede — acesso direto via IP/porta](#serviços-de-rede--acesso-direto-via-ipporta)
-  - [Serviços internos ao cluster — port-forward](#serviços-internos-ao-cluster--acesso-via-kubectl)
-  - [Configuração dos gateways LoRaWAN físicos](#configuração-dos-gateways-lorawan-físicos--packet-forwarder)
+  - [Serviços internos ao cluster — acesso via kubectl](#serviços-internos-ao-cluster--acesso-via-kubectl)
+  - [Configuração dos gateways LoRaWAN físicos — Packet Forwarder](#configuração-dos-gateways-lorawan-físicos--packet-forwarder)
 - [Configuração dos Gateways no ChirpStack](#configuração-dos-gateways-no-chirpstack)
-  - [Plano de canais AU915 — Brasil](#plano-de-canais-au915--brasil)
-  - [ChirpStack v3 — Network Server, Profiles e Gateways](#chirpstack-v3--configuração-completa)
-  - [ChirpStack v4 — Templates, Profiles e Gateways](#chirpstack-v4--configuração-completa)
-  - [Diferenças no cadastro v3 vs v4](#diferenças-no-cadastro-v3-vs-v4)
 - [Classes de dispositivos LoRaWAN — A, B e C](#classes-de-dispositivos-lorawan--a-b-e-c)
-  - [Class A — Aloha](#class-a--aloha)
-  - [Class B — Beacon](#class-b--beacon)
-  - [Class C — Continuous](#class-c--continuous)
-  - [Comparativo das três classes](#comparativo-das-três-classes)
-  - [Bibliotecas e suporte por classe](#bibliotecas-e-suporte-por-classe)
 - [Envio de Downlinks via MQTT](#envio-de-downlinks-via-mqtt)
-  - [Instalação do cliente MQTT](#instalação-do-cliente-mqtt)
-  - [Conceitos básicos — pub/sub e tópicos](#conceitos-básicos--pubsub-e-tópicos)
-  - [Disparar downlink — ChirpStack v3 (sem TLS)](#disparar-downlink--chirpstack-v3-sem-tls)
-  - [Disparar downlink — ChirpStack v4 (com TLS)](#disparar-downlink--chirpstack-v4-com-tls)
-  - [Monitorar uplinks e eventos via MQTT](#monitorar-uplinks-e-eventos-via-mqtt)
-  - [Referência de tópicos MQTT](#referência-de-tópicos-mqtt)
 - [Acesso ao Cluster](#acesso-ao-cluster)
 - [CI/CD com GitHub Actions](#cicd-com-github-actions)
-  - [Self-Hosted Runner OCI ARM64](#self-hosted-runner-oci-arm64)
-    - [Por que usar self-hosted runner](#por-que-usar-self-hosted-runner)
-    - [Pré-requisitos do runner](#pré-requisitos-do-runner)
-    - [0. Instalar o Docker no Ubuntu ARM64](#0-instalar-o-docker-no-ubuntu-arm64)
-    - [0.7 Instalar o OCI CLI na instância](#07-instalar-o-oci-cli-na-instância)
-    - [1. Gerar o token do runner no GitHub](#1-gerar-o-token-do-runner-no-github)
-    - [2. Instalar o runner na instância OCI](#2-instalar-o-runner-na-instância-oci)
-    - [3. Instalar como serviço systemd](#3-instalar-como-serviço-systemd)
-    - [4. Atualizar o workflow do repositório](#4-atualizar-o-workflow-do-repositório)
-    - [5. Três runners na mesma instância](#5-três-runners-na-mesma-instância)
-    - [6. Qual instância do cluster usar](#6-qual-instância-do-cluster-usar)
-    - [7. Verificar o runner no GitHub](#7-verificar-o-runner-no-github)
+  - [Workflow main.yml](#workflow-mainyml)
+  - [Versionamento por tags](#versionamento-por-tags)
+  - [Forçar um deploy (force_deploy.sh)](#forçar-um-deploy-force_deploysh)
+  - [Secrets do repositório GitHub](#secrets-do-repositório-github)
+  - [Verificar a execução do pipeline](#verificar-a-execução-do-pipeline)
+- [Self-Hosted Runner OCI ARM64](#self-hosted-runner-oci-arm64)
+  - [Por que usar self-hosted runner](#por-que-usar-self-hosted-runner)
+  - [Pré-requisitos do runner](#pré-requisitos-do-runner)
+  - [0. Instalar o Docker no Ubuntu ARM64](#0-instalar-o-docker-no-ubuntu-arm64)
+  - [0.7 Instalar o OCI CLI na instância](#07-instalar-o-oci-cli-na-instância)
+  - [1. Gerar o token do runner no GitHub](#1-gerar-o-token-do-runner-no-github)
+  - [2. Instalar o runner na instância OCI](#2-instalar-o-runner-na-instância-oci)
+  - [3. Instalar como serviço systemd](#3-instalar-como-serviço-systemd)
+  - [4. Atualizar o workflow do repositório](#4-atualizar-o-workflow-do-repositório)
+  - [5. Três runners na mesma instância](#5-três-runners-na-mesma-instância)
+  - [6. Qual instância do cluster usar](#6-qual-instância-do-cluster-usar)
+  - [7. Verificar o runner no GitHub](#7-verificar-o-runner-no-github)
 - [OCI Container Registry](#oci-container-registry)
 - [Destruindo a Infraestrutura](#destruindo-a-infraestrutura)
 - [Troubleshooting](#troubleshooting)
+  - [❌ `Out of capacity for shape VM.Standard.A1.Flex`](#-out-of-capacity-for-shape-vmstandarda1flex)
+  - [❌ `NotAuthenticated` — Falha na autenticação OCI](#-notauthenticated--falha-na-autenticação-oci)
+  - [❌ Nós em estado `NotReady`](#-nós-em-estado-notready)
   - [❌ Downlinks não chegam ao dispositivo Class A](#-downlinks-não-chegam-ao-dispositivo-class-a)
-  - [❌ Downlink descartado — payload excede o tamanho máximo](#-downlink-descartado--payload-excede-o-tamanho-máximo-downlink_payload_size)
+  - [❌ Downlink descartado — payload excede o tamanho máximo (`DOWNLINK_PAYLOAD_SIZE`)](#-downlink-descartado--payload-excede-o-tamanho-máximo-downlink_payload_size)
+  - [❌ Preflight errors no `kubeadm init` (NumCPU / Mem)](#-preflight-errors-no-kubeadm-init-numcpu--mem)
+  - [❌ Let's Encrypt não emite certificado](#-lets-encrypt-não-emite-certificado)
   - [❌ Let's Encrypt — `429 rateLimited`: limite de 5 certificados por semana atingido](#-lets-encrypt--429-ratelimited-limite-de-5-certificados-por-semana-atingido)
+  - [❌ Pods com `ImagePullBackOff` no namespace `oci-devops`](#-pods-com-imagepullbackoff-no-namespace-oci-devops)
+  - [❌ NLB Overall Health: Critical — portas UDP 1700 ou 1710](#-nlb-overall-health-critical--portas-udp-1700-ou-1710)
+  - [❌ Timeout de SSH durante o `terraform apply`](#-timeout-de-ssh-durante-o-terraform-apply)
   - [❌ GitHub Actions — `Input required and not supplied: token`](#-github-actions--input-required-and-not-supplied-token)
   - [❌ GitHub Actions — `refusing to allow a Personal Access Token to create or update workflow`](#-github-actions--refusing-to-allow-a-personal-access-token-to-create-or-update-workflow)
   - [❌ `409-NAMESPACE_CONFLICT` ao criar repositório no OCI Container Registry via Terraform](#-409-namespace_conflict-ao-criar-repositório-no-oci-container-registry-via-terraform)
-  - [❌ Docker build — `npm error Missing: <pacote>@<versão> from lock file`](#-docker-build--npm-error-missing-pacoteverso-from-lock-file)
+  - [❌ Docker build — `npm error Missing: <pacote>@<versão> from lock file`](#-docker-build--npm-error-missing-pacoteversão-from-lock-file)
   - [❌ ABP — "Frame-counter reset or rollover detected" após reset do dispositivo](#-abp--frame-counter-reset-or-rollover-detected-após-reset-do-dispositivo)
   - [❌ Uplinks chegam ao gateway mas nunca aparecem nos Events do device (MIC inválido — MCCI LMiC v6)](#-uplinks-chegam-ao-gateway-mas-nunca-aparecem-nos-events-do-device-mic-inválido--mcci-lmic-v6)
 - [Contribuindo](#contribuindo)
@@ -102,7 +112,7 @@ O foco deste repositório é a implantação e operação do **ChirpStack** — 
 
 Além do ChirpStack, o projeto inclui as três aplicações de infraestrutura base que compõem o ambiente operacional mínimo do cluster:
 
-- **Homepage** — site Angular (Avalon 21 / PrimeNG 21) que apresenta este repositório — ChirpStack v3 e v4 na OCI Always Free — em `chirpstack.seudominio.com.br`, com TLS automático pelo cert-manager e Let's Encrypt e deploy contínuo pelo GitHub Actions
+- **Site ChirpStack** — site Angular (Avalon 21 / PrimeNG 21) que apresenta este repositório — ChirpStack v3 e v4 na OCI Always Free — em `chirpstack.seudominio.com.br`, com TLS automático pelo cert-manager e Let's Encrypt e deploy contínuo pelo GitHub Actions
 - **Metrics Server** — coleta de métricas de CPU e memória dos nós e pods, necessário para o Kubernetes Dashboard e para o `kubectl top`
 - **UDP Health Check** — servidor UDP em Java que responde a requisições `PING/PONG`, necessário para liberar as verificações de saúde UDP no Network Load Balancer da OCI e manter o Overall Health `OK`
 
@@ -149,7 +159,7 @@ Internet
 
 Total ARM: 4 OCPUs + 24 GB RAM → exatamente no limite Always Free
 
-Namespace chirpstack-homepage
+Namespace chirpstack-site
 └── Homepage (Angular + nginx)          → chirpstack.seudominio.com.br/
 
 Namespace oci-devops
@@ -181,58 +191,45 @@ O código Terraform é organizado em módulos executados sequencialmente:
 
 ## Aplicações Padrão do Cluster
 
-Após a infraestrutura estar de pé, três aplicações completam o ambiente: a **Homepage** (`00.homepage/`), implantada automaticamente pelo GitHub Actions no namespace `chirpstack-homepage`, e o **Metrics Server** (`01.metrics_server/`) e o **UDP Health Check** (`02.udp_health_check-nlb_oci/`), implantados manualmente com os scripts de deploy e destroy de cada pasta.
+Após a infraestrutura estar de pé, o site (`00.homepage/`, namespace **`chirpstack-site`**) é implantado pelo pipeline + ArgoCD; `01.metrics_server/` e `02.udp_health_check-nlb_oci/` são implantados manualmente (namespaces `kube-system` e **`oci-devops`**).
 
-### 00. Homepage (Angular · chirpstack.seudominio.com.br)
+### 00. Site ChirpStack (Angular + nginx)
 
-Site de apresentação **deste repositório**: arquitetura do ChirpStack v3 e v4 no cluster, comparativo entre as versões, mapa de serviços, plano AU915 e classes de dispositivos, tópicos MQTT, aplicações (Manager e Consumer) e a infraestrutura Always Free. Os textos, versões, portas e hosts do site seguem este README (`src/app/core/site.config.ts`).
+Site de apresentação deste repositório (`chirpstack.adailsilva.com.br`): arquitetura do ChirpStack v3 e v4 no cluster, comparativo entre as versões, mapa de serviços, plano AU915 e classes de dispositivos, tópicos MQTT, aplicações (Manager e Consumer) e a infraestrutura Always Free. Feito em **Angular 21 + PrimeNG 21 (template Avalon 21)** com a identidade de `brand/` (teal, símbolo de antena LoRa), servido por NGINX, com HTTPS emitido automaticamente pelo **cert-manager + Let's Encrypt**.
 
-> O host `k8s.seudominio.com.br` continua reservado ao **Kubernetes Dashboard** (`/dashboard`) e à homepage pessoal do autor, publicada pelo repositório `k8s-arm-oci-always-free`. Por isso o site deste repositório tem subdomínio próprio.
+> Substitui a antiga homepage `00.homepage/app_chirpstack_homepage_frontend` (namespace `chirpstack-homepage`, imagem `app-chirpstack-homepage-frontend`), renomeada na padronização de 13/11/2026.
 
 **Fluxo de acesso:**
 ```
-https://chirpstack.seudominio.com.br
+https://chirpstack.adailsilva.com.br
     → NLB :443
     → NodePort 30443 (workers)
-    → Ingress NGINX
-    → Service app-chirpstack-homepage-frontend-service :80 (ClusterIP)
-    → Pod app-chirpstack-homepage-frontend-deployment (nginx + build Angular, ARM64, OCIR)
+    → Ingress NGINX (app-chirpstack-site-frontend-ingress)
+    → Service app-chirpstack-site-frontend-service :80 (ClusterIP)
+    → Pod app-chirpstack-site-frontend-deployment (imagem ARM64 do OCI Container Registry)
 ```
 
-**Tecnologias:** Angular 21, PrimeNG 21 (template Avalon 21), Tailwind 4, nginx (`nginx:alpine`), cert-manager + Let's Encrypt, Ingress NGINX
+**Código:** `00.homepage/app_chirpstack_site_frontend/` (textos, contatos e números em `src/app/core/site.config.ts`; páginas `/` (início), `/v3`, `/v4` e `/infraestrutura`) — documentação em [`00.homepage/app_chirpstack_site_frontend/README.md`](00.homepage/app_chirpstack_site_frontend/README.md)
 
-**Páginas:** `/` (início), `/v3`, `/v4` e `/infraestrutura`
+**Imagem:** `gru.ocir.io/<namespace>/app-chirpstack-site-frontend_platform_linux-arm64:<versão>`
 
-**Imagem:** `gru.ocir.io/<namespace>/app-chirpstack-homepage-frontend_platform_linux-arm64:<versão>`
+**Kubernetes resources (namespace `chirpstack-site`):**
 
-**Kubernetes resources (namespace `chirpstack-homepage`):**
-
-| Kind | Nome | Descrição |
+| Kind | Nome | Quem aplica |
 |---|---|---|
-| `Namespace` | `chirpstack-homepage` | Namespace exclusivo do site |
-| `Deployment` | `app-chirpstack-homepage-frontend-deployment` | 1 réplica do nginx com o build Angular · probes em `/healthz` |
-| `Service` | `app-chirpstack-homepage-frontend-service` | ClusterIP na porta 80 |
-| `Ingress` | `app-chirpstack-homepage-frontend-ingress` | TLS via `letsencrypt-prod`, host `chirpstack.seudominio.com.br` |
-| `Secret` | `oci-registry-secret` | Credenciais do OCIR (criado pelo pipeline) |
+| `Namespace` | `chirpstack-site` | Pipeline (`01.create__Namespace.yaml`) |
+| `Deployment` | `app-chirpstack-site-frontend-deployment` | **ArgoCD** (`kustomization.yaml`, `newTag` fixado pelo pipeline) |
+| `Service` | `app-chirpstack-site-frontend-service` | Pipeline |
+| `Ingress` | `app-chirpstack-site-frontend-ingress` | Pipeline — TLS via `letsencrypt-prod` |
+| `ClusterIssuer` | `letsencrypt-prod` / `letsencrypt-staging` | Scaffold (cópia de referência em `05.*__ClusterIssuer.yaml`) |
 
-Os `ClusterIssuer` `letsencrypt-prod` e `letsencrypt-staging` são instalados pelo módulo `k8s_scaffold` do Terraform.
+**Deploy:** automático pelo job `app_chirpstack_site_frontend` do `.github/workflows/main.yml` a cada push em `00.homepage/app_chirpstack_site_frontend/**` (ou `workflow_dispatch` com `target=app-chirpstack-site-frontend`, ou `./force_deploy.sh site`): build ARM64 → OCIR → Namespace/Service/Ingress → `newTag` no GitOps → ArgoCD sincroniza (Application `chirpstack-site-frontend`).
 
-**Deploy:** automático pelo job `app_chirpstack_homepage_frontend` do `.github/workflows/main.yml` a cada push que altere `00.homepage/app_chirpstack_homepage_frontend/**` (detalhes em [CI/CD com GitHub Actions](#cicd-com-github-actions)). Para forçar um novo deploy sem mudar código:
-
+**Rodar localmente:**
 ```bash
-./force_deploy.sh homepage
-```
-
-**Rodar localmente e build manual da imagem (ARM64):**
-```bash
-cd 00.homepage/app_chirpstack_homepage_frontend
-npm ci && npm start                      # http://localhost:4411
-
-docker login -u <namespace>/<seu_email> -p "<auth_token>" gru.ocir.io
-docker buildx build \
-  --platform linux/arm64 \
-  -t gru.ocir.io/<namespace>/app-chirpstack-homepage-frontend_platform_linux-arm64:latest \
-  --push .
+cd 00.homepage/app_chirpstack_site_frontend/
+npm ci
+npm start          # http://localhost:4411 (perfil development; staging 4412, production 4413)
 ```
 
 ---
@@ -498,6 +495,45 @@ bash 02.destroy_udp_health_check_server_nlb_oci_script.sh
 
 ---
 
+## Sistemas ChirpStack
+
+Este repositório reúne a rede LoRaWAN própria (ChirpStack) e as aplicações construídas sobre ela. Os módulos `03.` e `04.` são **infraestrutura** (aplicados pelos scripts de `00.UsefulScripts/`, como o `01.metrics_server`); os módulos `05.` e `06.` são **sistemas** no padrão do CSLab (backend + frontend com `kubernetes/` próprio, pipeline e ArgoCD).
+
+| Módulo | Tipo | Namespace | Deploy | Documentação |
+|---|---|---|---|---|
+| `03.chirpstack_v3/` | Infraestrutura — LNS ChirpStack v3 | `chirpstack-v3` | scripts `00.UsefulScripts/` | [03. ChirpStack v3](#03-chirpstack-v3) |
+| `04.chirpstack_v4/` | Infraestrutura — LNS ChirpStack v4 | `chirpstack-v4` | scripts `00.UsefulScripts/` | [04. ChirpStack v4](#04-chirpstack-v4) |
+| `05.chirpstack_consumer/` | Sistema — Consumer (Spring Boot + Angular/Avalon) | `chirpstack-consumer` | pipeline + ArgoCD | [README](05.chirpstack_consumer/README.md) |
+| `06.chirpstack_manager/` | Sistema — Manager (Spring Boot 4 + Angular/Avalon + PostgreSQL) | `chirpstack-manager` | pipeline + ArgoCD | [README](06.chirpstack_manager/README.md) |
+
+### 05. ChirpStack Consumer
+
+Aplicação que consome os eventos do ChirpStack e os mostra em tempo real (API Spring Boot com WebSocket/STOMP + frontend Angular/Avalon). **Sem banco de dados.** Todo o tráfego entra pelo frontend: o NGINX da imagem encaminha `/api/` e `/ws/` para a API.
+
+| Pasta | Manifestos (`kubernetes/`) | Recursos |
+|---|---|---|
+| `api_chirpstack_consumer_backend/` | `01.create__Namespace.yaml` · `02.api-chirpstack-consumer-backend__Deployment.yaml` · `03.api-chirpstack-consumer-backend__Service.yaml` · `kustomization.yaml` | Deployment `api-chirpstack-consumer-backend-deployment`, Service `api-chirpstack-consumer-backend-service:8080` (ClusterIP, sem Ingress) |
+| `app_chirpstack_consumer_frontend/` | `01` · `02...__Deployment.yaml` · `03...__Service.yaml` · `04`/`05` (referência) · `06.app-chirpstack-consumer__Ingress.yaml` · `kustomization.yaml` | Deployment `app-chirpstack-consumer-frontend-deployment`, Service `app-chirpstack-consumer-frontend-service:80`, Ingress `app-chirpstack-consumer.adailsilva.com.br` (TLS) |
+
+Pastas do módulo no padrão CSLab: `backups/`, `deploy/` (build local), `planos_implantacao/`, `stack_chirpstack-consumer/` (docker-compose local) e `useful_commands_local_deploy/`. Como não há banco, não existem `scripts_back-up/`, `stack_postgresql_pgAdmin_4/` nem `useful_commands_backup_and_restore/`.
+
+### 06. ChirpStack Manager
+
+Painel web para administrar o ChirpStack v4 pela REST API, com login próprio, perfis, auditoria, visitantes, controle de sessão e backup/restauração (inclusive Google Drive). Documentação completa em [`06.chirpstack_manager/README.md`](06.chirpstack_manager/README.md) (telas em `docs/telas/`).
+
+| Pasta | Manifestos (`kubernetes/`) | Recursos |
+|---|---|---|
+| `api_chirpstack_manager_backend/` | `01` Namespace · `02` Secret (**exemplo** — o real é criado à mão) · `03` ConfigMap · `04`–`06` PostgreSQL (PVC, StatefulSet, Service) · `07` PVC de backups · `08` Deployment · `09` Service · `kustomization.yaml` | Deployment `chirpstack-manager-api` (8083; actuator 8084), StatefulSet `chirpstack-manager-postgres` |
+| `app_chirpstack_manager_frontend/` | `01` · `02` Deployment · `03` Service · `04`/`05` (referência) · `06` Ingress · `07` Ingress da restauração · `kustomization.yaml` | Deployment `chirpstack-manager-web` (NGINX 8080), Ingress `chirpstack-manager.adailsilva.com.br` |
+
+> Os nomes dos recursos do Manager (`chirpstack-manager-api`, `chirpstack-manager-web`, `chirpstack-manager-postgres`) foram **mantidos** na padronização: o PVC do banco e o proxy do NGINX (`/api` → `chirpstack-manager-api:8083`) dependem deles. Só os nomes dos arquivos, das imagens (`api-/app-chirpstack-manager-*`) e das Applications seguem o padrão novo.
+
+Pastas do módulo no padrão CSLab: `backups/`, `deploy/`, `planos_implantacao/`, `scripts_back-up/` (Linux/Windows), `stack_chirpstack-manager/` (aplicação completa local), `stack_postgresql_pgAdmin_4/` (PostgreSQL 15435 + pgAdmin 16545), `useful_commands_backup_and_restore/` e `useful_commands_local_deploy/`.
+
+**Antes do primeiro deploy pelo pipeline:** crie o Secret `chirpstack-manager-secrets` no namespace `chirpstack-manager` (modelo no `02`); sem ele o job do backend para de propósito.
+
+---
+
 ## Pré-requisitos
 
 ### Conta Oracle Cloud
@@ -594,7 +630,7 @@ Adicione `oci_api_key_public.pem` em **Identity → Users → (seu usuário) →
 
 | Aplicação | Namespace | Versão / Imagem | Função |
 |---|---|---|---|
-| **Homepage (Angular + nginx)** | `chirpstack-homepage` | `nginx:alpine` + build Angular 21 (ARM64) | Site do repositório em `chirpstack.seudominio.com.br` |
+| **Homepage (Angular + nginx)** | `chirpstack-site` | `nginx:alpine` + build Angular 21 (ARM64) | Site do repositório em `chirpstack.seudominio.com.br` |
 | **Metrics Server** | `kube-system` | `metrics-server:v0.7.2` | Métricas de CPU/RAM para Dashboard e `kubectl top` |
 | **UDP Health Check :1700** | `oci-devops` | Java (ARM64, OCI Registry) | Libera porta UDP 1700 no NLB (PING/PONG) |
 | **UDP Health Check :1710** | `oci-devops` | Java (ARM64, OCI Registry) | Libera porta UDP 1710 no NLB (PING/PONG) |
@@ -625,19 +661,23 @@ Adicione `oci_api_key_public.pem` em **Identity → Users → (seu usuário) →
 │
 ├── force_deploy.sh                  # Força o deploy (grava .force-deploy nas pastas das apps)
 ├── .github/workflows/main.yml       # CI/CD: detect + um job por aplicação
+├── gitops/                          # ArgoCD: app-of-apps + Applications chirpstack-* (ver gitops/README.md)
+├── brand/                           # Identidade visual (BRAND.md + logos/ícones chirpstack-*)
 │
 ├── 00.homepage/                     # App: site do repositório (chirpstack.seudominio.com.br)
-│   └── app_chirpstack_homepage_frontend/
+│   └── app_chirpstack_site_frontend/
 │       ├── Dockerfile               # node:22-alpine (build) → nginx:alpine
 │       ├── nginx.conf               # SPA fallback, /healthz, cache e cabeçalhos
 │       ├── package.json             # Angular 21 · PrimeNG 21 · Avalon 21
 │       ├── src/app/core/site.config.ts   # Todo o conteúdo do site (espelha este README)
 │       ├── src/app/pages/           # home · versao (/v3 e /v4) · infraestrutura
 │       └── kubernetes/
-│           ├── 01.create__Namespace.yaml                          # Namespace chirpstack-homepage
-│           ├── 02.app-chirpstack-homepage-frontend__Deployment.yaml
-│           ├── 03.app-chirpstack-homepage-frontend__Service.yaml  # ClusterIP :80
-│           ├── 04.app-chirpstack-homepage__Ingress.yaml           # TLS letsencrypt-prod
+│           ├── 01.create__Namespace.yaml                          # Namespace chirpstack-site
+│           ├── 02.app-chirpstack-site-frontend__Deployment.yaml   # Deployment (ArgoCD)
+│           ├── 03.app-chirpstack-site-frontend__Service.yaml      # ClusterIP :80
+│           ├── 04.app-chirpstack-site-cert-manager__...yaml       # referência (scaffold)
+│           ├── 05.app-chirpstack-site-letsencrypt-issuer__...yaml # referência (scaffold)
+│           ├── 06.app-chirpstack-site__Ingress.yaml               # TLS letsencrypt-prod
 │           └── kustomization.yaml                                 # Imagem + versão (pipeline)
 │
 ├── 01.metrics_server/               # App: Metrics Server
@@ -775,6 +815,108 @@ Adicione `oci_api_key_public.pem` em **Identity → Users → (seu usuário) →
         ├── 26.chirpstack-v4-rest-api__Ingress.yaml   # HTTPS + TLS Let's Encrypt (REST API)
         └── 27.chirpstack-v4-toolbox__Deployment.yaml # nicolaka/netshoot (debug)
 ```
+
+**Sistemas (`05.` e `06.`, no padrão de módulo do CSLab):**
+
+```
+├── 05.chirpstack_consumer/
+│   ├── api_chirpstack_consumer_backend/      # Spring Boot (WebSocket/STOMP), sem banco
+│   │   └── kubernetes/                       # 01 Namespace · 02 Deployment · 03 Service · kustomization · 00.UsefulScripts
+│   ├── app_chirpstack_consumer_frontend/     # Angular/Avalon + NGINX (proxy /api e /ws)
+│   │   └── kubernetes/                       # 01 · 02 Deployment · 03 Service · 04/05 ref. · 06 Ingress · kustomization
+│   ├── backups/ · deploy/ · planos_implantacao/ · stack_chirpstack-consumer/ · useful_commands_local_deploy/
+│   └── README.md
+│
+└── 06.chirpstack_manager/
+    ├── api_chirpstack_manager_backend/       # Spring Boot 4 (BFF da REST API do ChirpStack v4) + PostgreSQL
+    │   └── kubernetes/                       # 01 · 02 Secret (exemplo) · 03 ConfigMap · 04–06 PostgreSQL · 07 PVC · 08 Deployment · 09 Service
+    ├── app_chirpstack_manager_frontend/      # Angular/Avalon + NGINX
+    │   └── kubernetes/                       # 01 · 02 Deployment · 03 Service · 04/05 ref. · 06 Ingress · 07 Ingress restauração
+    ├── backups/ · deploy/ · planos_implantacao/ · scripts_back-up/
+    ├── stack_chirpstack-manager/ · stack_postgresql_pgAdmin_4/
+    ├── useful_commands_backup_and_restore/ · useful_commands_local_deploy/
+    ├── docs/telas/                           # capturas das telas
+    └── README.md
+```
+
+---
+
+## Padrão dos Repositórios
+
+> Seção **idêntica nos 5 repositórios**. Ao mudar o padrão, atualize-a em todos.
+
+Os cinco repositórios rodam **no mesmo cluster** Kubernetes ARM64 da OCI Always Free. Cada um guarda os sistemas de um projeto/empresa, mas todos seguem a **mesma organização**, tendo o **CSLab** como referência (é o que mais evoluiu). Qualquer sistema novo começa copiando essa estrutura.
+
+| # | Repositório GitHub | Pasta local | Projeto (`<projeto>`) | Site institucional |
+|---|---|---|---|---|
+| 01 | `AdailSilva/k8s-arm-oci-always-free` | `01.k8s-on-arm-oci-always-free_standart` | `adailsilva` | `k8s.adailsilva.com.br` |
+| 03 | `AdailSilva/k8s-arm-oci-chirpstack` | `03.k8s-on-arm-oci-always-free_chirpstack` | `chirpstack` | `chirpstack.adailsilva.com.br` |
+| 04 | `AdailSilva/k8s-arm-oci-cslabweb` | `04.k8s-on-arm-oci-always-free_cslab` | `cslab` | `cslaboptico.adailsilva.com.br` |
+| 05 | `AdailSilva/k8s-arm-oci-3tsensors` | `05.k8s-on-arm-oci-always-free_3t_sensors` | `3tsensors` | `3tsensors-vibratrack.adailsilva.com.br` |
+| 06 | `AdailSilva/k8s-arm-oci-asesolucoes` | `06.k8s-on-arm-oci-always-free_ase_solucoes` | `asesolucoes` | `asesolucoes-rastrel.adailsilva.com.br` |
+
+### Estrutura comum
+
+```
+<repositório>/
+├── .github/workflows/main.yml            # detect + 1 job por app: build → OCIR → infra base → newTag no GitOps
+├── .github/workflows/mobile.yml          # (se houver app Flutter) APK/AAB no GitHub Releases
+├── 00.homepage/app_<projeto>_site_frontend/   # site institucional (Angular 21 + Avalon) — namespace <projeto>-site
+├── 01.metrics_server/                    # aplicação padrão do cluster
+├── 02.udp_health_check-nlb_oci/          # aplicação padrão do cluster
+├── 0N.<projeto>_<sistema>/               # um diretório por sistema (03, 04, 05...)
+│   ├── api_<projeto>_<sistema>_backend/  #   Spring Boot + kubernetes/ (NN.<componente>__<Kind>.yaml + kustomization.yaml)
+│   ├── app_<projeto>_<sistema>_frontend/ #   Angular + kubernetes/
+│   ├── app_<projeto>_<sistema>_mobile/   #   Flutter (quando houver)
+│   ├── backups/ deploy/ planos_implantacao/ postman_collection/ scripts_back-up/
+│   ├── stack_<projeto>-<sistema>/ stack_postgresql_pgAdmin_4/
+│   ├── useful_commands_backup_and_restore/ useful_commands_local_deploy/
+│   └── README.md (+ SETUP.md)
+├── brand/                                # BRAND.md + logotipos/ícones <projeto>-*.svg/png
+├── gitops/                               # apps/ (app-of-apps + 1 Application por app), bootstrap/, README, ROLLBACK
+├── compartment/ compute/ k8s/ k8s_scaffold/ network/ oci_artifacts_container_repository/
+├── main.tf providers.tf inputs.tf variables.auto.tfvars.example .terraform.lock.hcl
+├── force_deploy.sh                       # força o build/deploy sem alterar código
+└── README.md                             # documentação DESTE repositório
+```
+
+### Convenções de nomes
+
+| Item | Padrão | Exemplo (CSLab WEB) |
+|---|---|---|
+| Pasta do sistema | `0N.<projeto>_<sistema>` | `05.cslab_web` |
+| Pastas das aplicações | `api_<projeto>_<sistema>_backend`, `app_<projeto>_<sistema>_frontend`, `app_<projeto>_<sistema>_mobile` | `api_cslab_web_backend` |
+| Namespace do sistema | `<projeto>-<sistema>` | `cslab-web` |
+| Site institucional | pasta `00.homepage/app_<projeto>_site_frontend`, namespace **próprio** `<projeto>-site` | `cslab-site` |
+| Imagem OCIR | `api-/app-<projeto>-<sistema>-backend/frontend_platform_linux-arm64`, `app-<projeto>-site-frontend_platform_linux-arm64` | `app-cslab-web-frontend_platform_linux-arm64` |
+| Deployment / Service | `<imagem sem sufixo>-deployment` / `-service` | `app-cslab-web-frontend-deployment` |
+| Tag Git (versão) | `<imagem sem sufixo>-X.Y` | `api-cslab-web-backend-0.7` (exemplo) |
+| Job do pipeline | `<pasta da aplicação>` | `api_cslab_web_backend` |
+| Application ArgoCD | `<projeto>-<sistema>-backend/frontend`, `<projeto>-site-frontend`, `<projeto>-app-of-apps` | `cslab-web-backend` |
+| Manifestos | `NN.<componente>__<Kind>.yaml`, na ordem de aplicação; `kustomization.yaml` só com o Deployment | `12.api-cslab-web-backend__Deployment.yaml` |
+| Marca | `brand/<projeto>-<peça>[-variação][-tamanho].ext` | `brand/cslab-icone-512.png` |
+
+> Onde o identificador não pode começar com dígito (pacote Java/Dart, banco, CSS), o projeto `3tsensors` usa `t3sensors` (ex.: `br.com.t3sensors.vibratrack`, `t3sensors_vibratrack_database`).
+
+### Terraform compartilhado entre repositórios
+
+Os arquivos de infraestrutura são **cópias idênticas** nos 5 repositórios — todos descrevem o mesmo cluster:
+`main.tf`, `providers.tf`, `inputs.tf`, `variables.auto.tfvars(.example)`, `.terraform.lock.hcl`, `compartment/`, `compute/`, `k8s/`, `k8s_scaffold/`, `network/`, `oci_artifacts_container_repository/` e o state local (`terraform.tfstate`, `terraform.tfstate.backup`, fora do Git).
+
+1. Altere a infraestrutura em **um** repositório e rode `terraform plan`/`apply` ali.
+2. Copie os arquivos acima (inclusive o `terraform.tfstate` atualizado) para os outros 4.
+3. Repositório de imagem novo: declare em `oci_artifacts_container_repository/oci_artifacts_container_repository.tf` (bloco único para os 5 repositórios). Se o pipeline já o criou no primeiro push, rode `oci_artifacts_container_repository/import_existing_repositories.sh` antes do `apply`.
+
+> O state é local e copiado à mão: nunca rode `apply` em dois repositórios ao mesmo tempo nem com um state desatualizado.
+
+### Checklist para um sistema novo
+
+1. Criar `0N.<projeto>_<sistema>/` copiando a estrutura de um sistema do CSLab (ou do VibraTrack/Rastrel) e trocando os nomes.
+2. Manifestos em `api_.../kubernetes/` e `app_.../kubernetes/` com a numeração `NN.` e `kustomization.yaml` (só o Deployment).
+3. Repositórios de imagem no `oci_artifacts_container_repository.tf` (e copiar para os outros 4 repositórios).
+4. Jobs no `.github/workflows/main.yml` (mesmo modelo do job do site) e entradas no `force_deploy.sh`.
+5. Applications em `gitops/apps/` e no `include` do `app-of-apps.yaml`.
+6. Subdomínios no DNS, seção no README deste repositório e, se for produto novo, ícones em `brand/`.
 
 ---
 
@@ -949,10 +1091,10 @@ Os arquivos Ingress do projeto precisam ser editados com seus subdomínios reais
 
 **Homepage:**
 ```bash
-# Arquivo: 00.homepage/app_chirpstack_homepage_frontend/kubernetes/04.app-chirpstack-homepage__Ingress.yaml
+# Arquivo: 00.homepage/app_chirpstack_site_frontend/kubernetes/04.app-chirpstack-site__Ingress.yaml
 # Substituir: chirpstack.adailsilva.com.br → chirpstack.seudominio.com.br
 sed -i 's/chirpstack.adailsilva.com.br/chirpstack.seudominio.com.br/g' \
-  00.homepage/app_chirpstack_homepage_frontend/kubernetes/04.app-chirpstack-homepage__Ingress.yaml
+  00.homepage/app_chirpstack_site_frontend/kubernetes/04.app-chirpstack-site__Ingress.yaml
 # Os links do site ficam em src/app/core/site.config.ts e src/index.html (mesma substituição).
 ```
 
@@ -1476,14 +1618,14 @@ kubectl get daemonset -n oci-devops
 
 ### 3. Homepage
 
-A Homepage não tem script manual: ela sobe pelo GitHub Actions (job `app_chirpstack_homepage_frontend`) a cada alteração em `00.homepage/app_chirpstack_homepage_frontend/**`. Com o DNS de `chirpstack.seudominio.com.br` já apontando para o NLB, dispare o primeiro deploy:
+A Homepage não tem script manual: ela sobe pelo GitHub Actions (job `app_chirpstack_site_frontend`) a cada alteração em `00.homepage/app_chirpstack_site_frontend/**`. Com o DNS de `chirpstack.seudominio.com.br` já apontando para o NLB, dispare o primeiro deploy:
 
 ```bash
-./force_deploy.sh homepage             # ou Actions → Run workflow → target = app_chirpstack_homepage_frontend
+./force_deploy.sh homepage             # ou Actions → Run workflow → target = app_chirpstack_site_frontend
 
 # Verificar:
-kubectl get pods,svc,ingress -n chirpstack-homepage
-kubectl get certificate -n chirpstack-homepage
+kubectl get pods,svc,ingress -n chirpstack-site
+kubectl get certificate -n chirpstack-site
 ```
 
 ---
@@ -3017,6 +3159,40 @@ bash 02.destroy_chirpstack-v4_script.sh
 
 ---
 
+## GitOps com ArgoCD
+
+O ArgoCD gerencia **somente os Deployments** deste repositório (site, Consumer — backend/frontend — e Manager — backend/frontend). A versão em produção de cada um é o `newTag` do respectivo `kubernetes/kustomization.yaml`. Namespace, Secrets, ConfigMaps, bancos, PVs/PVCs, Services e Ingress continuam sendo aplicados pelo pipeline — por isso as Applications usam `prune: false`.
+
+O ArgoCD é **um só para o cluster** (compartilhado pelos 5 repositórios); este repositório só registra a sua credencial e o seu app-of-apps (`chirpstack-app-of-apps`), com Applications de prefixo `chirpstack-`.
+
+```
+push em master ─► main.yml ─► build ARM64 ─► OCIR (tag X.Y + latest)
+                               │
+                               ├─► kubectl apply: Namespace, Service, Ingress (e infraestrutura do sistema)
+                               │
+                               └─► commit "[skip ci]": newTag "X.Y" na kustomization.yaml
+                                         │
+                       ArgoCD (auto-sync, selfHeal) ◄─┘
+                                         │
+                                         ▼
+                                  Deployment atualizado
+```
+
+| Arquivo | Conteúdo |
+|---|---|
+| [`gitops/README.md`](gitops/README.md) | Layout, o que o pipeline faz e particularidades |
+| [`gitops/bootstrap/00-argocd-install.md`](gitops/bootstrap/00-argocd-install.md) | ArgoCD (uma vez por cluster) e credencial deste repositório privado |
+| [`gitops/ROLLBACK.md`](gitops/ROLLBACK.md) | Como voltar versão pelo Git |
+| `gitops/apps/` | `app-of-apps.yaml` + 5 Applications, todas com `targetRevision: master` |
+
+Pontos importantes:
+
+- **Congelar um app:** a linha `# chirpstack-release-congelado: <motivo>` na `kustomization.yaml` faz o pipeline publicar a imagem sem trocar o `newTag`.
+- **Não use o rollback nativo do ArgoCD** com auto-sync ligado: o `selfHeal` volta ao que está no Git. Faça rollback pelo Git ([`gitops/ROLLBACK.md`](gitops/ROLLBACK.md)).
+- **Tags imutáveis:** o pipeline publica cada versão com tag `X.Y` no OCIR; mantenha as versões antigas para permitir rollback.
+
+---
+
 ## Mapa de Serviços e Links de Acesso
 
 Referência rápida de todos os serviços disponíveis no cluster após o provisionamento e deploy completos. Substitua `seudominio.com.br` pelo seu domínio real.
@@ -3025,7 +3201,7 @@ Referência rápida de todos os serviços disponíveis no cluster após o provis
 
 | Serviço | URL | Credenciais padrão | Namespace |
 |---|---|---|---|
-| **Homepage** | `https://chirpstack.seudominio.com.br` | — (pública) | `chirpstack-homepage` |
+| **Homepage** | `https://chirpstack.seudominio.com.br` | — (pública) | `chirpstack-site` |
 | **Kubernetes Dashboard** | `https://k8s.seudominio.com.br/dashboard` | Token via `terraform output admin_token` | `kubernetes-dashboard` |
 | **ChirpStack v3 — UI** | `https://chirpstack-v3.seudominio.com.br` | `admin` / `admin` | `chirpstack-v3` |
 | **ChirpStack v3 — API (Swagger)** | `https://chirpstack-v3.seudominio.com.br/api` | JWT via UI → Profile → API Keys | `chirpstack-v3` |
@@ -4110,7 +4286,7 @@ kubectl get nodes -o wide
 kubectl get pods -n kube-system        # Sistema + Metrics Server
 kubectl get pods -n ingress-nginx      # Ingress Controller
 kubectl get pods -n cert-manager       # Gerenciador de certificados TLS
-kubectl get pods -n chirpstack-homepage  # Homepage (site do repositório)
+kubectl get pods -n chirpstack-site  # Homepage (site do repositório)
 kubectl get pods -n oci-devops         # UDP Health Check
 kubectl get pods -n chirpstack-v3      # ChirpStack v3 (se implantado)
 kubectl get pods -n chirpstack-v4      # ChirpStack v4 (se implantado)
@@ -4147,213 +4323,73 @@ terraform output admin_token
 
 ## CI/CD com GitHub Actions
 
-O workflow `.github/workflows/main.yml` roda no **runner self-hosted ARM64** do próprio cluster e tem um job por aplicação. O job `detect` usa o `dorny/paths-filter` para descobrir quais pastas mudaram no push e só os jobs correspondentes executam:
+O pipeline segue o **mesmo modelo do CSLab** (repositório de referência): um job `detect` descobre o que mudou (`dorny/paths-filter`) e cada aplicação tem o seu job, todos no runner self-hosted ARM64 (`runs-on: [self-hosted, Linux, ARM64]`).
 
-| Job | Pasta monitorada | Namespace | Repositório no OCIR |
-|---|---|---|---|
-| `app_chirpstack_homepage_frontend` | `00.homepage/app_chirpstack_homepage_frontend/**` | `chirpstack-homepage` | `app-chirpstack-homepage-frontend_platform_linux-arm64` |
-| `api_chirpstack_consumer_backend` | `05.chirpstack_consumer/api_chirpstack_consumer_backend/**` | `chirpstack-consumer` | `api-chirpstack-consumer-backend_platform_linux-arm64` |
-| `app_chirpstack_consumer_frontend` | `05.chirpstack_consumer/app_chirpstack_consumer_frontend/**` | `chirpstack-consumer` | `app-chirpstack-consumer-frontend_platform_linux-arm64` |
+### Workflow main.yml
 
-Cada job versiona com **tag Git própria** no formato `<prefixo>-X.Y` (ex.: `app-chirpstack-homepage-frontend-1.4`): o minor sobe a cada execução, e o major quando o disparo manual usa `version_type: major`.
+| Job | Dispara com | Namespace | Imagem OCIR | Application ArgoCD |
+|---|---|---|---|---|
+| `app_chirpstack_site_frontend` | `00.homepage/app_chirpstack_site_frontend/**` | `chirpstack-site` | `app-chirpstack-site-frontend_platform_linux-arm64` | `chirpstack-site-frontend` |
+| `api_chirpstack_consumer_backend` | `05.chirpstack_consumer/api_chirpstack_consumer_backend/**` | `chirpstack-consumer` | `api-chirpstack-consumer-backend_platform_linux-arm64` | `chirpstack-consumer-backend` |
+| `app_chirpstack_consumer_frontend` | `05.chirpstack_consumer/app_chirpstack_consumer_frontend/**` | `chirpstack-consumer` | `app-chirpstack-consumer-frontend_platform_linux-arm64` | `chirpstack-consumer-frontend` |
+| `api_chirpstack_manager_backend` | `06.chirpstack_manager/api_chirpstack_manager_backend/**` | `chirpstack-manager` | `api-chirpstack-manager-backend_platform_linux-arm64` | `chirpstack-manager-backend` |
+| `app_chirpstack_manager_frontend` | `06.chirpstack_manager/app_chirpstack_manager_frontend/**` | `chirpstack-manager` | `app-chirpstack-manager-frontend_platform_linux-arm64` | `chirpstack-manager-frontend` |
 
-### Gatilhos do pipeline
+Passos de cada job (iguais em todos os repositórios):
 
-```yaml
-on:
-  push:
-    branches:
-      - master
-    paths:
-      - '00.homepage/app_chirpstack_homepage_frontend/**'
-      - '05.chirpstack_consumer/api_chirpstack_consumer_backend/**'
-      - '05.chirpstack_consumer/app_chirpstack_consumer_frontend/**'
-  workflow_dispatch:      # Actions → Run workflow
-    inputs:
-      version_type:       # minor (padrão) ou major
-      target:             # todos | app_chirpstack_homepage_frontend | api_… | app_…
-```
+1. Calcula a próxima versão `X.Y` pelas tags Git do componente (`workflow_dispatch` com `version_type=major` sobe o major) e cria a tag.
+2. Instala/valida OCI CLI e kubectl; garante o namespace (espera sair de `Terminating`, se for o caso).
+3. **Garante o repositório no OCIR** (cria se faltar; depois importe no Terraform com `oci_artifacts_container_repository/import_existing_repositories.sh`).
+4. Build `linux/arm64` com cache no registry, `--provenance=false --sbom=false`, tags `X.Y` e `latest`.
+5. Aplica a infraestrutura base (Namespace, Service, Ingress e o que o sistema precisar) e o `oci-registry-secret`.
+6. **Fixar versão no GitOps:** troca o `newTag` da `kustomization.yaml` num worktree de `origin/master`, comita `deploy: <componente> X.Y [skip ci]` e faz push (até 5 tentativas). O ArgoCD aplica o Deployment.
 
-**Forçar deploy sem alterar código** — o script `force_deploy.sh` da raiz grava um arquivo `.force-deploy` (data/hora e ID único) na pasta de cada projeto, faz o commit só desses arquivos e o push (com `pull --rebase` e até 3 tentativas). Como o arquivo muda, o paths-filter dispara o job:
+`concurrency` com `cancel-in-progress: false`: execuções do workflow não disputam o push do GitOps.
+
+### Versionamento por tags
 
 ```bash
-./force_deploy.sh                    # todos os projetos
-./force_deploy.sh homepage           # só a Homepage
-./force_deploy.sh consumer           # só o ChirpStack Consumer (backend + frontend)
-./force_deploy.sh --dry-run          # mostra o que seria feito
-./force_deploy.sh --no-push          # cria o commit sem enviar
+git fetch --tags
+git tag --list 'app-chirpstack-site-frontend-*' | sort -V | tail -5
+git tag --list 'api-chirpstack-consumer-backend-*' | sort -V | tail -5
+git tag --list 'app-chirpstack-consumer-frontend-*' | sort -V | tail -5
+git tag --list 'api-chirpstack-manager-backend-*' | sort -V | tail -5
+git tag --list 'app-chirpstack-manager-frontend-*' | sort -V | tail -5
 ```
 
-### Etapas do job da Homepage
+### Forçar um deploy (force_deploy.sh)
 
-| # | Step | Descrição |
-|---|---|---|
-| 1 | **Checkout** | Clona o repositório com `fetch-depth: 0` (todas as tags) |
-| 2 | **Calcular próxima versão** | Lê a última tag `app-chirpstack-homepage-frontend-X.Y` e incrementa |
-| 3 | **Set up Docker Buildx** | Builder `docker-container` |
-| 4 | **Configurar OCI CLI** | Credenciais a partir dos Secrets; instala a CLI e o `jq` se faltarem |
-| 5 | **Configurar kubectl** | Instala a v1.31 (ARM64) se ausente ou antiga e grava o kubeconfig em `$RUNNER_TEMP` |
-| 6 | **Garantir repositório no OCIR** | Cria `app-chirpstack-homepage-frontend_platform_linux-arm64` no compartimento, se não existir |
-| 7 | **Build & Push** | Imagem `linux/arm64` com as tags `X.Y` e `latest` |
-| 8 | **Criar tag Git** | Publica `app-chirpstack-homepage-frontend-X.Y` (só depois do build) |
-| 9 | **Infraestrutura base** | Namespace, `oci-registry-secret`, Service e Ingress |
-| 10 | **Aplicar o Deployment** | Grava imagem e versão no `kustomization.yaml` **só no runner** (sem commit) e roda `kubectl apply -k` |
-| 11 | **Aguardar rollout** | `rollout status` e confere se o Deployment está com a imagem `:X.Y`; falha se não estiver |
-| 12 | **Limpar imagens unknown** | Remove do OCIR os manifestos sem tag gerados pelo Buildx |
-| 13 | **Remover credenciais** | Apaga kubeconfig e chave OCI do runner (sempre executa) |
+Grava/atualiza o arquivo `.force-deploy` (data/hora + ID) nos projetos selecionados, comita só esses arquivos e faz push com `pull --rebase`. Como o arquivo muda, o `paths-filter` dispara o job correspondente.
+
+```bash
+./force_deploy.sh                 # todos os projetos
+./force_deploy.sh consumer manager # apenas os que contêm o(s) termo(s)
+./force_deploy.sh --dry-run       # só mostra o que seria feito
+./force_deploy.sh --no-push       # cria o commit, sem push
+```
 
 ### Secrets do repositório GitHub
 
-Todos os valores abaixo devem ser cadastrados em **Settings → Secrets and variables → Actions → New repository secret** no seu repositório.
+Cadastre em **Settings → Secrets and variables → Actions → New repository secret** (mesmos valores nos 5 repositórios, exceto o que for próprio de mobile):
 
 | Secret | Valor esperado | Como obter |
 |---|---|---|
-| `OCI_CONFIG` | Conteúdo completo do arquivo `~/.oci/config` | Gerado automaticamente ao configurar a OCI CLI (`oci setup config`) |
-| `OCI_KEY_FILE` | Conteúdo da chave privada OCI (`oci_api_key.pem`) | Arquivo gerado em `~/.oci/oci_api_key.pem` |
-| `KUBECONFIG` | Conteúdo do kubeconfig externo do cluster | Gerado pelo Terraform em `.terraform/.kube/config-external` após o `apply` |
-| `OCI_REGISTRY_URL` | URL do OCI Container Registry | Ex: `gru.ocir.io` (varia por região) |
-| `OCI_REGISTRY_USERNAME` | Username de autenticação no OCI Registry | Formato: `<namespace>/<seu_email>` — ex: `griszz3l82u1/adail101@hotmail.com` |
-| `OCI_REGISTRY_PASSWORD` | Auth token do OCI Registry | Gerado em **OCI Console → Identity → Users → Auth Tokens → Generate Token** |
-| `OCI_REGISTRY_EMAIL` | E-mail da conta OCI | O mesmo e-mail usado no `OCI_REGISTRY_USERNAME` — ex: `adail101@hotmail.com` |
-| `OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE` | Namespace do OCI Object Storage | Encontrado em **OCI Console → Object Storage → Namespace** ou via `oci os ns get` |
-| `GH_PAT` | Personal Access Token do GitHub com escopos `repo` e `workflow` | Gerado em **GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)** — obrigatório também para o checkout em repositórios privados e para push de tags em repositórios com workflows |
-| `OCI_COMPARTMENT_ID` | OCID do compartment onde o Container Registry está | Encontrado em **OCI Console → Identity & Security → Compartments** ou nos detalhes do repositório no Container Registry |
-
-### Como obter cada Secret
-
-**`OCI_CONFIG`** — exiba e copie o conteúdo do arquivo de configuração da OCI CLI:
-```bash
-cat ~/.oci/config
-```
-O arquivo tem o formato abaixo. O campo `key_file` deve apontar para `/home/runner/.oci/key.pem` (caminho usado pelo runner no GitHub Actions):
-```ini
-[DEFAULT]
-user=ocid1.user.oc1..xxxxxxxxxx
-fingerprint=xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx
-tenancy=ocid1.tenancy.oc1..xxxxxxxxxx
-region=sa-saopaulo-1
-key_file=/home/runner/.oci/key.pem
-```
-
-> ⚠️ **Atenção — erro comum:** o arquivo `~/.oci/config` na sua máquina local provavelmente tem o caminho `key_file=/home/seu_usuario/.oci/oci_api_key.pem`. Se você copiar esse conteúdo sem ajustar, o OCI CLI no runner falhará com `FileNotFoundError` porque o caminho local não existe no ambiente do GitHub Actions. Antes de salvar o Secret, certifique-se de que o campo `key_file` está exatamente como `/home/runner/.oci/key.pem`. Use o comando abaixo para gerar o conteúdo já corrigido:
-> ```bash
-> cat ~/.oci/config | sed 's|key_file=.*|key_file=/home/runner/.oci/key.pem|'
-> ```
-> Copie a saída deste comando — e não o `cat ~/.oci/config` diretamente — para o Secret `OCI_CONFIG`.
-
-**`OCI_KEY_FILE`** — exiba e copie o conteúdo da chave privada:
-```bash
-cat ~/.oci/oci_api_key.pem
-```
-
-**`KUBECONFIG`** — após o `terraform apply`, exiba o kubeconfig externo:
-```bash
-cat .terraform/.kube/config-external
-# ou, se você usou linux_overwrite_local_kube_config = true:
-cat ~/.kube/config
-```
-
-**`OCI_REGISTRY_URL`** — URL do OCI Registry de acordo com a região:
-
-| Região OCI | URL do Registry |
-|---|---|
-| São Paulo (`sa-saopaulo-1`) | `gru.ocir.io` |
-| Ashburn (`us-ashburn-1`) | `iad.ocir.io` |
-| Phoenix (`us-phoenix-1`) | `phx.ocir.io` |
-| Frankfurt (`eu-frankfurt-1`) | `fra.ocir.io` |
-
-**`OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE`** — obtenha via OCI CLI:
-```bash
-oci os ns get --query 'data' --raw-output
-```
-
-**`OCI_REGISTRY_PASSWORD` (Auth Token)** — gere no console OCI:
-1. Acesse **Identity & Security → Users → (seu usuário)**
-2. Clique em **Auth Tokens → Generate Token**
-3. Copie o token gerado (ele é exibido apenas uma vez)
-
-**`OCI_REGISTRY_EMAIL`** — o mesmo e-mail da sua conta OCI, utilizado pelo Kubernetes ao criar o `imagePullSecret` (`oci-registry-secret`) para autenticar o pull de imagens privadas do OCI Container Registry. É o mesmo endereço que compõe a segunda parte do `OCI_REGISTRY_USERNAME` (ex: se o username é `griszz3l82u1/adail101@hotmail.com`, o e-mail é `adail101@hotmail.com`).
-
-**`GH_PAT` (Personal Access Token do GitHub)** — necessário para que o pipeline crie e faça push de tags Git de versionamento (ex: `0.1`, `0.2`, `1.0`) no repositório. O `GITHUB_TOKEN` padrão do Actions não tem permissão de escrita em tags, por isso é obrigatório criar um token pessoal:
-
-1. Acesse seu perfil no GitHub → clique na foto → **Settings**
-2. No menu lateral esquerdo, role até o fim → **Developer settings**
-3. **Personal access tokens → Tokens (classic)**
-4. Clique em **Generate new token → Generate new token (classic)**
-5. Preencha:
-   - **Note:** `GH_PAT` (ou qualquer nome descritivo)
-   - **Expiration:** escolha um prazo (ex: `90 days` ou `No expiration`)
-   - **Scopes:** marque ✅ `repo` e ✅ `workflow` — `repo` dá permissão de leitura/escrita no repositório e em tags; `workflow` é obrigatório porque o repositório contém `.github/workflows/` e o GitHub rejeita qualquer push de tag que referencie commits com arquivos de workflow sem esse escopo, com o erro `refusing to allow a Personal Access Token to create or update workflow`
-6. Clique em **Generate token** e **copie o valor gerado** (ele é exibido apenas uma vez)
-7. Adicione como Secret no repositório com o nome `GH_PAT`
-
-> O pipeline usa o `GH_PAT` em dois momentos: no step de `Checkout` (`token: ${{ secrets.GH_PAT }}`), onde é obrigatório para clonar repositórios privados — sem ele o runner recebe o erro `Input required and not supplied: token` e o job falha imediatamente — e no step **Criar tag Git**, que executa `git push origin <versão>`. O `GITHUB_TOKEN` padrão do Actions não tem permissão de escrita em tags nem de leitura em repositórios privados de outros contextos, por isso o `GH_PAT` é indispensável em ambos os casos.
->
-> ⚠️ **Repositório privado:** o token precisa estar cadastrado como Secret no próprio repositório (ou na organização) em **Settings → Secrets and variables → Actions**. Criá-lo apenas em **Developer settings** não é suficiente — o runner não consegue acessá-lo automaticamente a partir daí.
-
-**`OCI_COMPARTMENT_ID`** — OCID do compartment onde o OCI Container Registry está provisionado. Necessário para que o OCI CLI liste e delete as imagens `unknown` geradas pelo build multi-plataforma:
-
-**Opção 1 — Via console OCI (Identity):**
-1. Acesse [cloud.oracle.com](https://cloud.oracle.com) e faça login
-2. Menu (☰) → **Identity & Security → Compartments**
-3. Clique no compartment onde seu Container Registry está (geralmente o mesmo criado pelo Terraform: `k8s-on-arm-oci-always-free`, ou o compartment root)
-4. Copie o **OCID** exibido na página — tem o formato:
-```
-ocid1.compartment.oc1..aaaaaaaaxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
-
-**Opção 2 — Via console OCI (Container Registry):**
-1. Menu (☰) → **Developer Services → Container Registry**
-2. Clique em um repositório do projeto (ex.: `app-chirpstack-homepage-frontend_platform_linux-arm64`)
-3. Na página de detalhes, o campo **Compartment OCID** exibe o valor diretamente
-
-**Opção 3 — Via OCI CLI:**
-```bash
-# Lista todos os compartments e seus OCIDs
-oci iam compartment list --query 'data[*].{"name":name,"id":id}' --output table
-```
-
-Adicione o OCID como Secret no repositório com o nome `OCI_COMPARTMENT_ID`.
-
-### Como o pipeline constrói e implanta a imagem
-
-Build e push da Homepage (a partir da raiz do repositório):
-
-```bash
-docker buildx build --push \
-  --platform linux/arm64 \
-  -f 00.homepage/app_chirpstack_homepage_frontend/Dockerfile \
-  -t gru.ocir.io/<OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>/app-chirpstack-homepage-frontend_platform_linux-arm64:<X.Y> \
-  -t gru.ocir.io/<OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>/app-chirpstack-homepage-frontend_platform_linux-arm64:latest \
-  00.homepage/app_chirpstack_homepage_frontend
-```
-
-O Deployment não usa `latest` nem `rollout restart`: o pipeline grava a versão no `kustomization.yaml` e aplica com kustomize, então cada deploy troca a imagem por uma tag imutável:
-
-```yaml
-# 00.homepage/app_chirpstack_homepage_frontend/kubernetes/kustomization.yaml
-images:
-  - name: <OCI_REGISTRY_URL>/<OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>/app-chirpstack-homepage-frontend_platform_linux-arm64
-    newName: gru.ocir.io/<namespace>/app-chirpstack-homepage-frontend_platform_linux-arm64
-    newTag: "X.Y"            # trocado pelo pipeline a cada build
-```
-
-```bash
-kubectl apply -k 00.homepage/app_chirpstack_homepage_frontend/kubernetes
-```
-
-> Para aplicar à mão, ajuste antes o `newTag` para uma versão existente no OCIR.
+| `OCI_CONFIG` | Conteúdo completo do arquivo `~/.oci/config` | `oci setup config` (o pipeline corrige o `key_file` para o home do runner) |
+| `OCI_KEY_FILE` | Conteúdo da chave privada OCI (`oci_api_key.pem`) | `~/.oci/oci_api_key.pem` |
+| `KUBECONFIG` | Kubeconfig externo do cluster | Gerado pelo Terraform em `.terraform/.kube/config-external` |
+| `OCI_REGISTRY_URL` | URL do OCI Container Registry | Ex.: `gru.ocir.io` |
+| `OCI_REGISTRY_USERNAME` | Usuário do OCI Registry | `<namespace>/<seu_email>` |
+| `OCI_REGISTRY_PASSWORD` | Auth token do OCI Registry | **OCI Console → Identity → Users → Auth Tokens** |
+| `OCI_REGISTRY_EMAIL` | E-mail da conta OCI | O mesmo do `OCI_REGISTRY_USERNAME` |
+| `OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE` | Namespace do Object Storage | `oci os ns get` |
+| `GH_PAT` | Personal Access Token com escopos `repo` e `workflow` | **GitHub → Settings → Developer settings → Personal access tokens** — checkout, tags e commit do GitOps |
 
 ### Verificar a execução do pipeline
 
-Acompanhe em **Actions → CI/CD with GitHub Actions** no GitHub. No cluster:
-
 ```bash
-kubectl -n chirpstack-homepage rollout status deployment/app-chirpstack-homepage-frontend-deployment
-kubectl -n chirpstack-homepage get pods,svc,ingress -o wide
-kubectl -n chirpstack-homepage get deployment app-chirpstack-homepage-frontend-deployment \
-  -o jsonpath='{.spec.template.spec.containers[0].image}{"\n"}'
-git tag --list 'app-chirpstack-homepage-frontend-*' | sort -V | tail -3
+gh run list --repo AdailSilva/k8s-arm-oci-chirpstack --limit 5
+gh run watch --repo AdailSilva/k8s-arm-oci-chirpstack
+kubectl -n argocd get applications | grep -E '^NAME|^chirpstack-'
 ```
 
 ---
@@ -4624,22 +4660,22 @@ O job `detect` não faz build Docker — pode permanecer em `ubuntu-latest` sem 
 | Job | Trocar `runs-on` | Remover QEMU | Ajustar `--platform` |
 |---|:---:|:---:|:---:|
 | `detect` | ✗ (manter) | ✗ | ✗ |
-| `homepage` | ✓ | ✓ | ✓ |
-| `api_cslab_cardscontrol_backend` | ✓ | ✓ | ✓ |
-| `app_cslab_cardscontrol_frontend` | ✓ | ✓ | ✓ |
-| `api_cslab_web_backend` | ✓ | ✓ | ✓ |
-| `app_cslab_web_frontend` | ✓ | ✓ | ✓ |
+| `app_chirpstack_site_frontend` | ✓ | ✓ | ✓ |
+| `api_chirpstack_consumer_backend` | ✓ | ✓ | ✓ |
+| `app_chirpstack_consumer_frontend` | ✓ | ✓ | ✓ |
+| `api_chirpstack_manager_backend` | ✓ | ✓ | ✓ |
+| `app_chirpstack_manager_frontend` | ✓ | ✓ | ✓ |
 
 #### 4.5 Exemplo completo — job antes e depois
 
 **Antes (pago, com emulação):**
 
 ```yaml
-app_cslab_web_frontend:
-  name: CSLab - WEB – Frontend (Angular)
+app_chirpstack_consumer_frontend:
+  name: ChirpStack - Consumer – Frontend (Angular)
   runs-on: ubuntu-latest          # <- runner pago
   timeout-minutes: 45
-  needs: [detect, api_cslab_web_backend]
+  needs: detect
 
   steps:
     - name: Checkout
@@ -4654,7 +4690,7 @@ app_cslab_web_frontend:
       with:
         driver: docker-container
 
-    - name: Build & Push – CSLab Frontend
+    - name: Build & Push – ChirpStack - Consumer – Frontend
       run: |
         docker buildx build \
           --platform linux/amd64,linux/arm64 \   # <- remover amd64
@@ -4664,11 +4700,11 @@ app_cslab_web_frontend:
 **Depois (gratuito, build nativo):**
 
 ```yaml
-app_cslab_web_frontend:
-  name: CSLab - WEB – Frontend (Angular)
+app_chirpstack_consumer_frontend:
+  name: ChirpStack - Consumer – Frontend (Angular)
   runs-on: self-hosted             # <- instância OCI ARM64
   timeout-minutes: 45
-  needs: [detect, api_cslab_web_backend]
+  needs: detect
 
   steps:
     - name: Checkout
@@ -4682,7 +4718,7 @@ app_cslab_web_frontend:
       with:
         driver: docker-container
 
-    - name: Build & Push – CSLab Frontend
+    - name: Build & Push – ChirpStack - Consumer – Frontend
       run: |
         docker buildx build \
           --platform linux/arm64 \               # <- apenas ARM64 nativo
@@ -4963,7 +4999,7 @@ O módulo `oci-infra_ci_cd` cria repositórios privados no **OCI Container Regis
 
 | Repositório | Arquitetura | Aplicação |
 |---|---|---|
-| `app-chirpstack-homepage-frontend_platform_linux-arm64` | ARM64 | Homepage (site do repositório) |
+| `app-chirpstack-site-frontend_platform_linux-arm64` | ARM64 | Homepage (site do repositório) |
 | `udp-health-check-server-1700_platform_linux-arm64` | ARM64 | UDP Health Check porta 1700 |
 | `udp-health-check-server-1710_platform_linux-arm64` | ARM64 | UDP Health Check porta 1710 |
 

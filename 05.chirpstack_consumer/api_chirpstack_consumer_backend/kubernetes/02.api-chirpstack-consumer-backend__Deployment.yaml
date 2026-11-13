@@ -1,0 +1,73 @@
+---
+
+# ChirpStack Consumer — API (Spring Boot). Sem banco de dados: o pom.xml não tem
+# driver JDBC/JPA, então as propriedades spring.datasource.* dos profiles não são usadas.
+# Acesso só pelo proxy do frontend (/api/ e /ws/ no nginx.conf) — sem Ingress próprio.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-chirpstack-consumer-backend-deployment
+  namespace: chirpstack-consumer
+  labels:
+    app: api-chirpstack-consumer-backend-deployment
+    component: backend
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: api-chirpstack-consumer-backend-deployment
+      component: backend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: api-chirpstack-consumer-backend-deployment
+        component: backend
+    spec:
+      containers:
+        - name: api-chirpstack-consumer-backend-platform-linux-arm64
+          image: <OCI_REGISTRY_URL>/<OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>/api-chirpstack-consumer-backend_platform_linux-arm64:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: TZ
+              value: "America/Fortaleza"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 3
+      imagePullSecrets:
+        - name: oci-registry-secret
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - arm64

@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: chirpstack-site-frontend
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/AdailSilva/k8s-arm-oci-chirpstack.git
+    targetRevision: master
+    path: 00.homepage/app_chirpstack_site_frontend/kubernetes
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: chirpstack-site
+  syncPolicy:
+    automated: { prune: false, selfHeal: true }
+    syncOptions:
+      - ApplyOutOfSyncOnly=true
+      # O namespace chirpstack-site e criado pelo pipeline (01.create__Namespace.yaml).
+      # CreateNamespace cobre o caso do app-of-apps ser aplicado ANTES do primeiro
+      # deploy: sem ele a sincronizacao falha ate o pipeline rodar.
+      - CreateNamespace=true
+  revisionHistoryLimit: 20

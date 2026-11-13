@@ -1,0 +1,13 @@
+# Backend Local Deploy Commands
+cd ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/05.chirpstack_consumer/api_chirpstack_consumer_backend/ && \
+./mvnw clean install -U -DskipTests && \
+./mvnw spring-boot:run
+
+# Frontend Local Deploy Commands
+cd ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/05.chirpstack_consumer/app_chirpstack_consumer_frontend/ && \
+sudo rm -rf node_modules/ && \
+npm install && npm ci && \
+npm start
+
+# Install Angular CLI compatible with ChirpStack Consumer:
+npm install -g @angular/cli@21

@@ -1,0 +1,9 @@
+
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: chirpstack-site
+  labels:
+    app.kubernetes.io/part-of: chirpstack-site

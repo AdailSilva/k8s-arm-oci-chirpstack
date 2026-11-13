@@ -181,15 +181,18 @@ Testes do backend: `mvn verify` (sobe o contexto com H2, valida as migrations e 
 
 ```bash
 cp .env.example .env           # preencha os segredos
-docker compose -f docker/docker-compose.yaml --env-file .env up -d --build   # http://localhost:8080 (perfil production)
+cd stack_chirpstack-manager && docker compose --env-file ../.env up -d --build   # http://localhost:8080 (perfil production)
+# Só PostgreSQL + pgAdmin locais (perfil staging): cd stack_postgresql_pgAdmin_4 && docker compose up -d   # 15435 / 16545
 ```
 
 ## Kubernetes (cluster OCI ARM64)
 
 ```bash
-# Imagens multi-arquitetura
-docker buildx build --platform linux/amd64,linux/arm64 -t gru.ocir.io/griszz3l82u1/chirpstack-manager-api:0.1.0 --push api_chirpstack_manager_backend/
-docker buildx build --platform linux/amd64,linux/arm64 -t gru.ocir.io/griszz3l82u1/chirpstack-manager-web:0.1.0 --push app_chirpstack_manager_frontend/
+# Imagens: publicadas pelo pipeline (jobs api_chirpstack_manager_backend / app_chirpstack_manager_frontend
+# do .github/workflows/main.yml) em api-/app-chirpstack-manager-*_platform_linux-arm64:X.Y; o ArgoCD aplica
+# o Deployment (Applications chirpstack-manager-backend / -frontend). Build manual, se precisar:
+docker buildx build --platform linux/arm64 -t gru.ocir.io/griszz3l82u1/api-chirpstack-manager-backend_platform_linux-arm64:latest --push api_chirpstack_manager_backend/
+docker buildx build --platform linux/arm64 -t gru.ocir.io/griszz3l82u1/app-chirpstack-manager-frontend_platform_linux-arm64:latest --push app_chirpstack_manager_frontend/
 
 # Secret real (uma única vez; o arquivo 02 é só exemplo e não é aplicado pelo script)
 kubectl apply -f api_chirpstack_manager_backend/kubernetes/01.create__Namespace.yaml
@@ -209,7 +212,7 @@ Como no CSLab BackOffice, cada módulo tem a sua pasta `kubernetes/` com `00.Use
 
 | Backend (`api_chirpstack_manager_backend/kubernetes/`) | Frontend (`app_chirpstack_manager_frontend/kubernetes/`) |
 |---|---|
-| 01 Namespace · 02 Secret (exemplo) · 03 ConfigMap · 04–06 PostgreSQL (PVC, StatefulSet, Service) · 07 PVC dos backups · 08 Deployment · 09 Service | 01 Namespace · 02 Deployment · 03 Service · 04 Ingress · 05 Ingress da restauração (512 MB) |
+| 01 Namespace · 02 Secret (exemplo) · 03 ConfigMap · 04–06 PostgreSQL (PVC, StatefulSet, Service) · 07 PVC dos backups · 08 Deployment · 09 Service | 01 Namespace · 02 Deployment · 03 Service · 04 cert-manager e 05 ClusterIssuer (referência) · 06 Ingress · 07 Ingress da restauração (512 MB) |
 
 | Script | O que faz |
 |---|---|
@@ -228,7 +231,7 @@ Antes de aplicar, ajuste nos manifests:
 - o nome do `ClusterIssuer`;
 - o `storageClassName` do PostgreSQL (backend `04…PersistentVolumeClaim.yaml`) e do volume de backups (backend `07…PersistentVolumeClaim.yaml`);
 - o `GOOGLE_DRIVE_REDIRECT_URI` no ConfigMap;
-- o `imagePullSecrets` do OCIR.
+- o `imagePullSecrets` do OCIR (`oci-registry-secret`, criado pelo pipeline em cada deploy).
 
 ---
 
@@ -265,7 +268,10 @@ Antes de aplicar, ajuste nos manifests:
 │       │                           catalogo, multicast, tenants, usuarios, visitantes, backup, auth...
 │       ├── shared/                 campos/, graficos/, tabela/, visual/
 │       └── layout/                 tema Avalon adaptado (menu, topo, rodapé)
-├── docker/docker-compose.yaml      ambiente local completo
+├── backups/ · deploy/ · planos_implantacao/ · scripts_back-up/   padrão de módulo do CSLab
+├── stack_chirpstack-manager/       docker-compose da aplicação completa (local)
+├── stack_postgresql_pgAdmin_4/     PostgreSQL + pgAdmin locais (perfil staging)
+├── useful_commands_backup_and_restore/ · useful_commands_local_deploy/
 └── docs/telas/                     capturas de tela
 ```
 

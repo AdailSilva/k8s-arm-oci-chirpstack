@@ -1,0 +1,24 @@
+1. Script para Backup (backup_database.sh)
+
+2. Script para Restore (restore_database.sh)
+
+
+# Uso dos Scripts
+
+## Backup:
+### Torne o script executável:
+chmod +x backup_database.sh
+
+### Execute o script:
+./backup_database.sh
+
+
+## Restore:
+### Torne o script executável:
+chmod +x restore_database.sh
+
+### Execute o script, garantindo que o arquivo de backup exista:
+./restore_database.sh
+
+### Nota: Substitua /path/para/salvar/backup e chirpstack_manager_arquivo.sql pelos caminhos e nomes de arquivo apropriados. Se estiver em um ambiente seguro, é possível configurar variáveis de ambiente para evitar passar a senha diretamente no script.
+

@@ -1,0 +1,16 @@
+# Backend Local Deploy Commands (perfil development = H2 em data/)
+cd ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/06.chirpstack_manager/api_chirpstack_manager_backend/ && \
+mvn clean install -U -DskipTests -Pdevelopment && \
+mvn spring-boot:run -Pdevelopment
+
+# Backend com PostgreSQL local (stack_postgresql_pgAdmin_4, porta 15435): perfil staging
+# DB_URL=jdbc:postgresql://localhost:15435/chirpstack_manager DB_USERNAME=postgres DB_PASSWORD=chirpstack-manager mvn spring-boot:run -Pstaging
+
+# Frontend Local Deploy Commands
+cd ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/06.chirpstack_manager/app_chirpstack_manager_frontend/ && \
+sudo rm -rf node_modules/ && \
+npm install && npm ci && \
+npm run start:development
+
+# Install Angular CLI compatible with ChirpStack Manager:
+npm install -g @angular/cli@21

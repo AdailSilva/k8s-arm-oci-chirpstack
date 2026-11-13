@@ -1,0 +1,14 @@
+1. Script para Backup (backup_database.bat)
+
+2. Script para Restore (restore_database.bat)
+
+
+# Executar os Scripts:
+Para executar, clique duas vezes no arquivo .bat ou abra o Prompt de Comando, navegue até o diretório dos scripts e execute:
+backup_database.bat
+restore_database.bat
+
+## Agendar Execução (Opcional):
+Use o Agendador de Tarefas do Windows para executar os scripts automaticamente.
+Nota: Garanta que o PostgreSQL esteja instalado e configurado corretamente, e que as variáveis de caminho estejam ajustadas no script para apontar para os executáveis do PostgreSQL (pg_dump.exe e pg_restore.exe).
+

@@ -1,0 +1,7 @@
+# Plano de implantação:
+
+## Scripts SQL
+  - (sem banco de dados: o ChirpStack Consumer não persiste dados)
+
+## Artefatos e builds
+  - 

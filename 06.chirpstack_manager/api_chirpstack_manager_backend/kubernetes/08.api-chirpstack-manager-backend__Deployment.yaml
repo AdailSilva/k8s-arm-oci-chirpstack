@@ -27,7 +27,7 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
       containers:
         - name: api
-          image: gru.ocir.io/griszz3l82u1/chirpstack-manager-api:0.1.0
+          image: <OCI_REGISTRY_URL>/<OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>/api-chirpstack-manager-backend_platform_linux-arm64:latest
           imagePullPolicy: IfNotPresent
           # 8083 = aplicação (perfil production) | 8084 = actuator/probes (management.server.port),
           # mesmo esquema do CSLab. A 8084 não entra no Service nem no Ingress.
@@ -83,5 +83,5 @@ spec:
         - name: backups
           persistentVolumeClaim:
             claimName: chirpstack-manager-backups
-      # imagePullSecrets:
-      #   - name: ocir-secret
+      imagePullSecrets:
+        - name: oci-registry-secret

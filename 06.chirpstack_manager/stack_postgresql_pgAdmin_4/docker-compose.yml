@@ -1,0 +1,45 @@
+# Docker-Compose ChirpStack Manager: infraestrutura LOCAL (PostgreSQL + pgAdmin)
+# Para rodar a API com o perfil staging/production apontando para localhost:15435.
+# Subir: 'docker compose up -d'
+
+services:
+  chirpstack-manager-postgres:
+    container_name: 'chirpstack-manager-postgres'
+    image: postgres:17-alpine
+    hostname: chirpstack-manager-postgres-compose
+    mem_limit: 1024m
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: chirpstack-manager
+      POSTGRES_DB: chirpstack_manager
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "15435:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - chirpstack-manager-network
+
+  chirpstack-manager-pgadmin:
+    container_name: 'chirpstack-manager-pgadmin'
+    image: dpage/pgadmin4:latest
+    hostname: chirpstack-manager-pgadmin-compose
+    mem_limit: 1024m
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "admin@adailsilva.com.br"
+      PGADMIN_DEFAULT_PASSWORD: "chirpstack-manager"
+    ports:
+      - "16545:80"
+    depends_on:
+      - chirpstack-manager-postgres
+    networks:
+      - chirpstack-manager-network
+
+volumes:
+  db-data:
+
+networks:
+  chirpstack-manager-network:
+    driver: bridge

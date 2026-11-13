@@ -1,0 +1,49 @@
+{
+    "name": "app-chirpstack-site-frontend",
+    "version": "1.0.0",
+    "description": "Homepage do reposit\u00f3rio k8s-arm-oci-chirpstack (chirpstack.adailsilva.com.br) \u2014 ChirpStack v3 e v4 em Kubernetes na OCI Always Free (Avalon 21 / PrimeNG 21).",
+    "scripts": {
+        "ng": "ng",
+        "start": "ng serve --configuration development",
+        "build": "ng build",
+        "watch": "ng build --watch --configuration development",
+        "format": "prettier --write \"**/*.{js,mjs,ts,mts,d.ts,html}\" --cache",
+        "start:development": "ng serve --disable-host-check --host 0.0.0.0 --configuration development",
+        "start:staging": "ng serve --disable-host-check --host 0.0.0.0 --configuration staging",
+        "start:production": "ng serve --disable-host-check --host 0.0.0.0 --configuration production",
+        "build:development": "ng build --configuration development",
+        "build:staging": "ng build --configuration staging",
+        "build:production": "ng build --configuration production"
+    },
+    "private": true,
+    "dependencies": {
+        "@angular/common": "^21.2.0",
+        "@angular/compiler": "^21.2.0",
+        "@angular/core": "^21.2.0",
+        "@angular/forms": "^21.2.0",
+        "@angular/platform-browser": "^21.2.0",
+        "@angular/router": "^21.2.0",
+        "@primeuix/themes": "^2.0.0",
+        "@tailwindcss/postcss": "^4.1.11",
+        "primeicons": "^7.0.0",
+        "primeng": "^21.1.8",
+        "rxjs": "~7.8.0",
+        "tailwindcss-primeui": "^0.6.1",
+        "tslib": "^2.8.1"
+    },
+    "devDependencies": {
+        "@angular-devkit/build-angular": "^21.2.0",
+        "@angular/cli": "^21.2.0",
+        "@angular/compiler-cli": "^21.2.0",
+        "autoprefixer": "^10.4.20",
+        "eslint": "^9.14.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-import": "^2.31.0",
+        "eslint-plugin-prefer-arrow": "^1.2.3",
+        "eslint-plugin-prettier": "^4.2.1",
+        "postcss": "^8.5.6",
+        "prettier": "^3.0.0",
+        "tailwindcss": "^4.1.11",
+        "typescript": "~5.9.3"
+    }
+}

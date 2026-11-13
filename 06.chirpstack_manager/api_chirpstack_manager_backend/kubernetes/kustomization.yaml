@@ -12,10 +12,11 @@ resources:
   - 08.api-chirpstack-manager-backend__Deployment.yaml
 
 images:
-  - name: gru.ocir.io/griszz3l82u1/chirpstack-manager-api
-    newName: gru.ocir.io/griszz3l82u1/chirpstack-manager-api
+  - name: <OCI_REGISTRY_URL>/<OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>/api-chirpstack-manager-backend_platform_linux-arm64
+    newName: gru.ocir.io/griszz3l82u1/api-chirpstack-manager-backend_platform_linux-arm64
     # Atualizado pelo pipeline a cada build (tag imutavel = versao calculada).
-    newTag: "0.1.0"
+    # "latest" so ate o primeiro build; o pipeline troca pela versao (0.1, 0.2...).
+    newTag: "latest"
 
 patches:
   - target:

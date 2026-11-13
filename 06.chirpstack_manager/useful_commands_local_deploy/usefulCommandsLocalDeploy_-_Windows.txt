@@ -1,0 +1,2 @@
+01_start_chirpstack_manager_backend.bat  -> sobe a API local (perfil development, H2)
+02_start_chirpstack_manager_frontend.bat -> sobe o Angular (ng serve)

@@ -1,0 +1,23 @@
+# =====================================================================
+#  ChirpStack Consumer - ambiente local (backend + frontend)
+#    cd stack_chirpstack-consumer && docker compose up --build -d
+#    http://localhost:8080
+#  O nome do serviço da API é o mesmo do Service do Kubernetes
+#  (api-chirpstack-consumer-backend-service), usado pelo nginx.conf do frontend.
+# =====================================================================
+services:
+  api-chirpstack-consumer-backend-service:
+    build: ../api_chirpstack_consumer_backend
+    container_name: api-chirpstack-consumer-backend
+    environment:
+      TZ: America/Fortaleza
+    restart: unless-stopped
+
+  app-chirpstack-consumer-frontend:
+    build: ../app_chirpstack_consumer_frontend
+    container_name: app-chirpstack-consumer-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - api-chirpstack-consumer-backend-service
+    restart: unless-stopped

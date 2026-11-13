@@ -1,0 +1,31 @@
+# Useful Commands:
+
+kubectl apply -f ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/06.chirpstack_manager/api_chirpstack_manager_backend/kubernetes/01.create__Namespace.yaml
+
+# (A pipeline cria/atualiza o oci-registry-secret a cada deploy; manual só se necessário.)
+kubectl create secret docker-registry oci-registry-secret --docker-server=gru.ocir.io --docker-username='<OCI_NAMESPACE>/<USUARIO_OCI>' --docker-password='<AUTH_TOKEN>' --docker-email='<EMAIL_OCI>' -n chirpstack-manager
+
+
+cd ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/06.chirpstack_manager/api_chirpstack_manager_backend
+
+docker buildx build --platform 'linux/arm64' --tag gru.ocir.io/<OCI_NAMESPACE>/api-chirpstack-manager-backend_platform_linux-arm64:latest --no-cache .
+docker buildx build --platform 'linux/arm64' --tag gru.ocir.io/<OCI_NAMESPACE>/api-chirpstack-manager-backend_platform_linux-arm64:latest --no-cache --push .
+
+
+
+# Grant permissions:
+
+cd ~/Apps/OracleCloud/03.k8s-on-arm-oci-always-free_chirpstack/06.chirpstack_manager/api_chirpstack_manager_backend/kubernetes/00.UsefulScripts
+
+chmod +x 01.deploy_full_api-chirpstack-manager-backend_script.sh
+bash 01.deploy_full_api-chirpstack-manager-backend_script.sh
+
+chmod +x 02.destroy_full_api-chirpstack-manager-backend_script.sh
+bash 02.destroy_full_api-chirpstack-manager-backend_script.sh
+
+
+# Pods e logs (os nomes dos recursos foram mantidos para preservar o banco e o proxy do NGINX):
+
+kubectl get pods,svc,ingress,certificate,pvc -n chirpstack-manager
+kubectl logs -f deploy/chirpstack-manager-api -n chirpstack-manager
+kubectl rollout restart deployment/chirpstack-manager-api -n chirpstack-manager

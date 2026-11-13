@@ -1,3 +1,6 @@
 .env
 *.log
 .DS_Store
+
+# Banco H2 e backups locais do perfil development
+api_chirpstack_manager_backend/data/

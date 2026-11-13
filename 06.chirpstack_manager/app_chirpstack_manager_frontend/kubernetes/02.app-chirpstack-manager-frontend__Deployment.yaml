@@ -21,7 +21,7 @@ spec:
         runAsUser: 101
       containers:
         - name: web
-          image: gru.ocir.io/griszz3l82u1/chirpstack-manager-web:0.1.0
+          image: <OCI_REGISTRY_URL>/<OCI_REGISTRY_OBJECT_STORAGE_NAMESPACE>/app-chirpstack-manager-frontend_platform_linux-arm64:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
@@ -35,5 +35,5 @@ spec:
           resources:
             requests: { cpu: 20m, memory: 32Mi }
             limits: { cpu: 250m, memory: 128Mi }
-      # imagePullSecrets:
-      #   - name: ocir-secret
+      imagePullSecrets:
+        - name: oci-registry-secret
