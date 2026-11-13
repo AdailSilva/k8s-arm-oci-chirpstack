@@ -2,6 +2,6 @@
 # Qualquer alteração aqui dispara o pipeline (paths-filter) deste projeto.
 # Não editar manualmente.
 project=00.homepage/app_chirpstack_site_frontend
-deploy_at=2026-11-12 18:19:24 -0300
-deploy_id=1794518364-13966
+deploy_at=2026-11-13 16:44:46 -0300
+deploy_id=1794599086-19590
 author=Adail dos Santos Silva

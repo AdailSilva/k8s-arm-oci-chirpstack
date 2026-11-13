@@ -1,0 +1,7 @@
+# Arquivo gerado automaticamente por force_deploy.sh
+# Qualquer alteração aqui dispara o pipeline (paths-filter) deste projeto.
+# Não editar manualmente.
+project=06.chirpstack_manager/app_chirpstack_manager_frontend
+deploy_at=2026-11-13 16:44:46 -0300
+deploy_id=1794599086-19590
+author=Adail dos Santos Silva
