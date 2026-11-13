@@ -11,7 +11,7 @@ images:
     newName: gru.ocir.io/griszz3l82u1/app-chirpstack-site-frontend_platform_linux-arm64
     # Atualizado pelo pipeline a cada build (tag imutável = versão calculada).
     # "latest" só até o primeiro build; o pipeline troca pela versão (0.1, 0.2...).
-    newTag: "latest"
+    newTag: "0.1"
 
 patches:
   - target:
